@@ -119,7 +119,7 @@ export default function UploadVideoForm() {
       });
     } finally {
       setUploading(false);
-      toast.dismiss(loadingToast);
+      setTimeout(() => toast.dismiss(loadingToast), 3000);
     }
   };
 
@@ -153,12 +153,12 @@ export default function UploadVideoForm() {
             </Typography>
             <Box
               sx={{
-                width: "320px",
-                height: "180px",
+                width: "100%",
+                height: "220px",
                 background: "#F6F7F8",
                 borderRadius: "8px",
-                border: "3px solid #fff",
-                boxShadow: "0px 0px 8px red",
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23333' stroke-width='1' stroke-dasharray='12' stroke-dashoffset='15' stroke-linecap='round'/%3e%3c/svg%3e\")",
                 position: "relative",
                 overflow: "hidden",
                 cursor: "pointer",

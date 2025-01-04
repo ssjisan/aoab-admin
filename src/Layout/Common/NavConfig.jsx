@@ -1,13 +1,7 @@
 import {
-  AlbumList,
-  Blog,
-  Calender,
   Dashboard,
   Doctor,
-  ExerciseVideo,
-  Form,
-  JournalList,
-  Services,
+  OnlineLearning,
   Users,
   Video,
 } from "../../assets/IconSet";
@@ -26,24 +20,12 @@ const navConfig = ({ pathname }) => [
     ],
   },
   {
-    title: "Appointments",
+    title: "Online Learning",
     icon: (
-      <Calender color={pathname === "/appointments" ? "#00AE60" : "#637381"} size={20} />
-    ),
-    items: [
-      {
-        title: "Appointments",
-        link: "/appointments",
-      },
-    ],
-  },
-  {
-    title: "Parents guidance",
-    icon: (
-      <Services
+      <OnlineLearning
         color={
-          pathname.startsWith("/create_guidance") ||
-          pathname.startsWith("/guidance_list")
+          pathname.startsWith("/add_online_learning") ||
+          pathname.startsWith("/online_learning_list")
             ? "#00AE60"
             : "#637381"
         }
@@ -52,36 +34,12 @@ const navConfig = ({ pathname }) => [
     ),
     items: [
       {
-        title: "Create guidance",
-        link: "/create_guidance",
+        title: "Add Online Learning",
+        link: "/add_online_learning",
       },
       {
-        title: "Guidance List",
-        link: "/guidance_list",
-      },
-    ],
-  },
-  {
-    title: "Album",
-    icon: (
-      <AlbumList
-        color={
-          pathname.startsWith("/upload_album") ||
-          pathname.startsWith("/album_list")
-            ? "#00AE60"
-            : "#637381"
-        }
-        size={20}
-      />
-    ),
-    items: [
-      {
-        title: "Add Album",
-        link: "/upload_album",
-      },
-      {
-        title: "Album List",
-        link: "/album_list",
+        title: "Online Learning List",
+        link: "/online_learning_list",
       },
     ],
   },
@@ -110,36 +68,12 @@ const navConfig = ({ pathname }) => [
     ],
   },
   {
-    title: "Exercise Video",
-    icon: (
-      <ExerciseVideo
-        color={
-          pathname.startsWith("/upload_exercise_video") ||
-          pathname.startsWith("/exercise_video_list")
-            ? "#00AE60"
-            : "#637381"
-        }
-        size={20}
-      />
-    ),
-    items: [
-      {
-        title: "Add Exercise Video",
-        link: "/upload_exercise_video",
-      },
-      {
-        title: "Exercise Video List",
-        link: "/exercise_video_list",
-      },
-    ],
-  },
-  {
-    title: "Doctor",
+    title: "Courses and Events",
     icon: (
       <Doctor
         color={
-          pathname.startsWith("/add_doctor") ||
-          pathname.startsWith("/doctor_list")
+          pathname.startsWith("/add_courses_events") ||
+          pathname.startsWith("/courses_events_list")
             ? "#00AE60"
             : "#637381"
         }
@@ -148,82 +82,12 @@ const navConfig = ({ pathname }) => [
     ),
     items: [
       {
-        title: "Add Doctor",
-        link: "/add_doctor",
+        title: "Add Courses and Events",
+        link: "/add_courses_events",
       },
       {
-        title: "Doctor List",
-        link: "/doctor_list",
-      },
-    ],
-  },
-  {
-    title: "Blog",
-    icon: (
-      <Blog
-        color={
-          pathname.startsWith("/write_blog") || pathname.startsWith("/blog")
-            ? "#00AE60"
-            : "#637381"
-        }
-        size={20}
-      />
-    ),
-    items: [
-      {
-        title: "Write Blog",
-        link: "/write_blog",
-      },
-      {
-        title: "All Blogs",
-        link: "/blog",
-      },
-    ],
-  },
-  {
-    title: "Links",
-    icon: (
-      <JournalList
-        color={
-          pathname.startsWith("/add_link") ||
-          pathname.startsWith("/links")
-            ? "#00AE60"
-            : "#637381"
-        }
-        size={20}
-      />
-    ),
-    items: [
-      {
-        title: "Add Link",
-        link: "/add_link",
-      },
-      {
-        title: "All Links",
-        link: "/links",
-      },
-    ],
-  },
-  {
-    title: "Forms",
-    icon: (
-      <Form
-        color={
-          pathname.startsWith("/upload_form") || pathname.startsWith("/forms")
-            ? "#00AE60"
-            : "#637381"
-        }
-        size={20}
-      />
-    ),
-    items: [
-      {
-        title: "Upload Form",
-        link: "/upload_form",
-      },
-      {
-        title: "Form List",
-        link: "/forms",
+        title: "Courses and Events List",
+        link: "/courses_events_list",
       },
     ],
   },

@@ -1,23 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { MatrixIconBlog } from "../../../assets/Icons/MatrixIconBlog";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
 
 export default function BlogCount() {
-  const [blogs, setBlogs] = useState([]);
-  useEffect(() => {
-    loadBlogs();
-  }, []);
-
-  const loadBlogs = async () => {
-    try {
-      const { data } = await axios.get("/blogs");
-      setBlogs(data);
-    } catch (err) {
-      toast.error("Problem loading blogs");
-    }
-  };
   return (
     <Box
       sx={{
@@ -33,7 +17,7 @@ export default function BlogCount() {
     >
       <MatrixIconBlog />
       <Stack>
-        <Typography variant="h4">{blogs.length}</Typography>
+        <Typography variant="h4">0</Typography>
         <Typography variant="subtitle2" color="text.secondary">
           Total Blogs
         </Typography>

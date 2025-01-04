@@ -1,22 +1,8 @@
 import { Box, Stack, Typography } from "@mui/material";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { MatrixIconAlbum } from "../../../assets/Icons/MatrixIconAlbum";
 
 export default function AlbumCount() {
-  const [albums,setAlbums]=useState([])
-  useEffect(() => {
-    loadEvents();
-  }, []);
-  const loadEvents = async () => {
-    try {
-      const { data } = await axios.get("/albums");
-      setAlbums(data);
-    } catch (err) {
-      toast.error("Check");
-    }
-  };
+  
   return (
     <Box
       sx={{
@@ -32,7 +18,7 @@ export default function AlbumCount() {
     >
       <MatrixIconAlbum />
       <Stack>
-        <Typography variant="h4">{albums.length}</Typography>
+        <Typography variant="h4">0</Typography>
         <Typography variant="subtitle2" color="text.secondary">
           Total Album
         </Typography>

@@ -1,23 +1,8 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { MatrixIconAppointment } from "../../../assets/Icons/MatrixIconAppointment";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
 
 export default function AppointmentCount() {
-  const [appointments, setAppointments] = useState([]);
-
-  useEffect(() => {
-    loadProfiles();
-  }, []);
-  const loadProfiles = async () => {
-    try {
-      const { data } = await axios.get("/appointments");
-      setAppointments(data);
-    } catch (err) {
-      toast.error("Problem loading Appointments");
-    }
-  };
+ 
   return (
     <Box
       sx={{
@@ -33,7 +18,7 @@ export default function AppointmentCount() {
     >
       <MatrixIconAppointment />
       <Stack>
-        <Typography variant="h4">{appointments.length}</Typography>
+        <Typography variant="h4">0</Typography>
         <Typography variant="subtitle2" color="text.secondary">
           Total Appointment
         </Typography>

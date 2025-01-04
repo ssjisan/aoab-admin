@@ -9,3 +9,4 @@ Currently, two official plugins are available:
 # itbd_admin
 # posb-dashboard
 # poc-admin
+# aoab-admin
