@@ -23,6 +23,7 @@
     "axios": "^1.6.8",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
+    "dotenv": "^16.4.7",
     "lottie-react": "^2.4.0",
     "quill": "^2.0.2",
     "quill-image-resize-module-react": "^3.0.0",
