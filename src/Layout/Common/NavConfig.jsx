@@ -1,6 +1,8 @@
 import {
+  CoursesEvents,
   Dashboard,
-  Doctor,
+  Form,
+  Link,
   OnlineLearning,
   Users,
   Video,
@@ -16,6 +18,30 @@ const navConfig = ({ pathname }) => [
       {
         title: "Dashboard",
         link: "/",
+      },
+    ],
+  },
+  {
+    title: "Courses and Events",
+    icon: (
+      <CoursesEvents
+        color={
+          pathname.startsWith("/add_courses_events") ||
+          pathname.startsWith("/courses_events_list")
+            ? "#00AE60"
+            : "#637381"
+        }
+        size={20}
+      />
+    ),
+    items: [
+      {
+        title: "Add Courses and Events",
+        link: "/add_courses_events",
+      },
+      {
+        title: "Courses and Events List",
+        link: "/courses_events_list",
       },
     ],
   },
@@ -44,6 +70,54 @@ const navConfig = ({ pathname }) => [
     ],
   },
   {
+    title: "Links",
+    icon: (
+      <Link
+        color={
+          pathname.startsWith("/add_links") ||
+          pathname.startsWith("/links_list")
+            ? "#00AE60"
+            : "#637381"
+        }
+        size={20}
+      />
+    ),
+    items: [
+      {
+        title: "Add Link",
+        link: "/add_links",
+      },
+      {
+        title: "All Links",
+        link: "/links_list",
+      },
+    ],
+  },
+  {
+    title: "Forms",
+    icon: (
+      <Form
+        color={
+          pathname.startsWith("/add_forms") ||
+          pathname.startsWith("/forms_list")
+            ? "#00AE60"
+            : "#637381"
+        }
+        size={20}
+      />
+    ),
+    items: [
+      {
+        title: "Add Form",
+        link: "/add_forms",
+      },
+      {
+        title: "All Forms",
+        link: "/forms_list",
+      },
+    ],
+  },
+  {
     title: "Video",
     icon: (
       <Video
@@ -64,30 +138,6 @@ const navConfig = ({ pathname }) => [
       {
         title: "Video List",
         link: "/video_list",
-      },
-    ],
-  },
-  {
-    title: "Courses and Events",
-    icon: (
-      <Doctor
-        color={
-          pathname.startsWith("/add_courses_events") ||
-          pathname.startsWith("/courses_events_list")
-            ? "#00AE60"
-            : "#637381"
-        }
-        size={20}
-      />
-    ),
-    items: [
-      {
-        title: "Add Courses and Events",
-        link: "/add_courses_events",
-      },
-      {
-        title: "Courses and Events List",
-        link: "/courses_events_list",
       },
     ],
   },

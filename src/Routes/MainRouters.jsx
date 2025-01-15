@@ -16,6 +16,12 @@ import AddCoursesEvents from "../Page/Courses&Events/AddCoursesEvents";
 import CoursesEventsList from "../Page/Courses&Events/CoursesEventsList";
 import PreviewCourseEvent from "../Page/Courses&Events/PreviewCourseEvent";
 import UpdateCoursesEvents from "../Page/Courses&Events/UpdateCoursesEvents";
+import AddLink from "../Page/Links/AddLink";
+import LinksList from "../Page/Links/LinksList";
+import UpdateLink from "../Page/Links/UpdateLink";
+import AddForm from "../Page/Forms/AddForm";
+import FormsList from "../Page/Forms/FormsList";
+import UpdateForm from "../Page/Forms/UpdateForm";
 
 export default function MainRouters() {
   return (
@@ -49,6 +55,13 @@ export default function MainRouters() {
         <Route path="" element={<PrivateRoute />}>
           <Route path="/" element={<Dashboard />} />
 
+          {/* Courses & Events Routes Start */}
+          <Route path="/add_courses_events" element={<AddCoursesEvents />} />
+          <Route path="/courses_events_list" element={<CoursesEventsList />} />
+          <Route path="/course_event/:id" element={<PreviewCourseEvent />} />
+          <Route path="/courses_events/:id" element={<UpdateCoursesEvents />} />
+          {/* Courses & Events Routes End */}
+
           {/* Online Learning Start */}
           <Route path="/add_online_learning" element={<AddOnlineLearning />} />
           <Route path="/online_learning_list" element={<ResourcesList />} />
@@ -56,18 +69,23 @@ export default function MainRouters() {
 
           {/* Online Learning End */}
 
+          {/* Links Start */}
+          <Route path="/add_links" element={<AddLink />} />
+          <Route path="/links_list" element={<LinksList />} />
+          <Route path="link/:linkId" element={<UpdateLink />} />
+          {/* Links End */}
+
+          {/* Forms Start */}
+          <Route path="/add_forms" element={<AddForm />} />
+          <Route path="/forms_list" element={<FormsList />} />
+          <Route path="/form/:formId" element={<UpdateForm />} />
+          {/* Forms End */}
+
           {/* Videos Routes Start */}
           <Route path="/upload_video" element={<UploadVideo />} />
           <Route path="/video_list" element={<VideoList />} />
           <Route path="/video/:slug" element={<UpdateVideo />} />
           {/* Videos Routes End */}
-
-          {/* Courses & Events Routes Start */}
-          <Route path="/add_courses_events" element={<AddCoursesEvents />} />
-          <Route path="/courses_events_list" element={<CoursesEventsList />} />
-          <Route path="/course_event/:id" element={<PreviewCourseEvent />} />
-          <Route path="/courses_events/:id" element={<UpdateCoursesEvents />} />
-          {/* Courses & Events Routes End */}
 
           {/* User Routes Start */}
           <Route path="/create_use" element={<AddUser />} />
