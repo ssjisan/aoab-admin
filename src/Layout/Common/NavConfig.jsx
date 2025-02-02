@@ -51,7 +51,8 @@ const navConfig = ({ pathname }) => [
     icon: (
       <AddAlbum
         color={
-          pathname.startsWith("/create_album") || pathname.startsWith("/albums")
+          pathname.startsWith("/add_album") ||
+          pathname.startsWith("/album_list")
             ? "#00AE60"
             : "#637381"
         }
@@ -60,12 +61,12 @@ const navConfig = ({ pathname }) => [
     ),
     items: [
       {
-        title: "Create Album",
-        link: "/create_album",
+        title: "Add Album",
+        link: "/add_album",
       },
       {
-        title: "Albums",
-        link: "/albums",
+        title: "Album List",
+        link: "/album_list",
       },
     ],
   },

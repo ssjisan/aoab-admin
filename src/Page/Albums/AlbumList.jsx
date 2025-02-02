@@ -1,7 +1,8 @@
-import { Box, Toolbar, Typography } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 import Sidebar from "../../Layout/Sidebar";
-import AddAlbum from "../../Components/Album/Add/AddAlbum";
-export default function CreateAlbum() {
+import AllAlbums from "../../Components/Albums/AlbumTable/AllAlbums";
+
+export default function AlbumList() {
   const drawerWidth = 280;
 
   return (
@@ -17,10 +18,7 @@ export default function CreateAlbum() {
       >
         <Toolbar />
         <Box>
-          <Typography variant="h4" sx={{ mb: "40px" }}>
-            Create Album
-          </Typography>
-          <AddAlbum />
+          <AllAlbums />
         </Box>
       </Box>
     </Box>
