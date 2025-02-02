@@ -14,10 +14,10 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import Logo from "/itbd.svg";
 import Navbar from "./Navbar";
 import "./Scrollbar.css";
 import { ArrowDown, Bullet } from "../assets/IconSet";
+import { Logo } from "../assets/Logo";
 
 const drawerWidth = 280;
 
@@ -63,8 +63,8 @@ function Sidebar(props) {
           p: "16px",
         }}
       >
-        <Box sx={{ ml: "32px" }}>
-          <img src={Logo} alt="logo" width="48px" height="48px" />
+        <Box sx={{ ml: "24px" }}>
+          <Logo width={"48px"} height={"48px"} />
         </Box>
         <List>
           {navConfig({ pathname }).map((section) =>

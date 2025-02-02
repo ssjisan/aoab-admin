@@ -9,12 +9,14 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  Stack,
   TextField,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../DataProcessing/DataProcessing";
-import { EyeOff, EyeOn } from "../../assets/IconSet";
+import { Alert, EyeOff, EyeOn } from "../../assets/IconSet";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -31,6 +33,7 @@ export default function InputFields() {
   );
   const { auth, setAuth } = useContext(DataContext);
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState(""); // State to store error message
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("email");
@@ -42,8 +45,9 @@ export default function InputFields() {
   }, []);
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Important to prevent default form behavior
+    e.preventDefault();
     setLoading(true);
+    setErrorMessage(""); // Clear previous error message
     try {
       const { data } = await axios.post("/login", {
         email,
@@ -51,7 +55,7 @@ export default function InputFields() {
       });
       if (data?.error) {
         setLoading(false);
-        toast.error(data.error);
+        setErrorMessage(data.error); // Set error message to display in the stack
       } else {
         localStorage.setItem("auth", JSON.stringify(data));
         if (rememberMe) {
@@ -71,7 +75,7 @@ export default function InputFields() {
       }
     } catch (err) {
       setLoading(false);
-      toast.error(`${err.message}. Please try again`);
+      setErrorMessage(`${err.message}. Please try again`); // Set error message
     }
   };
 
@@ -88,6 +92,20 @@ export default function InputFields() {
         mb: forBelow776 ? "80px" : "160px",
       }}
     >
+       {errorMessage && (
+        <Stack
+          gap="8px"
+          flexDirection="row"
+          justifyContent="flex-start"
+          alignItems="center"
+          sx={{ background: "#FFE9D5", p: "8px 16px", borderRadius: "12px", height:"48px" }}
+        >
+          <Alert size="24" color="#FF5630" />
+          <Typography variant="body2" sx={{ color: "#FF5630" }}>
+            {errorMessage}
+          </Typography>
+        </Stack>
+      )}
       <TextField
         id="email"
         label="Your Email"
@@ -114,9 +132,9 @@ export default function InputFields() {
                 edge="end"
               >
                 {showPassword ? (
-                  <EyeOff color="#918EAF" size="24px" />
-                ) : (
                   <EyeOn color="#918EAF" size="24px" />
+                ) : (
+                  <EyeOff color="#918EAF" size="24px" />
                 )}
               </IconButton>
             </InputAdornment>

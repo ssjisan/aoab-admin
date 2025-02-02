@@ -1,4 +1,5 @@
 import {
+  AddAlbum,
   CoursesEvents,
   Dashboard,
   Form,
@@ -42,6 +43,29 @@ const navConfig = ({ pathname }) => [
       {
         title: "Courses and Events List",
         link: "/courses_events_list",
+      },
+    ],
+  },
+  {
+    title: "Album",
+    icon: (
+      <AddAlbum
+        color={
+          pathname.startsWith("/create_album") || pathname.startsWith("/albums")
+            ? "#00AE60"
+            : "#637381"
+        }
+        size={20}
+      />
+    ),
+    items: [
+      {
+        title: "Create Album",
+        link: "/create_album",
+      },
+      {
+        title: "Albums",
+        link: "/albums",
       },
     ],
   },

@@ -22,6 +22,7 @@ import UpdateLink from "../Page/Links/UpdateLink";
 import AddForm from "../Page/Forms/AddForm";
 import FormsList from "../Page/Forms/FormsList";
 import UpdateForm from "../Page/Forms/UpdateForm";
+import CreateAlbum from "../Page/Album/CreateAlbum";
 
 export default function MainRouters() {
   return (
@@ -92,6 +93,12 @@ export default function MainRouters() {
           <Route path="change_password" element={<ChangePassword />} />
           <Route path="user_list" element={<UserList />} />
           {/* User Routes End */}
+
+          {/* Album Routes Start */}
+          <Route path="create_album" element={<CreateAlbum />} />
+          {/* <Route path="album_list" element={<AlbumList />} />
+          <Route path="album/:albumId" element={<UpdateAlbum />} /> */}
+          {/* Album Routes End */}
         </Route>
         {/* <Route path="*" element={<ErrorPage />} replace /> */}
       </Routes>

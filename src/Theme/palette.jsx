@@ -47,6 +47,7 @@ export function palette() {
     text: {
       primary: grey[900],
       secondary: grey[500],
+      tertiary: grey[100],
       disabled: alpha(grey[900], 0.24),
     },
     background: {

@@ -2,7 +2,7 @@ import { Box, Button, Stack, Typography, useMediaQuery } from "@mui/material";
 import { DataContext } from "../../../DataProcessing/DataProcessing";
 import { useContext } from "react";
 
-export default function SupportCard() {
+export default function WelcomeCard() {
   const forBelow676 = useMediaQuery("(max-width:676px)");
   const { auth } = useContext(DataContext);
 
@@ -13,9 +13,12 @@ export default function SupportCard() {
         alignItems: "center",
         flexDirection: forBelow676 && "column",
         background:
-          "linear-gradient(135deg, rgba(91, 228, 155, 0.2), rgba(0, 167, 111, 0.2)) rgb(255, 255, 255)",
+          "linear-gradient(to right, #141A21 25%, rgba(0, 75, 80, 0.88)), url(https://res.cloudinary.com/dmyttqosa/image/upload/v1738510998/user_panel/fh8inhzkp7uspq3fnxm7.webp)",
         borderRadius: "16px",
         height: "100%",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: " center center",
       }}
     >
       <Box
@@ -27,11 +30,11 @@ export default function SupportCard() {
           alignItems: "flex-start",
         }}
       >
-        <Stack>
-          <Typography variant="h4" sx={{ width: "100%" }}>
+        <Stack gap="8px">
+          <Typography variant="h4" sx={{ width: "100%", color: "#FFF" }}>
             Welcome back <br /> {auth?.user?.name}!
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.tertiary">
             Get tailored solutions that meet your needs – request your desired
             service today!
           </Typography>
@@ -41,7 +44,11 @@ export default function SupportCard() {
         </a>
       </Box>
       <Box sx={{ p: "24px", width: forBelow676 ? "100%" : "280px" }}>
-        <img src="https://res.cloudinary.com/dmyttqosa/image/upload/v1730748105/user_panel/nlcscfsjtvxbbcpl8pkj.png" alt="support" width="100%" />
+        <img
+          src="https://res.cloudinary.com/dmyttqosa/image/upload/v1730748105/user_panel/nlcscfsjtvxbbcpl8pkj.png"
+          alt="support"
+          width="100%"
+        />
       </Box>
     </Box>
   );

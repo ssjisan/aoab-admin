@@ -40,11 +40,11 @@ export default function Login() {
                 : "284px",
             }}
           >
-            <img src="Form Logo.png" alt="logo" width="100%" />
+            <img src="form.png" alt="logo" width="100%" />
           </Box>
           <Box sx={{ padding: forBelow776 ? "20px 0px" : "40px 0px" }}>
             <Typography variant="h4" sx={{ textAlign: "center" }}>
-              Login to InsightTech BD Portal
+              Login to InsightTech Global Portal
             </Typography>
           </Box>
           <InputFields />
