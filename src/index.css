@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Public Sans", sans-serif;
+}
+
+.ql-editor {
+  font-size: 16px; /* Set default font size */
+}
+
+.custom-quill {
+  border: 1px solid rgba(99, 115, 129, 0.32); /* Border for the entire component */
+  border-radius: 8px; /* Overall border radius */
+  overflow: hidden; /* Prevents overflow of inner components */
+}
+
+.custom-quill .ql-toolbar {
+  border: none; /* Remove separate border for the toolbar */
+  background: #fff; /* Background for the toolbar */
+}
+
+.custom-quill .ql-container {
+  min-height: 200px; /* Minimum height for the editor */
+}
+
+.ql-container > .ql-snow{
+  border:none
+}
