@@ -17,7 +17,7 @@ const navConfig = ({ pathname }) => {
   const role = auth?.user?.role;
 
   // Configuration for role 0 and 1 (Full Access)
-  const commonItems = [
+  const ForCommonRole = [
     {
       title: "Overview",
       icon: (
@@ -27,6 +27,30 @@ const navConfig = ({ pathname }) => {
         {
           title: "Dashboard",
           link: "/",
+        },
+      ],
+    },
+    {
+      title: "Students",
+      icon: (
+        <Students
+          color={
+            pathname.startsWith("/student_approval") ||
+            pathname.startsWith("/student_list")
+              ? "#00AE60"
+              : "#637381"
+          }
+          size={20}
+        />
+      ),
+      items: [
+        {
+          title: "Student Approval",
+          link: "/student_approval",
+        },
+        {
+          title: "Student List",
+          link: "/student_list",
         },
       ],
     },
@@ -201,7 +225,19 @@ const navConfig = ({ pathname }) => {
   ];
 
   // Only show Students for role 2
-  const studentsForRole2 = [
+  const ForRole2 = [
+    {
+      title: "Overview",
+      icon: (
+        <Dashboard color={pathname === "/" ? "#00AE60" : "#637381"} size={20} />
+      ),
+      items: [
+        {
+          title: "Dashboard",
+          link: "/",
+        },
+      ],
+    },
     {
       title: "Students",
       icon: (
@@ -220,24 +256,11 @@ const navConfig = ({ pathname }) => {
           title: "Student Approval",
           link: "/student_approval",
         },
-        {
-          title: "Student List",
-          link: "/student_list",
-        },
       ],
     },
   ];
+  return role === 2 ? ForRole2 : ForCommonRole;
 
-  // If role is 2, only show Dashboard and Students
-  if (role === 2) {
-    return [
-      commonItems[0], // Dashboard
-      studentsForRole2[0], // Students
-    ];
-  }
-
-  // If role is 0 or 1, show all the menus
-  return [...commonItems, ...studentsForRole2];
 };
 
 export default navConfig;

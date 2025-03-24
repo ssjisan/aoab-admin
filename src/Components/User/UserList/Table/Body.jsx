@@ -27,29 +27,25 @@ export default function Body({
   setSelectedUser,
 }) {
   const [open, setOpen] = useState(null);
-  const {auth} = useContext(DataContext)
+  const { auth } = useContext(DataContext);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   const handleOpenMenu = (event, user) => {
     setOpen(event.currentTarget);
     setSelectedUser(user);
-    setSelectedUserId(user._id)
+    setSelectedUserId(user._id);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
   };
   const handleResetPassword = async (userId) => {
-    
     try {
       if (selectedUser?.email === "ssjisan.dev@gmail.com") {
         toast.error("Access Denied");
         return;
       }
-      const response = await axios.post(
-        `/reset-password/${userId}`,
-        {},
-      );
+      const response = await axios.post(`/reset-password/${userId}`, {});
       toast.success(response.data.message);
     } catch (error) {
       toast.error(error.response?.data?.error || "Something went wrong.");
@@ -63,15 +59,22 @@ export default function Body({
           <TableRow key={data.id}>
             <TableCell align="left">{data.name}</TableCell>
             <TableCell align="left">{data.email}</TableCell>
-            <TableCell align="left">{data.role === 1 ? "Admin" : "Super Admin"}</TableCell>
+            <TableCell align="left">
+              {" "}
+              {data.role === 0
+                ? "Super Admin"
+                : data.role === 1
+                ? "Admin"
+                : "Moderator"}
+            </TableCell>
             <TableCell align="center">
               <Tooltip title="actions">
-              <IconButton
-                sx={{ width: "40px", height: "40px" }}
-                onClick={(event) => handleOpenMenu(event, data)}
-              >
-                <More color="#919EAB" size={24} />
-              </IconButton>
+                <IconButton
+                  sx={{ width: "40px", height: "40px" }}
+                  onClick={(event) => handleOpenMenu(event, data)}
+                >
+                  <More color="#919EAB" size={24} />
+                </IconButton>
               </Tooltip>
             </TableCell>
           </TableRow>
@@ -83,11 +86,22 @@ export default function Body({
         anchorOrigin={{ vertical: "top", horizontal: "left" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
-          sx: { width: 200, p: "8px", borderRadius: "12px", boxShadow:"0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12);" },
+          sx: {
+            width: 200,
+            p: "8px",
+            borderRadius: "12px",
+            boxShadow:
+              "0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12);",
+          },
         }}
       >
         <MenuItem
-          sx={{ display: "flex", gap: "8px", mb: auth?.user?.role === 0 && "8px", borderRadius: "8px" }}
+          sx={{
+            display: "flex",
+            gap: "8px",
+            mb: auth?.user?.role === 0 && "8px",
+            borderRadius: "8px",
+          }}
           onClick={() => {
             handleResetPassword(selectedUserId);
             handleCloseMenu();

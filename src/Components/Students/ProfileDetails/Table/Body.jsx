@@ -45,6 +45,11 @@ export default function Body({ profile }) {
         "Have you completed any other AOA Course (e.g., Non-Operative, Hybrid, etc.)?",
     },
     {
+      name: "aoNonOperativeCourse",
+      label: "Ao Non Operative Course",
+      question: "Have you completed any Ao Non Operative Course?",
+    },
+    {
       name: "aoaFellowship",
       label: "AOA Fellowship",
       question: "Have you completed any AOA Fellowship?",
