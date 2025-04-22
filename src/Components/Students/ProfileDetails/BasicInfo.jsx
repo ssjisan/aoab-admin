@@ -24,8 +24,6 @@ export default function BasicInfo({ profile }) {
       <TableContainer
         sx={{
           borderRadius: "12px",
-
-          overflow: "hidden",
         }}
       >
         <Table>

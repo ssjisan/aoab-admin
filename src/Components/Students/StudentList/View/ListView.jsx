@@ -1,12 +1,12 @@
 import {
   Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
+  Button,
+  Chip,
   Stack,
   Table,
   TableContainer,
+  TablePagination,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -14,57 +14,73 @@ import toast from "react-hot-toast";
 import Body from "./Table/Body";
 import Header from "./Table/Header";
 import ProfileDetailsDrawer from "../../ProfileDetails/ProfileDetailsDrawer";
+import { DownArrow, Filter, Remove } from "../../../../assets/IconSet";
+import FilterDrawer from "../Filter/FilterDrawer";
 
 export default function ListView() {
   const [studentProfiles, setStudentProfiles] = useState([]);
-  const [selectedCourse, setSelectedCourse] = useState(""); // Store selected course label
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [openFilterDrawer, setOpenFilterDrawer] = useState(false); // 🔹 New state
+  const [search, setSearch] = useState(""); // Search state
+  const [yearFrom, setYearFrom] = useState("");
+  const [yearTo, setYearTo] = useState("");
 
-  // This will load all students initially when the component mounts
+  const DownArrowIcon = () => <DownArrow color="grey" size={16} />;
+
   useEffect(() => {
-    loadStudentsProfile(); // Load all students on first render
+    loadStudentsProfile();
   }, []);
 
-  // This will load students for the selected course
-  useEffect(() => {
-    if (selectedCourse !== "") {
-      loadStudentsProfile(selectedCourse); // Load selected course students when course changes
-    } else {
-      loadStudentsProfile(); // Load all students if no course is selected
-    }
-  }, [selectedCourse]);
+  const handleApplyFilters = () => {
+    console.log("Applied Search Filter:", search);
+    loadStudentsProfile(search, yearFrom, yearTo);
+    setOpenFilterDrawer(false); // Close filter drawer
+  };
 
-  const loadStudentsProfile = async (courseLabel = "") => {
+  const loadStudentsProfile = async (
+    search = "",
+    yearFrom = "",
+    yearTo = ""
+  ) => {
     try {
-      let url = "/verified-accounts";
-      if (courseLabel) {
-        url += `?label=${courseLabel}&status=yes`;
-      }
+      setLoading(true);
 
-      const { data } = await axios.get(url);
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      if (yearFrom) params.append("yearFrom", yearFrom);
+      if (yearTo) params.append("yearTo", yearTo);
+
+      const { data } = await axios.get(
+        `/verified-accounts?${params.toString()}`
+      );
       setStudentProfiles(data);
     } catch (err) {
-      console.error("Error details:", err);
+      console.error("Error loading student profiles:", err);
       toast.error("Students Profile can't load");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const courses = [
-    { label: "aoBasicCourse", name: "AO Basic Course" },
-    { label: "aoAdvanceCourse", name: "AO Advanced Course" },
-    { label: "aoMastersCourse", name: "AO Masters Course" },
-    { label: "aoaPediatricSeminar", name: "AOA Pediatric Seminar" },
-    { label: "aoaPelvicSeminar", name: "AOA Pelvic Seminar" },
-    { label: "aoaFootAnkleSeminar", name: "AOA Foot & Ankle Seminar" },
-    { label: "aoPeer", name: "AO Peer" },
-    { label: "aoaOtherCourses", name: "AOA Other Courses" },
-    { label: "aoaFellowship", name: "AOA Fellowship" },
-    { label: "tableFaculty", name: "Table Faculty" },
-    { label: "nationalFaculty", name: "National Faculty" },
-  ];
-  // Inside ListView function
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
-
+  const handleClearSearch = () => {
+    setSearch("");
+    loadStudentsProfile("", yearFrom, yearTo); // Keep the year filters intact
+  };
+  const handleClearYear = () => {
+    setYearFrom("");
+    setYearTo("");
+    loadStudentsProfile(search, "", ""); // Keep the year filters intact
+  };
+  const handleClearFilter = () => {
+    setSearch("");
+    setYearFrom("");
+    setYearTo("");
+    loadStudentsProfile("", "", "");
+  };
   const handleViewProfile = async (studentId) => {
     try {
       const { data } = await axios.get(`/student/${studentId}`);
@@ -86,34 +102,109 @@ export default function ListView() {
       }}
     >
       <TableContainer>
-        <Stack alignItems="flex-end">
-          <FormControl sx={{ m: 1, width: 220 }} size="small">
-            <InputLabel id="course-select-label">Filter by Course</InputLabel>
-            <Select
-              labelId="course-select-label"
-              value={selectedCourse}
-              label="Filter by Course"
-              onChange={(e) => setSelectedCourse(e.target.value)}
-            >
-              <MenuItem value="">All Verified Students</MenuItem>
-              {courses.map((course) => (
-                <MenuItem key={course.label} value={course.label}>
-                  {course.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Stack
+          sx={{ p: "12px 0px", width: "100%" }}
+          alignItems="flex-end"
+          flexDirection="row"
+          justifyContent="center"
+        >
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ width: "100%" }}
+            alignItems="center"
+          >
+            {(search || yearFrom || yearTo) && (
+              <Typography variant="body2"><Box component={"span"} sx={{fontWeight:"700"}}>{studentProfiles.length}</Box> result found</Typography>
+            )}
+            {search && (
+              <Chip
+                size="small"
+                label={search}
+                onDelete={handleClearSearch}
+                color="primary"
+                sx={{color:"#00AE60", background:"#dbf1e8"}}
+              />
+            )}
+            {(yearFrom || yearTo) && (
+              <Chip
+                size="small"
+                label={`${yearFrom ? yearFrom : ""}${
+                  yearFrom && yearTo ? "-" : ""
+                }${yearTo ? yearTo : ""}`}
+                onDelete={handleClearYear}
+                color="primary"
+                sx={{color:"#00AE60", background:"#dbf1e8"}}
+              />
+            )}
+            {(search || yearFrom || yearTo) && (
+              <Button
+                onClick={handleClearFilter}
+                variant="text"
+                color="error"
+                startIcon={<Remove color="#DC3545" size={20} />}
+              >
+                Reset
+              </Button>
+            )}
+          </Stack>
+          <Button
+            startIcon={<Filter color="#060415" size={20} />}
+            sx={{ color: "#060415", width: "fit-content" }}
+            onClick={() => setOpenFilterDrawer(true)} // 🔹 Open filter drawer
+          >
+            Filter
+          </Button>
         </Stack>
+
         <Table>
           <Header />
-          <Body studentProfiles={studentProfiles} onViewProfile={handleViewProfile}/>
+          <Body
+            studentProfiles={studentProfiles.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage
+            )}
+            onViewProfile={handleViewProfile}
+            loading={loading}
+          />
+          <TablePagination
+            count={studentProfiles.length}
+            page={page}
+            onPageChange={(event, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            slotProps={{
+              select: {
+                IconComponent: DownArrowIcon,
+              },
+            }}
+            sx={{
+              borderBottom: "none",
+              borderTop: "1px solid rgba(145, 158, 171, 0.24)",
+            }}
+          />
         </Table>
       </TableContainer>
       <ProfileDetailsDrawer
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
         studentProfile={selectedStudent}
-      />{" "}
+      />
+      <FilterDrawer // 🔹 New drawer component
+        open={openFilterDrawer}
+        onClose={() => setOpenFilterDrawer(false)}
+        handleApplyFilters={handleApplyFilters}
+        search={search}
+        setSearch={setSearch}
+        yearFrom={yearFrom}
+        setYearFrom={setYearFrom}
+        yearTo={yearTo}
+        setYearTo={setYearTo}
+      />
     </Box>
   );
 }

@@ -18,6 +18,9 @@ export default function Header() {
           BM&DC Reg.
         </TableCell>
         <TableCell align="left" sx={{ p: "8px 16px" }}>
+          AOA No.
+        </TableCell>
+        <TableCell align="left" sx={{ p: "8px 16px" }}>
           View Profile
         </TableCell>
       </TableRow>

@@ -20,9 +20,6 @@ export default function Body({
   page,
   rowsPerPage,
   handleRemove,
-  isModalOpen,
-  userRemoveModal,
-  showModal,
   selectedUser,
   setSelectedUser,
 }) {
@@ -85,7 +82,7 @@ export default function Body({
         onClose={handleCloseMenu}
         anchorOrigin={{ vertical: "top", horizontal: "left" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
-        PaperProps={{
+        slotProps={{
           sx: {
             width: 200,
             p: "8px",

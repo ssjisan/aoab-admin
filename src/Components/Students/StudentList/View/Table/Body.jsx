@@ -1,9 +1,36 @@
-import { Stack, TableBody, TableRow, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Stack,
+  TableBody,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import TableCell from "@mui/material/TableCell";
 import PropTypes from "prop-types";
 import { NoData } from "../../../../../assets/IconSet";
 
-export default function Body({ studentProfiles, onViewProfile }) {
+export default function Body({ studentProfiles, onViewProfile, loading }) {
+  if (loading) {
+    return (
+      <TableBody>
+        <TableRow>
+          <TableCell colSpan={6}>
+            <Stack
+              sx={{ width: "100%", mt: 4, mb: 4 }}
+              gap={2}
+              alignItems="center"
+            >
+              <CircularProgress />
+              <Typography variant="h6" color="text.secondary">
+                Loading profiles...
+              </Typography>
+            </Stack>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    );
+  }
+
   if (!studentProfiles.length) {
     return (
       <TableBody>
@@ -16,7 +43,7 @@ export default function Body({ studentProfiles, onViewProfile }) {
             >
               <NoData />
               <Typography variant="h6" color="text.secondary">
-                No pending data here!
+                No data here!
               </Typography>
             </Stack>
           </TableCell>
@@ -31,8 +58,9 @@ export default function Body({ studentProfiles, onViewProfile }) {
           <TableRow key={data._id}>
             <TableCell sx={{ p: "16px" }}>{data.name}</TableCell>
             <TableCell sx={{ p: "16px" }}>{data.email}</TableCell>
-            <TableCell sx={{ p: "16px" }}>{data.contactNumber}</TableCell>
-            <TableCell sx={{ p: "16px" }}>{data.bmdcNo}</TableCell>
+            <TableCell sx={{ p: "16px" }}>+880{data.contactNumber}</TableCell>
+            <TableCell sx={{ p: "16px" }}>A-{data.bmdcNo}</TableCell>
+            <TableCell sx={{ p: "16px" }}>{data?.aoaNo}</TableCell>
             <TableCell
               sx={{
                 p: "16px",
@@ -61,4 +89,5 @@ Body.propTypes = {
     })
   ).isRequired,
   onViewProfile: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };

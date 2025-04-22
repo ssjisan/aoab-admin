@@ -49,11 +49,9 @@ export default function ProfileCard({ profile }) {
           textAlign: { xs: "center", sm: "center", md: "left", lg: "left" },
         }}
       >
-        <Stack flexDirection="row" gap="8px" alignItems="center">
-          <Typography variant="h5" sx={{ fontWeight: "700" }}>
+        <Typography variant="h5" sx={{ fontWeight: "700" }}>
             {profile.name}
           </Typography>
-        </Stack>
         <Typography variant="body1" color="text.secondary">
           {profile.email}
         </Typography>

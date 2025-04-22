@@ -1,4 +1,11 @@
-import { Button, Stack, TableBody, TableRow, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Stack,
+  TableBody,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import TableCell from "@mui/material/TableCell";
 import PropTypes from "prop-types";
 import { NoData } from "../../../../../assets/IconSet";
@@ -8,7 +15,28 @@ export default function Body({
   openApprovalModal,
   openDenyModal,
   onViewProfile,
+  loading,
 }) {
+  if (loading) {
+    return (
+      <TableBody>
+        <TableRow>
+          <TableCell colSpan={6}>
+            <Stack
+              sx={{ width: "100%", mt: 4, mb: 4 }}
+              gap={2}
+              alignItems="center"
+            >
+              <CircularProgress />
+              <Typography variant="h6" color="text.secondary">
+                Loading profiles...
+              </Typography>
+            </Stack>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    );
+  }
   if (!studentProfiles.length >= 1) {
     return (
       <TableBody>
@@ -29,6 +57,7 @@ export default function Body({
       </TableBody>
     );
   }
+
   return (
     <TableBody>
       {studentProfiles.map((data) => {
@@ -36,8 +65,10 @@ export default function Body({
           <TableRow key={data._id}>
             <TableCell sx={{ p: "8px 16px" }}>{data.name}</TableCell>
             <TableCell sx={{ p: "8px 16px" }}>{data.email}</TableCell>
-            <TableCell sx={{ p: "8px 16px" }}>{data.contactNumber}</TableCell>
-            <TableCell sx={{ p: "8px 16px" }}>{data.bmdcNo}</TableCell>
+            <TableCell sx={{ p: "8px 16px" }}>
+              +880{data.contactNumber}
+            </TableCell>
+            <TableCell sx={{ p: "8px 16px" }}>A-{data.bmdcNo}</TableCell>
             <TableCell
               sx={{
                 p: "16px",
@@ -85,4 +116,5 @@ Body.propTypes = {
   openApprovalModal: PropTypes.func.isRequired,
   openDenyModal: PropTypes.func.isRequired,
   onViewProfile: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
