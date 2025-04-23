@@ -1,21 +1,17 @@
 import {
-  Autocomplete,
-  Box,
   Button,
   Drawer,
-  FormControl,
   IconButton,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { Cross } from "../../../../assets/IconSet";
-import { useState } from "react";
+import PropTypes from "prop-types";
 
 export default function FilterDrawer({
   open,
   onClose,
-  handleSearchChange,
   search,
   setSearch,
   handleApplyFilters,
@@ -65,6 +61,7 @@ export default function FilterDrawer({
               onChange={(e) => setSearch(e.target.value)}
               fullWidth
               size="small"
+               placeholder="Search"
             />
           </Stack>
 
@@ -144,3 +141,16 @@ export default function FilterDrawer({
     </Drawer>
   );
 }
+
+FilterDrawer.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  search: PropTypes.string.isRequired,
+  setSearch: PropTypes.func.isRequired,
+  handleApplyFilters: PropTypes.func.isRequired,
+  yearFrom: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
+  setYearFrom: PropTypes.func.isRequired,
+  yearTo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  setYearTo: PropTypes.func.isRequired,
+};

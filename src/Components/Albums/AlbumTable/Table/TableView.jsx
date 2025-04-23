@@ -1,24 +1,36 @@
 import { Box, Table, TableContainer } from "@mui/material";
-import Header from "./Header";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Body from "./Body";
-import Pagination from "./Pagination";
 import RemoveAlbum from "../../RemoveAlbum/RemoveAlbum";
 import Gallery from "../../GalleryViewer/Gallery";
 import { useNavigate } from "react-router-dom";
+import CustomeHeader from "../../../Common/Table/CustomeHeader";
+import CustomePagination from "../../../Common/Table/CustomePagination";
 
 export default function TableView() {
   const [albums, setAlbums] = useState([]);
   const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [albumToDelete, setAlbumToDelete] = useState(null);
   const [albumOpen, setAlbumOpen] = useState(false);
   const navigate = useNavigate();
+
+  // ***************** Table Header Columns ************************* //
+
+  const columns = [
+    { key: "album name", label: "Album Name" },
+    { key: "upload date	", label: "Upload Date" },
+    { key: "file count	", label: "File Count" },
+    { key: "total size	", label: "Total Size" },
+  ];
+
+  // ***************** Table Header Columns ************************* //
+
   // Load Albums Start //
   useEffect(() => {
     loadAlbums();
@@ -30,17 +42,6 @@ export default function TableView() {
     } catch (err) {
       toast.error("Check");
     }
-  };
-
-  // Paginations Controller Start //
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   // Popover Menu Controller Start //
@@ -136,10 +137,17 @@ export default function TableView() {
     >
       <TableContainer>
         <Table>
-          <Header />
+          <CustomeHeader
+            columns={columns}
+            includeActions={true}
+            includeDrag={true}
+          />
           <Body
             onDragEnd={onDragEnd}
-            albums={albums}
+            albums={albums.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage
+            )}
             page={page}
             rowsPerPage={rowsPerPage}
             open={open}
@@ -153,12 +161,12 @@ export default function TableView() {
             showConfirmationModal={showConfirmationModal}
             redirectEdit={redirectEdit}
           />
-          <Pagination
-            albums={albums}
+          <CustomePagination
+            count={albums.length}
             page={page}
+            setPage={setPage}
             rowsPerPage={rowsPerPage}
-            handleChangePage={handleChangePage}
-            handleChangeRowsPerPage={handleChangeRowsPerPage}
+            setRowsPerPage={setRowsPerPage}
           />
         </Table>
       </TableContainer>

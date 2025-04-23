@@ -1,14 +1,16 @@
 import {
-  Button,
   CircularProgress,
+  IconButton,
   Stack,
   TableBody,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import TableCell from "@mui/material/TableCell";
 import PropTypes from "prop-types";
-import { NoData } from "../../../../../assets/IconSet";
+import { Approve, Deny, More, NoData } from "../../../../../assets/IconSet";
+import CustomePopOver from "../../../../Common/PopOver/CustomePopOver";
 
 export default function Body({
   studentProfiles,
@@ -16,6 +18,10 @@ export default function Body({
   openDenyModal,
   onViewProfile,
   loading,
+  selectedRow,
+  handleOpenMenu,
+  handleCloseMenu,
+  open,
 }) {
   if (loading) {
     return (
@@ -80,26 +86,38 @@ export default function Body({
             >
               View Details
             </TableCell>
-            <TableCell sx={{ p: "8px 16px", width: "220px" }}>
-              <Stack flexDirection="row" gap="8px">
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => openDenyModal(data)}
+            <TableCell align="center" sx={{ p: "16px" }}>
+              <Tooltip title="Actions">
+                <IconButton
+                  sx={{ width: "40px", height: "40px" }}
+                  onClick={(event) => handleOpenMenu(event, data)}
                 >
-                  Deny
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => openApprovalModal(data)}
-                >
-                  Approve
-                </Button>
-              </Stack>
+                  <More color="#919EAB" size={24} />
+                </IconButton>
+              </Tooltip>
             </TableCell>
           </TableRow>
         );
       })}
+      <CustomePopOver
+        open={Boolean(open)}
+        anchorEl={open}
+        onClose={handleCloseMenu}
+        menuItems={[
+          {
+            label: "Approve",
+            icon: Approve,
+            onClick: () => openApprovalModal(selectedRow),
+            color: "success"
+          },
+          {
+            label: "Deny",
+            icon: Deny,
+            onClick: () => openDenyModal(selectedRow),
+            color: "error",
+          },
+        ]}
+      />
     </TableBody>
   );
 }
@@ -117,4 +135,8 @@ Body.propTypes = {
   openDenyModal: PropTypes.func.isRequired,
   onViewProfile: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  selectedRow: PropTypes.object.isRequired,
+  handleOpenMenu: PropTypes.func.isRequired,
+  handleCloseMenu: PropTypes.func.isRequired,
+  open: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
 };

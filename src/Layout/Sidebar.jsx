@@ -64,7 +64,7 @@ function Sidebar(props) {
         }}
       >
         <Box sx={{ ml: "24px" }}>
-          <Logo width={"48px"} height={"48px"} />
+          <Logo width={"40px"} height={"40px"} />
         </Box>
         <List>
           {navConfig({ pathname }).map((section) =>

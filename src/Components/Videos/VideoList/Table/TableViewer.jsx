@@ -1,19 +1,19 @@
 import { Box, Table, TableContainer } from "@mui/material";
 import Body from "./Body";
-import Header from "./Header";
-import Pagination from "./Pagination";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import RemoveVideo from "../../RemoveVideo/RemoveVideo";
 import VideoPlay from "../../VideoPlay/VideoPlay";
 import { useNavigate } from "react-router-dom";
+import CustomeHeader from "../../../Common/Table/CustomeHeader";
+import CustomePagination from "../../../Common/Table/CustomePagination";
+import ConfirmationModal from "../../../Common/RemoveConfirmation/ConfirmationModal";
 
 export default function TableViewer() {
   const [videos, setVideos] = useState([]);
   const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [videoToDelete, setVideoToDelete] = useState(null);
@@ -33,17 +33,6 @@ export default function TableViewer() {
     }
   };
   console.log(videos);
-
-  // Paginations Controller Start //
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
 
   // Popover Menu Controller Start //
 
@@ -103,20 +92,12 @@ export default function TableViewer() {
     console.log(slug);
 
     try {
-      // Show loading toast
-      const loadingToastId = toast.loading("Deleting video...");
-
-      // Perform DELETE request with slug
-      await axios.delete(`/video/${slug}`);
-
-      // Remove the deleted video from the state
-      setVideos(videos.filter((video) => video.slug !== slug));
-
-      // Dismiss loading toast and show success toast
-      toast.success("Video deleted successfully!", { id: loadingToastId });
+      const loadingToastId = toast.loading("Deleting video..."); // Show loading toast
+      await axios.delete(`/video/${slug}`); // Perform DELETE request with slug
+      setVideos(videos.filter((video) => video.slug !== slug)); // Remove the deleted video from the state
+      toast.success("Video deleted successfully!", { id: loadingToastId }); // Dismiss loading toast and show success toast
     } catch (error) {
-      // Dismiss loading toast and show error toast
-      toast.error("Failed to delete video.");
+      toast.error("Failed to delete video."); // Dismiss loading toast and show error toast
     }
   };
 
@@ -137,12 +118,21 @@ export default function TableViewer() {
     handleCloseMenu(); // Close popover
   };
 
-
   // Edit Video COntroller Start
 
   const redirectEdit = (e, selectedAlbum) => {
     navigate(`/video/${selectedAlbum.slug}`);
   };
+
+  // ***************** Table Header Columns ************************* //
+
+  const columns = [
+    { key: "video title", label: "Video Title" },
+    { key: "source	", label: "Source	" },
+    { key: "upload date	", label: "Upload Date" },
+  ];
+
+  // ***************** Table Header Columns ************************* //
 
   return (
     <Box
@@ -156,9 +146,16 @@ export default function TableViewer() {
     >
       <TableContainer>
         <Table>
-          <Header />
+          <CustomeHeader
+            columns={columns}
+            includeActions={true}
+            includeDrag={true}
+          />
           <Body
-            videos={videos}
+            videos={videos.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage
+            )}
             page={page}
             rowsPerPage={rowsPerPage}
             open={open}
@@ -171,22 +168,26 @@ export default function TableViewer() {
             handleVideoPlay={handleVideoPlay}
             redirectEdit={redirectEdit}
           />
-          <Pagination
-            videos={videos}
+          <CustomePagination
+            count={videos.length}
             page={page}
+            setPage={setPage}
             rowsPerPage={rowsPerPage}
-            handleChangePage={handleChangePage}
-            handleChangeRowsPerPage={handleChangeRowsPerPage}
+            setRowsPerPage={setRowsPerPage}
           />
         </Table>
       </TableContainer>
-      <VideoPlay videoOpen={videoOpen} handleVideoClose={handleVideoClose} source={selectedVideo?.url}/>
-      <RemoveVideo
-        confirmationModalOpen={confirmationModalOpen}
-        videoName={videoToDelete ? videoToDelete.title : ""}
-        setConfirmationModalOpen={setConfirmationModalOpen}
-        handleCloseRemoveAlbum={handleCloseRemoveAlbum}
-        handleConfirmRemove={handleConfirmRemove}
+      <VideoPlay
+        videoOpen={videoOpen}
+        handleVideoClose={handleVideoClose}
+        source={selectedVideo?.url}
+      />
+      <ConfirmationModal
+        open={confirmationModalOpen}
+        title="Delete Video"
+        itemName={videoToDelete?.title || ""}
+        onClose={handleCloseRemoveAlbum}
+        onConfirm={handleConfirmRemove}
       />
     </Box>
   );

@@ -1,8 +1,6 @@
 import {
   Box,
   IconButton,
-  MenuItem,
-  Popover,
   Stack,
   TableBody,
   TableCell,
@@ -13,12 +11,11 @@ import {
 import { Drag, Edit, EyeBold, More, Remove } from "../../../../assets/IconSet";
 import PropTypes from "prop-types";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import CustomePopOver from "../../../Common/PopOver/CustomePopOver";
 
 export default function Body({
   videos,
-  page,
   open,
-  rowsPerPage,
   handleOpenMenu,
   handleCloseMenu,
   formatDate,
@@ -40,127 +37,99 @@ export default function Body({
       <Droppable droppableId="videosDroppable">
         {(provided) => (
           <TableBody ref={provided.innerRef} {...provided.droppableProps}>
-            {videos
-              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((data, index) => {
-                const videoId = getVideoId(data.url); // Get video ID from URL
-                const thumb =
-                  data.videoType === "google-drive"
-                    ? data.thumbnail[0]?.url
-                    : `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-                return (
-                  <Draggable
-                    key={data._id}
-                    draggableId={data._id}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <TableRow
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        sx={{ overflow: "hidden" }}
-                      >
-                        <TableCell align="center">
-                          <Tooltip title="Drag">
-                            <IconButton sx={{ width: "40px", height: "40px" }}>
-                              <Drag color="#919EAB" size={24} />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                        <TableCell component="th" scope="row">
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={2}
+            {videos.map((data, index) => {
+              const videoId = getVideoId(data.url); // Get video ID from URL
+              const thumb =
+                data.videoType === "google-drive"
+                  ? data.thumbnail[0]?.url
+                  : `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+              return (
+                <Draggable key={data._id} draggableId={data._id} index={index}>
+                  {(provided) => (
+                    <TableRow
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      sx={{ overflow: "hidden" }}
+                    >
+                      <TableCell align="center">
+                        <Tooltip title="Drag">
+                          <IconButton sx={{ width: "40px", height: "40px" }}>
+                            <Drag color="#919EAB" size={24} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                          <Box
+                            sx={{
+                              width: "80px",
+                              height: "48px",
+                              borderRadius: "8px",
+                              overflow: "hidden",
+                            }}
                           >
-                            <Box
-                              sx={{
-                                width: "80px",
-                                height: "48px",
-                                borderRadius: "8px",
-                                overflow: "hidden",
-                              }}
-                            >
-                              <img
-                                src={thumb} // Reference the thumbnail URL here
-                                alt="First Image"
-                                width="100%"
-                                height="100%"
-                                style={{ objectFit: "cover" }}
-                              />
-                            </Box>
-                            <Typography variant="subtitle2" align="left">
-                              {data.title}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="left" sx={{ p: "16px" }}>
-                          {data.videoType}
-                        </TableCell>
-                        <TableCell align="left" sx={{ p: "16px" }}>
-                          {formatDate(data.createdAt)}
-                        </TableCell>
-                        <TableCell align="center" sx={{ p: "16px" }}>
-                          <Tooltip title="Actions">
-                            <IconButton
-                              sx={{ width: "40px", height: "40px" }}
-                              onClick={(event) => handleOpenMenu(event, data)}
-                            >
-                              <More color="#919EAB" size={24} />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </Draggable>
-                );
-              })}
+                            <img
+                              src={thumb} // Reference the thumbnail URL here
+                              alt="First Image"
+                              width="100%"
+                              height="100%"
+                              style={{ objectFit: "cover" }}
+                            />
+                          </Box>
+                          <Typography variant="subtitle2" align="left">
+                            {data.title}
+                          </Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell align="left" sx={{ p: "16px" }}>
+                        {data.videoType}
+                      </TableCell>
+                      <TableCell align="left" sx={{ p: "16px" }}>
+                        {formatDate(data.createdAt)}
+                      </TableCell>
+                      <TableCell align="center" sx={{ p: "16px" }}>
+                        <Tooltip title="Actions">
+                          <IconButton
+                            sx={{ width: "40px", height: "40px" }}
+                            onClick={(event) => handleOpenMenu(event, data)}
+                          >
+                            <More color="#919EAB" size={24} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Draggable>
+              );
+            })}
             {provided.placeholder}
           </TableBody>
         )}
       </Droppable>
-      <Popover
-        open={open}
+      <CustomePopOver
+        open={Boolean(open)}
         anchorEl={open}
         onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: "top", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-        PaperProps={{
-          sx: {
-            width: 160,
-            p: "8px",
-            borderRadius: "8px",
-            boxShadow: "-20px 20px 40px -4px rgba(145, 158, 171, 0.24)",
+        menuItems={[
+          {
+            label: "Preview",
+            icon: EyeBold,
+            onClick: handleVideoPlay,
           },
-        }}
-      >
-        <MenuItem
-          sx={{ display: "flex", gap: "8px", mb: "8px", borderRadius: "8px" }}
-          onClick={handleVideoPlay}
-        >
-          <EyeBold color="#919EAB" size={20} />
-          Preview
-        </MenuItem>
-        <MenuItem
-          sx={{ display: "flex", gap: "8px", mb: "8px", borderRadius: "8px" }}
-          onClick={(e) => redirectEdit(e, selectedVideo)}
-        >
-          <Edit color="#919EAB" size={20} />
-          Edit
-        </MenuItem>
-        <MenuItem
-          sx={{
-            color: "error.main",
-            display: "flex",
-            gap: "8px",
-            borderRadius: "8px",
-          }}
-          onClick={showConfirmationModal}
-        >
-          <Remove color="red" size={20} /> Delete
-        </MenuItem>
-      </Popover>
+          {
+            label: "Edit",
+            icon: Edit,
+            onClick: (e) => redirectEdit(e, selectedVideo),
+          },
+          {
+            label: "Delete",
+            icon: Remove,
+            onClick: showConfirmationModal,
+            color: "error",
+          },
+        ]}
+      />
     </DragDropContext>
   );
 }

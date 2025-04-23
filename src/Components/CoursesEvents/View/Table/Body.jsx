@@ -1,7 +1,5 @@
 import {
   IconButton,
-  MenuItem,
-  Popover,
   TableBody,
   TableRow,
   Tooltip,
@@ -19,6 +17,7 @@ import {
 } from "../../../../assets/IconSet";
 import { format } from "date-fns";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import CustomePopOver from "../../../Common/PopOver/CustomePopOver";
 
 export default function Body({
   coursesEvents,
@@ -31,10 +30,8 @@ export default function Body({
   open,
   setDataToDelete,
   setIsModalOpen,
-  redirectEdit
+  redirectEdit,
 }) {
-  
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="coursesEvents">
@@ -151,54 +148,37 @@ export default function Body({
           </TableBody>
         )}
       </Droppable>
-      <Popover
+      <CustomePopOver
         open={Boolean(open)}
         anchorEl={open}
         onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: "top", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-        slotProps={{
-          paper: {
-            sx: {
-              width: 160,
-              p: "8px",
-              borderRadius: "8px",
-              boxShadow: "-20px 20px 40px -4px rgba(145, 158, 171, 0.24)",
-            },
+        menuItems={[
+          {
+            label: "Preview",
+            icon: EyeBold,
+            onClick: () => handlePreview(selectedRowId),
           },
-        }}
-      >
-        <MenuItem
-          sx={{ display: "flex", gap: "16px", mb: "8px", borderRadius: "8px" }}
-          onClick={() => handlePreview(selectedRowId)}
-        >
-          <EyeBold color="#919EAB" size={20} />
-          Preview
-        </MenuItem>
-        {selectedTab === "running" &&
-        <MenuItem
-          sx={{ display: "flex", gap: "16px", mb: "8px", borderRadius: "8px" }}
-          onClick={(e) => redirectEdit(e, selectedRowId)}
-        >
-          <Edit color="#919EAB" size={20} />
-          Edit
-        </MenuItem>}
-        <MenuItem
-          sx={{
-            color: "error.main",
-            display: "flex",
-            gap: "16px",
-            borderRadius: "8px",
-          }}
-          onClick={() => {
-            setDataToDelete(selectedRowId);
-            setIsModalOpen(true);
-            handleCloseMenu(); // Close popover
-          }}
-        >
-          <Remove color="red" size={20} /> Delete
-        </MenuItem>
-      </Popover>
+          ...(selectedTab === "running"
+            ? [
+                {
+                  label: "Edit",
+                  icon: Edit,
+                  onClick: (e) => redirectEdit(e, selectedRowId),
+                },
+              ]
+            : []),
+          {
+            label: "Delete",
+            icon: Remove,
+            onClick: () => {
+              setDataToDelete(selectedRowId);
+              setIsModalOpen(true);
+              handleCloseMenu();
+            },
+            color: "error",
+          },
+        ]}
+      />
     </DragDropContext>
   );
 }
@@ -210,7 +190,8 @@ Body.propTypes = {
       title: PropTypes.string.isRequired,
       location: PropTypes.string.isRequired,
       language: PropTypes.string.isRequired,
-      fees: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      fees: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
       contactPerson: PropTypes.string.isRequired,
       contactEmail: PropTypes.string.isRequired,
       startDate: PropTypes.string,
@@ -226,5 +207,5 @@ Body.propTypes = {
   open: PropTypes.object, // Reference to the anchor element for the popover
   setDataToDelete: PropTypes.func.isRequired, // Function to set the item to delete
   setIsModalOpen: PropTypes.func.isRequired, // Function to open/close modal
-  redirectEdit:PropTypes.func.isRequired
+  redirectEdit: PropTypes.func.isRequired,
 };

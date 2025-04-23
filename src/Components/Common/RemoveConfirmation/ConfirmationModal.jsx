@@ -3,14 +3,19 @@ import Modal from "@mui/material/Modal";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { Warning } from "../../../assets/IconSet";
 
-export default function RemoveModal({
-  isOpen,
-  handleClose,
-  resourceTitle,
-  handleRemove,
+export default function ConfirmationModal({
+  open,
+  title = "Are you sure?",
+  message,
+  itemName = "",
+  onClose,
+  onConfirm,
+  confirmLabel = "Yes, Delete",
+  cancelLabel = "Cancel",
+  confirmColor = "error",
 }) {
   return (
-    <Modal open={isOpen} onClose={handleClose}>
+    <Modal open={open} onClose={onClose}>
       <div
         style={{
           position: "absolute",
@@ -30,21 +35,23 @@ export default function RemoveModal({
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Delete Journal
+            {title}
           </Typography>
         </Box>
         <Stack
           gap="16px"
           justifyContent={"center"}
           alignItems={"center"}
-          sx={{
-            p: "24px 16px",
-          }}
+          sx={{ p: "24px 16px" }}
         >
           <Warning size="48px" color="#dc3545" />
           <Typography variant="body1" sx={{ textAlign: "center" }}>
-            Are you sure you want to delete{" "}
-            <strong>&quot;{resourceTitle}&quot;</strong>?
+            {message || (
+              <>
+                Are you sure you want to delete{" "}
+                <strong>&quot;{itemName}&quot;</strong>?
+              </>
+            )}
           </Typography>
         </Stack>
         <Stack
@@ -53,11 +60,11 @@ export default function RemoveModal({
           justifyContent={"flex-end"}
           sx={{ p: "16px", borderTop: "1px solid rgba(145, 158, 171, 0.24)" }}
         >
-          <Button onClick={handleClose} color="inherit">
-            Cancel
+          <Button onClick={onClose} color="inherit">
+            {cancelLabel}
           </Button>
-          <Button onClick={handleRemove} variant="contained" color="error">
-            Yes, Delete
+          <Button onClick={onConfirm} variant="contained" color={confirmColor}>
+            {confirmLabel}
           </Button>
         </Stack>
       </div>
@@ -65,9 +72,14 @@ export default function RemoveModal({
   );
 }
 
-RemoveModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
-  handleRemove: PropTypes.func.isRequired,
-  resourceTitle: PropTypes.string.isRequired,
+ConfirmationModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  title: PropTypes.string,
+  message: PropTypes.node,
+  itemName: PropTypes.string,
+  onClose: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  confirmLabel: PropTypes.string,
+  cancelLabel: PropTypes.string,
+  confirmColor: PropTypes.string,
 };

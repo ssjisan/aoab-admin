@@ -2,12 +2,12 @@ import { Box, Table, TableContainer } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import Pagination from "./Table/Pagination";
 import Body from "./Table/Body";
-import Header from "./Table/Header";
 
 import { useNavigate } from "react-router-dom";
-import RemoveResourceModal from "../RemoveResource/RemoveResourceModal";
+import CustomeHeader from "../../Common/Table/CustomeHeader";
+import CustomePagination from "../../Common/Table/CustomePagination";
+import ConfirmationModal from "../../Common/RemoveConfirmation/ConfirmationModal";
 
 export default function MainTable() {
   const navigate = useNavigate();
@@ -16,7 +16,14 @@ export default function MainTable() {
   const [selectedResource, setSelectedResource] = useState(null);
   const [resourceToDelete, setResourceToDelete] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // ***************** Table Header Columns ************************* //
 
+  const columns = [
+    { key: "title", label: "Title" },
+    { key: "preview	", label: "Preview" },
+  ];
+
+  // ***************** Table Header Columns ************************* //
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -33,16 +40,7 @@ export default function MainTable() {
     }
   };
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Dragging and reorder
   const onDragEnd = async (result) => {
@@ -121,7 +119,11 @@ export default function MainTable() {
     >
       <TableContainer>
         <Table>
-          <Header />
+          <CustomeHeader
+            columns={columns}
+            includeActions={true}
+            includeDrag={true}
+          />
           <Body
             resources={resources}
             page={page}
@@ -137,20 +139,21 @@ export default function MainTable() {
             open={open}
             setResourceToDelete={setResourceToDelete}
           />
+          <CustomePagination
+            count={resources.length}
+            page={page}
+            setPage={setPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+          />
         </Table>
-        <Pagination
-          resources={resources}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          handleChangePage={handleChangePage}
-          handleChangeRowsPerPage={handleChangeRowsPerPage}
-        />
       </TableContainer>
-      <RemoveResourceModal
-        isOpen={isModalOpen}
-        handleClose={() => setIsModalOpen(false)}
-        resourceTitle={resourceToDelete ? resourceToDelete.title : ""}
-        handleRemove={handleRemove}
+      <ConfirmationModal
+        open={isModalOpen}
+        title="Delete resource?"
+        itemName={resourceToDelete?.title || ""}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleRemove}
       />
     </Box>
   );

@@ -12,8 +12,7 @@ export default function WelcomeCard() {
         display: "flex",
         alignItems: "center",
         flexDirection: forBelow676 && "column",
-        background:
-          "linear-gradient(to right, #141A21 25%, rgba(0, 75, 80, 0.88)), url(https://res.cloudinary.com/dmyttqosa/image/upload/v1738510998/user_panel/fh8inhzkp7uspq3fnxm7.webp)",
+        background: "url(/bg1.png)",
         borderRadius: "16px",
         height: "100%",
         backgroundSize: "cover",
@@ -31,24 +30,17 @@ export default function WelcomeCard() {
         }}
       >
         <Stack gap="8px">
-          <Typography variant="h4" sx={{ width: "100%", color: "#FFF" }}>
+          <Typography variant="h4" sx={{ width: "100%" }} color="text.primary">
             Welcome back <br /> {auth?.user?.name}!
           </Typography>
-          <Typography variant="body2" color="text.tertiary">
-            Get tailored solutions that meet your needs – request your desired
-            service today!
+          <Typography variant="body1" color="text.secondary">
+            Visit our website – Get tailored solutions that meet your needs.
+            Request your desired service today!
           </Typography>
         </Stack>
-        <a href="https://insighttechbd.com/contact_us" target="_blank">
-          <Button variant="contained">Start a project</Button>
+        <a href="https://insighttechglobal.com/" target="_blank">
+          <Button variant="contained">Visit website</Button>
         </a>
-      </Box>
-      <Box sx={{ p: "24px", width: forBelow676 ? "100%" : "280px" }}>
-        <img
-          src="https://res.cloudinary.com/dmyttqosa/image/upload/v1730748105/user_panel/nlcscfsjtvxbbcpl8pkj.png"
-          alt="support"
-          width="100%"
-        />
       </Box>
     </Box>
   );

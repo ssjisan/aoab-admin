@@ -1,8 +1,9 @@
 import { Box, Grid, Toolbar, useMediaQuery } from "@mui/material";
 import Sidebar from "../Layout/Sidebar";
 import MatrixCardDeck from "../Components/Dashboard/MatrixCardDeck";
-import DirectNavigation from "../Components/Dashboard/DirectNavigation/DirectNavigation";
 import WelcomeCard from "../Components/Dashboard/WelcomeCard/WelcomeCard";
+import PieChart from "../Components/Dashboard/Analytics/PieChart";
+import PendingStudents from "../Components/Dashboard/PendingStudents/PendingStudents";
 
 export default function Dashboard() {
   const drawerWidth = 280;
@@ -21,16 +22,17 @@ export default function Dashboard() {
       >
         <Toolbar />
         <Box>
-          <Grid container spacing={3} alignItems="stretch">
-            <Grid item xs={12} sm={12} md={7}>
-              <WelcomeCard />
-            </Grid>
-            <Grid item xs={12} sm={12} md={5}>
-              <DirectNavigation />
-            </Grid>
-          </Grid>
+          <WelcomeCard />
           <MatrixCardDeck />
         </Box>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={12} md={4} lg={4}>
+            <PieChart />
+          </Grid>
+          <Grid item xs={12} sm={12} md={8} lg={8}>
+            <PendingStudents />
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );

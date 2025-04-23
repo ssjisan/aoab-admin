@@ -2,12 +2,11 @@ import { Box, Table, TableContainer } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import Pagination from "./Table/Pagination";
 import Body from "./Table/Body";
-import Header from "./Table/Header";
-
 import { useNavigate } from "react-router-dom";
-import RemoveModal from "../Remove/RemoveModal";
+import CustomeHeader from "../../Common/Table/CustomeHeader";
+import CustomePagination from "../../Common/Table/CustomePagination";
+import ConfirmationModal from "../../Common/RemoveConfirmation/ConfirmationModal";
 
 export default function ListView() {
   const navigate = useNavigate();
@@ -16,6 +15,15 @@ export default function ListView() {
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [dataToDelete, setDataToDelete] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // ***************** Table Header Columns ************************* //
+
+  const columns = [
+    { key: "title", label: "Title" },
+    { key: "preview	", label: "Preview" },
+  ];
+
+  // ***************** Table Header Columns ************************* //
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -33,16 +41,7 @@ export default function ListView() {
     }
   };
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Dragging and reorder
   const onDragEnd = async (result) => {
@@ -75,9 +74,7 @@ export default function ListView() {
       toast.success(data.message || "Form deleted successfully");
 
       // Update the state by filtering out the deleted resource
-      setLinks((prevlinks) =>
-        prevlinks.filter((link) => link._id !== id)
-      );
+      setLinks((prevlinks) => prevlinks.filter((link) => link._id !== id));
     } catch (err) {
       console.error("Error deleting from:", err);
       toast.error("Unable to delete form at the moment.");
@@ -121,9 +118,16 @@ export default function ListView() {
     >
       <TableContainer>
         <Table>
-          <Header />
+          <CustomeHeader
+            columns={columns}
+            includeActions={true}
+            includeDrag={true}
+          />
           <Body
-            links={links}
+            links={links.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage
+            )}
             page={page}
             rowsPerPage={rowsPerPage}
             isModalOpen={isModalOpen}
@@ -137,20 +141,21 @@ export default function ListView() {
             open={open}
             setDataToDelete={setDataToDelete}
           />
+          <CustomePagination
+            count={links.length}
+            page={page}
+            setPage={setPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+          />
         </Table>
-        <Pagination
-          links={links}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          handleChangePage={handleChangePage}
-          handleChangeRowsPerPage={handleChangeRowsPerPage}
-        />
       </TableContainer>
-      <RemoveModal
-        isOpen={isModalOpen}
-        handleClose={() => setIsModalOpen(false)}
-        resourceTitle={dataToDelete ? dataToDelete.title : ""}
-        handleRemove={handleRemove}
+      <ConfirmationModal
+        open={isModalOpen}
+        title="Delete"
+        itemName={dataToDelete?.title || ""}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleRemove}
       />
     </Box>
   );

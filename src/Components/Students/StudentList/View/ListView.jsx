@@ -14,9 +14,14 @@ import toast from "react-hot-toast";
 import Body from "./Table/Body";
 import Header from "./Table/Header";
 import ProfileDetailsDrawer from "../../ProfileDetails/ProfileDetailsDrawer";
-import { DownArrow, Filter, Remove } from "../../../../assets/IconSet";
+import {
+  DownArrow,
+  Download,
+  Filter,
+  Remove,
+} from "../../../../assets/IconSet";
 import FilterDrawer from "../Filter/FilterDrawer";
-
+import Papa from "papaparse";
 export default function ListView() {
   const [studentProfiles, setStudentProfiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -91,6 +96,44 @@ export default function ListView() {
     }
   };
 
+  const handleDownloadCSV = () => {
+    if (!studentProfiles.length) {
+      toast.error("No data to download");
+      return;
+    }
+
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}_${String(now.getMonth() + 1).padStart(2, '0')}_${String(now.getDate()).padStart(2, '0')}`;
+
+  
+    const formattedTime = now.getHours().toString().padStart(2, "0") + now.getMinutes().toString().padStart(2, "0"); // e.g., 1350
+  
+  
+    const fileName = `Student_Profile_${formattedDate}_${formattedTime}.csv`;
+
+    // Extract only the required fields
+    const filteredData = studentProfiles.map((student) => ({
+      Name: student?.name || "",
+      Email: student?.email || "",
+      "Contact Number": student?.contactNumber || "",
+      BMDCNO: student?.bmdcNo || "",
+      "Postgraduation Year":
+        student?.postGraduationDegrees?.[0]?.yearOfGraduation || "",
+    }));
+
+    const csv = Papa.unparse(filteredData);
+
+    // Create a Blob from the CSV string and trigger a download
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Box
       sx={{
@@ -115,7 +158,12 @@ export default function ListView() {
             alignItems="center"
           >
             {(search || yearFrom || yearTo) && (
-              <Typography variant="body2"><Box component={"span"} sx={{fontWeight:"700"}}>{studentProfiles.length}</Box> result found</Typography>
+              <Typography variant="body2">
+                <Box component={"span"} sx={{ fontWeight: "700" }}>
+                  {studentProfiles.length}
+                </Box>{" "}
+                result found
+              </Typography>
             )}
             {search && (
               <Chip
@@ -123,7 +171,7 @@ export default function ListView() {
                 label={search}
                 onDelete={handleClearSearch}
                 color="primary"
-                sx={{color:"#00AE60", background:"#dbf1e8"}}
+                sx={{ color: "#00AE60", background: "#dbf1e8" }}
               />
             )}
             {(yearFrom || yearTo) && (
@@ -134,7 +182,7 @@ export default function ListView() {
                 }${yearTo ? yearTo : ""}`}
                 onDelete={handleClearYear}
                 color="primary"
-                sx={{color:"#00AE60", background:"#dbf1e8"}}
+                sx={{ color: "#00AE60", background: "#dbf1e8" }}
               />
             )}
             {(search || yearFrom || yearTo) && (
@@ -148,13 +196,22 @@ export default function ListView() {
               </Button>
             )}
           </Stack>
-          <Button
-            startIcon={<Filter color="#060415" size={20} />}
-            sx={{ color: "#060415", width: "fit-content" }}
-            onClick={() => setOpenFilterDrawer(true)} // 🔹 Open filter drawer
-          >
-            Filter
-          </Button>
+          <Stack flexDirection="row" gap="8px">
+            <Button
+              startIcon={<Download color="#060415" size={20} />}
+              onClick={handleDownloadCSV}
+              sx={{ color: "#060415", width: "fit-content" }}
+            >
+              Download
+            </Button>
+            <Button
+              startIcon={<Filter color="#060415" size={20} />}
+              sx={{ color: "#060415", width: "fit-content" }}
+              onClick={() => setOpenFilterDrawer(true)} // 🔹 Open filter drawer
+            >
+              Filter
+            </Button>
+          </Stack>
         </Stack>
 
         <Table>

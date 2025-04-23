@@ -1,16 +1,9 @@
-import {
-  Box,
-  IconButton,
-  MenuItem,
-  Popover,
-  TableBody,
-  TableRow,
-  Tooltip,
-} from "@mui/material";
+import { Box, IconButton, TableBody, TableRow, Tooltip } from "@mui/material";
 import TableCell from "@mui/material/TableCell";
 import PropTypes from "prop-types";
 import { Remove, More, Edit, Drag } from "../../../../assets/IconSet";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import CustomePopOver from "../../../Common/PopOver/CustomePopOver";
 
 export default function Body({
   resources,
@@ -88,44 +81,28 @@ export default function Body({
           </TableBody>
         )}
       </Droppable>
-      <Popover
-        open={open}
+      <CustomePopOver
+        open={Boolean(open)}
         anchorEl={open}
         onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: "top", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-        PaperProps={{
-          sx: {
-            width: 160,
-            p: "8px",
-            borderRadius: "8px",
-            boxShadow: "-20px 20px 40px -4px rgba(145, 158, 171, 0.24)",
+        menuItems={[
+          {
+            label: "Edit",
+            icon: Edit,
+            onClick: (e) => redirectEdit(e, selectedResource),
           },
-        }}
-      >
-        <MenuItem
-          sx={{ display: "flex", gap: "8px", mb: "8px", borderRadius: "8px" }}
-          onClick={(e) => redirectEdit(e, selectedResource)}
-        >
-          <Edit color="#919EAB" size={20} />
-          Edit
-        </MenuItem>
-        <MenuItem
-          sx={{
-            color: "error.main",
-            display: "flex",
-            gap: "8px",
-            borderRadius: "8px",
-          }}
-          onClick={() => {
-            setResourceToDelete(selectedResource);
-            setIsModalOpen(true);
-            handleCloseMenu(); // Close popover
-          }}
-        >
-          <Remove color="red" size={20} /> Delete
-        </MenuItem>
-      </Popover>
+          {
+            label: "Delete",
+            icon: Remove,
+            onClick: () => {
+              setResourceToDelete(selectedResource);
+              setIsModalOpen(true);
+              handleCloseMenu();
+            },
+            color: "error",
+          },
+        ]}
+      />
     </DragDropContext>
   );
 }
