@@ -12,6 +12,7 @@ export default function PieChart() {
   const options = {
     chart: {
       type: "pie",
+      fontFamily: "Public Sans, sans-serif",
     },
     labels: ["Approved", "Pending", "Wrong Entry", "Account Not Complete"],
     colors: ["#00a76f", "#ffd666", "#ff5630","#006c9c"],

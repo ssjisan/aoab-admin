@@ -89,7 +89,7 @@ export default function AccountPopOver() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <Avatar src="/avatar.jpg" sx={AvatarSx}></Avatar>
+        <Avatar src="https://res.cloudinary.com/dmyttqosa/image/upload/v1745492633/avatar_etniw4.jpg" sx={AvatarSx}></Avatar>
       </IconButton>
       <Box>
         <Menu

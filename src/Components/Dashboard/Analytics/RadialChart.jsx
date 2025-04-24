@@ -12,6 +12,7 @@ export default function RadialChart() {
     chart: {
       type: "radialBar",
       sparkline: { enabled: true },
+      fontFamily: "Public Sans, sans-serif",
     },
     plotOptions: {
       radialBar: {
@@ -31,7 +32,6 @@ export default function RadialChart() {
             fontWeight: 600,
             color: color,
             offsetY: 5,
-            fontFamily: "public-sans, sans-serif",
           },
         },
       },

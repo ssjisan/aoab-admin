@@ -34,7 +34,7 @@ export default function StudentCount() {
       }}
     >
       <Box sx={{width:"64px", height:"64px"}}>
-        <img src="/approve.png" style={{width:"100%"}}/>
+        <img src="https://res.cloudinary.com/dmyttqosa/image/upload/v1745491938/approve_uzrjty.png" style={{width:"100%"}}/>
       </Box>
       <Stack>
         <Typography variant="h4">{verified}</Typography>

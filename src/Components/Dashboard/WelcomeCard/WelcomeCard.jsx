@@ -12,7 +12,7 @@ export default function WelcomeCard() {
         display: "flex",
         alignItems: "center",
         flexDirection: forBelow676 && "column",
-        background: "url(/bg1.png)",
+        background: "url(https://res.cloudinary.com/dmyttqosa/image/upload/v1745492529/bg1_j85clb.png)",
         borderRadius: "16px",
         height: "100%",
         backgroundSize: "cover",

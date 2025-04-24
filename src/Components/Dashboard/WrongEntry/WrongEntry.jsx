@@ -43,7 +43,7 @@ export default function WrongEntry() {
         <Button
           sx={{ width: "fit-content" }}
           component="a"
-          href="/student_approval"
+          href="/email_verification_error"
         >
           See All
         </Button>
