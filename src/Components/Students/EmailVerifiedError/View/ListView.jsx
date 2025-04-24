@@ -3,15 +3,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Body from "./Table/Body";
-import ConfirmationModal from "../Confirmation/ConfirmationModal";
-import DenyModal from "../Deny/DenyModal";
 import ProfileDetailsDrawer from "../../ProfileDetails/ProfileDetailsDrawer";
 import CustomeHeader from "../../../Common/Table/CustomeHeader";
 import CustomePagination from "../../../Common/Table/CustomePagination";
 import PropTypes from "prop-types";
+import ConfirmationModal from "../../../Common/RemoveConfirmation/ConfirmationModal";
 
 export default function ListView({
-  showApprove = true,
   showDeny = true,
   showViewProfile = true,
   limit = null, // NEW: limit number of rows (e.g., 5)
@@ -20,11 +18,7 @@ export default function ListView({
   onDataFetched,
 }) {
   const [studentProfiles, setStudentProfiles] = useState([]);
-  const [dataToApprove, setDataToApprove] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDenyModalOpen, setIsDenyModalOpen] = useState(false);
-  const [dataToDeny, setDataToDeny] = useState(null);
-  const [remarks, setRemarks] = useState(""); // State to store remarks
   const [loading, setLoading] = useState(false); // State to track API request
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -40,7 +34,6 @@ export default function ListView({
     { key: "email", label: "Email" },
     { key: "contact number", label: "Contact Number" },
     { key: "bmdc no", label: "BM&DC Reg." },
-    { key: "view profile", label: "View Profile" },
   ];
 
   // ***************** Table Header Columns ************************* //
@@ -48,9 +41,11 @@ export default function ListView({
     setSelectedRow(data);
     setOpen(event.currentTarget);
   };
+
   const handleCloseMenu = () => {
     setOpen(null);
   };
+
   const handleViewProfile = async (studentId) => {
     try {
       const { data } = await axios.get(`/student/${studentId}`);
@@ -60,11 +55,12 @@ export default function ListView({
       toast.error("Failed to load student profile");
     }
   };
+
   const loadstudentsProfile = async () => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get("/unverified-accounts");
+      const { data } = await axios.get("/unverified-email");
       setStudentProfiles(data);
       if (typeof onDataFetched === "function") {
         onDataFetched(data.length);
@@ -88,75 +84,31 @@ export default function ListView({
         page * rowsPerPage + rowsPerPage
       );
 
-  // Function to open the modal and pass selected data
-  const openApprovalModal = (data) => {
-    setDataToApprove(data); // Set the selected student's data to show in modal
-    setIsModalOpen(true); // Open the modal
-    setOpen(false);
-  };
-  const openDenyModal = (data) => {
-    setDataToDeny(data); // Set the selected student's data to show in modal
+  const openDenyModal = () => {
     setIsDenyModalOpen(true); // Open the modal
     setOpen(false);
   };
 
-  const handleApprove = async () => {
-    if (dataToApprove) {
-      const studentId = dataToApprove._id;
-      console.log(studentId);
-      setLoading(true);
-      try {
-        // Change to GET request
-        const response = await axios.get(`/approve/${studentId}`);
+  const handleRemove = async () => {
+    if (!selectedRow?._id) return;
 
-        if (response.status === 200) {
-          toast.success("Student approved successfully");
-          // Remove the student from the list of unverified profiles
-          setStudentProfiles((prev) =>
-            prev.filter((profile) => profile._id !== dataToApprove._id)
-          );
-          setIsModalOpen(false); // Close the modal
-        }
-      } catch (err) {
-        console.error("Error approving student:", err);
-        toast.error("Error approving student");
-      } finally {
-        setLoading(false); // End loading state
+    try {
+      const res = await axios.delete(`/remove-unverified/${selectedRow._id}`);
+
+      if (res.status === 200) {
+        toast.success("Student removed successfully");
+        setStudentProfiles((prev) =>
+          prev.filter((profile) => profile._id !== selectedRow._id)
+        );
+      } else {
+        toast.error(res.data.message || "Failed to remove student");
       }
-    }
-  };
-
-  const handleDeny = async () => {
-    if (!remarks.trim()) {
-      toast.error("Remarks are required");
-      return;
-    }
-
-    if (dataToDeny) {
-      const studentId = dataToDeny._id;
-      console.log("Denying student:", studentId);
-
-      try {
-        // Send a PUT request with remarks
-        const response = await axios.put(`/deny/${studentId}`, {
-          isAccountVerified: false,
-          isBmdcVerified: null,
-          remarks,
-        });
-
-        if (response.status === 200) {
-          toast.success("Student denied successfully");
-          // Remove denied student from the list
-          setStudentProfiles((prev) =>
-            prev.filter((profile) => profile._id !== studentId)
-          );
-          setIsDenyModalOpen(false); // Close modal
-          setRemarks(""); // Clear remarks input
-        }
-      } catch (err) {
-        console.error("Error denying student:", err);
-        toast.error("Error denying student");
-      }
+    } catch (err) {
+      console.error("Error deleting student:", err);
+      toast.error("An error occurred while removing the student");
+    } finally {
+      // Close the confirmation modal no matter what
+      setIsDenyModalOpen(false);
     }
   };
   const Content = (
@@ -169,10 +121,7 @@ export default function ListView({
         />
         <Body
           studentProfiles={displayedProfiles}
-          setDataToApprove={setDataToApprove}
-          setIsModalOpen={setIsModalOpen}
           setIsDenyModalOpen={setIsDenyModalOpen}
-          openApprovalModal={openApprovalModal}
           openDenyModal={openDenyModal}
           onViewProfile={handleViewProfile}
           loading={loading}
@@ -218,23 +167,13 @@ export default function ListView({
           studentProfile={selectedStudent}
         />
       )}
-      {showApprove && (
-        <ConfirmationModal
-          isOpen={isModalOpen}
-          handleClose={() => setIsModalOpen(false)}
-          data={dataToApprove}
-          handleApprove={handleApprove}
-        />
-      )}
       {showDeny && (
-        <DenyModal
-          isOpen={isDenyModalOpen}
-          handleClose={() => setIsDenyModalOpen(false)}
-          data={dataToDeny}
-          handleDeny={handleDeny}
-          remarks={remarks}
-          setRemarks={setRemarks}
-          loading={loading}
+        <ConfirmationModal
+          open={isDenyModalOpen}
+          title="Delete unverified email account?"
+          itemName={selectedRow?.name || ""}
+          onClose={() => setIsDenyModalOpen(false)}
+          onConfirm={handleRemove}
         />
       )}
     </>

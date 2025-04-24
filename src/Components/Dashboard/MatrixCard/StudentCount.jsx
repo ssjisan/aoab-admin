@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { MatrixIconMember } from "../../../assets/Icons/MatrixIconMember";
+// import { MatrixIconMember } from "../../../assets/Icons/MatrixIconMember";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -33,7 +33,9 @@ export default function StudentCount() {
         alignItems: "center",
       }}
     >
-      <MatrixIconMember />
+      <Box sx={{width:"64px", height:"64px"}}>
+        <img src="/approve.png" style={{width:"100%"}}/>
+      </Box>
       <Stack>
         <Typography variant="h4">{verified}</Typography>
         <Typography variant="subtitle2" color="text.secondary">

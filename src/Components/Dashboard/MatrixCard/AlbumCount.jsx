@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { MatrixIconAlbum } from "../../../assets/Icons/MatrixIconAlbum";
+// import { MatrixIconAlbum } from "../../../assets/Icons/MatrixIconAlbum";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -32,7 +32,9 @@ export default function AlbumCount() {
         alignItems: "center",
       }}
     >
-      <MatrixIconAlbum />
+      <Box sx={{width:"64px", height:"64px"}}>
+        <img src="/album.png" style={{width:"100%"}}/>
+      </Box>
       <Stack>
         <Typography variant="h4">{albums.length}</Typography>
         <Typography variant="subtitle2" color="text.secondary">

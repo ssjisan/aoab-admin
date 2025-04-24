@@ -1,13 +1,13 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
-import ListView from "../../Students/Approval/View/ListView";
-import { useState } from "react";
+import {
+  Box,
+  Button,
+  Stack,
+  Typography,
+} from "@mui/material";
+import ListView from "../../Students/EmailVerifiedError/View/ListView";
 
-export default function PendingStudents() {
-  const [pendingCount, setPendingCount] = useState(0);
-
-  const handleDataFromListView = (data) => {
-    setPendingCount(data); // Or however your response is structured
-  };
+export default function WrongEntry() {
+ 
   return (
     <Box
       sx={{
@@ -23,17 +23,14 @@ export default function PendingStudents() {
     >
       <Stack sx={{ p: "24px 0px 24px 8px", width: "100%" }}>
         <Typography variant="h6">
-          Student Approval Pending ({pendingCount})
+          Wrong Account Creation
         </Typography>
       </Stack>
       <ListView
-        endpoint="/unverified-accounts"
         limit={5}
-        showApprove={true}
         showDeny={true}
         showPagination={false}
         withContainer={false}
-        onDataFetched={handleDataFromListView}
       />
       <Stack
         alignItems="flex-end"

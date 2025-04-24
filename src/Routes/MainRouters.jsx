@@ -27,6 +27,7 @@ import UpdateAlbum from "../Page/Albums/UpdateAlbum";
 import UploadAlbum from "../Page/Albums/UploadAlbum";
 import StudentsList from "../Page/Students/StudentsList";
 import StudentsApproval from "../Page/Students/StudentsApproval";
+import EmailVerificationError from "../Page/Students/EmailVerificationError";
 
 export default function MainRouters() {
   return (
@@ -101,9 +102,10 @@ export default function MainRouters() {
           {/* Students Info Routes Start */}
           <Route path="/student_approval" element={<StudentsApproval />} />
           <Route path="/student_list" element={<StudentsList />} />
+          <Route path="/email_verification_error" element={<EmailVerificationError />} />
           {/* User Routes End */}
 
-
+          
 
           {/* Album Routes Start */}
           <Route path="add_album" element={<UploadAlbum />} />

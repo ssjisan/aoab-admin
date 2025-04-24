@@ -52,6 +52,10 @@ const navConfig = ({ pathname }) => {
           title: "Student List",
           link: "/student_list",
         },
+        {
+          title: "Email Verification Error",
+          link: "/email_verification_error",
+        },
       ],
     },
     {

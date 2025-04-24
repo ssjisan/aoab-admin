@@ -20,8 +20,8 @@ export default function Body({ studentProfiles, onViewProfile, loading }) {
               gap={2}
               alignItems="center"
             >
-              <CircularProgress />
-              <Typography variant="h6" color="text.secondary">
+              <CircularProgress size={40}/>
+              <Typography variant="body1" color="text.secondary" sx={{fontWeight:"500 !important"}}>
                 Loading profiles...
               </Typography>
             </Stack>
@@ -42,7 +42,7 @@ export default function Body({ studentProfiles, onViewProfile, loading }) {
               alignItems="center"
             >
               <NoData />
-              <Typography variant="h6" color="text.secondary">
+              <Typography variant="body1" color="text.secondary" sx={{fontWeight:"500 !important"}}>
                 No data here!
               </Typography>
             </Stack>

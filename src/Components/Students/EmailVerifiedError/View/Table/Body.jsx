@@ -9,14 +9,12 @@ import {
 } from "@mui/material";
 import TableCell from "@mui/material/TableCell";
 import PropTypes from "prop-types";
-import { Approve, Deny, More, NoData } from "../../../../../assets/IconSet";
+import { More, NoData, Remove } from "../../../../../assets/IconSet";
 import CustomePopOver from "../../../../Common/PopOver/CustomePopOver";
 
 export default function Body({
   studentProfiles,
-  openApprovalModal,
   openDenyModal,
-  onViewProfile,
   loading,
   selectedRow,
   handleOpenMenu,
@@ -55,7 +53,7 @@ export default function Body({
             >
               <NoData />
               <Typography variant="body1" color="text.secondary" sx={{fontWeight:"500 !important"}}>
-                No approval pending!
+                No unverified email account!
               </Typography>
             </Stack>
           </TableCell>
@@ -75,17 +73,6 @@ export default function Body({
               +880{data.contactNumber}
             </TableCell>
             <TableCell sx={{ p: "8px 16px" }}>A-{data.bmdcNo}</TableCell>
-            <TableCell
-              sx={{
-                p: "16px",
-                textDecoration: "underline",
-                color: "blue",
-                cursor: "pointer",
-              }}
-              onClick={() => onViewProfile(data._id)}
-            >
-              View Details
-            </TableCell>
             <TableCell align="center" sx={{ p: "16px" }}>
               <Tooltip title="Actions">
                 <IconButton
@@ -105,14 +92,8 @@ export default function Body({
         onClose={handleCloseMenu}
         menuItems={[
           {
-            label: "Approve",
-            icon: Approve,
-            onClick: () => openApprovalModal(selectedRow),
-            color: "success"
-          },
-          {
-            label: "Deny",
-            icon: Deny,
+            label: "Remove",
+            icon: Remove,
             onClick: () => openDenyModal(selectedRow),
             color: "error",
           },
@@ -133,7 +114,6 @@ Body.propTypes = {
   ).isRequired,
   openApprovalModal: PropTypes.func.isRequired,
   openDenyModal: PropTypes.func.isRequired,
-  onViewProfile: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   selectedRow: PropTypes.object.isRequired,
   handleOpenMenu: PropTypes.func.isRequired,

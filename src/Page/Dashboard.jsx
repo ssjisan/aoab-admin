@@ -4,6 +4,8 @@ import MatrixCardDeck from "../Components/Dashboard/MatrixCardDeck";
 import WelcomeCard from "../Components/Dashboard/WelcomeCard/WelcomeCard";
 import PieChart from "../Components/Dashboard/Analytics/PieChart";
 import PendingStudents from "../Components/Dashboard/PendingStudents/PendingStudents";
+import WrongEntry from "../Components/Dashboard/WrongEntry/WrongEntry";
+import RadialChart from "../Components/Dashboard/Analytics/RadialChart";
 
 export default function Dashboard() {
   const drawerWidth = 280;
@@ -31,6 +33,12 @@ export default function Dashboard() {
           </Grid>
           <Grid item xs={12} sm={12} md={8} lg={8}>
             <PendingStudents />
+          </Grid>
+          <Grid item xs={12} sm={12} md={8} lg={8}>
+            <WrongEntry />
+          </Grid>
+          <Grid item xs={12} sm={12} md={4} lg={4}>
+            <RadialChart />
           </Grid>
         </Grid>
       </Box>

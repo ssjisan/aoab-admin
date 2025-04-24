@@ -37,7 +37,8 @@ export default function CustomePopOver({
               sx={{
                 display: "flex",
                 gap: "8px",
-                mb: "8px",
+                mt: "4px",
+                mb: "4px",
                 borderRadius: "8px",
                 fontSize: "14px",
                 color:

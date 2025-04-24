@@ -1,24 +1,24 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { MatrixIconVideos } from "../../../assets/Icons/MatrixIconVideos";
+// import { MatrixIconVideos } from "../../../assets/Icons/MatrixIconVideos";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
 export default function VideoCount() {
-    const [videos, setVideos] = useState([]);
-  
- // Load Videos Start //
- useEffect(() => {
-  loadVideos();
-}, []);
-const loadVideos = async () => {
-  try {
-    const { data } = await axios.get("/list_videos");
-    setVideos(data);
-  } catch (err) {
-    toast.error("Problem loading videos");
-  }
-};
+  const [videos, setVideos] = useState([]);
+
+  // Load Videos Start //
+  useEffect(() => {
+    loadVideos();
+  }, []);
+  const loadVideos = async () => {
+    try {
+      const { data } = await axios.get("/list_videos");
+      setVideos(data);
+    } catch (err) {
+      toast.error("Problem loading videos");
+    }
+  };
   return (
     <Box
       sx={{
@@ -32,7 +32,9 @@ const loadVideos = async () => {
         alignItems: "center",
       }}
     >
-      <MatrixIconVideos />
+      <Box sx={{ width: "64px", height: "64px" }}>
+        <img src="/video.png" style={{ width: "100%" }} />
+      </Box>
       <Stack>
         <Typography variant="h4">{videos.length}</Typography>
         <Typography variant="subtitle2" color="text.secondary">

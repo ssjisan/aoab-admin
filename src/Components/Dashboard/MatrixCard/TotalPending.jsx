@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { MatrixIconPending } from "../../../assets/Icons/MatrixIconPending";
+// import { MatrixIconPending } from "../../../assets/Icons/MatrixIconPending";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -33,7 +33,9 @@ export default function TotalPending() {
         alignItems: "center",
       }}
     >
-      <MatrixIconPending />
+      <Box sx={{width:"64px", height:"64px"}}>
+        <img src="/pending.png" style={{width:"100%"}}/>
+      </Box>
       <Stack>
         <Typography variant="h4">{rawCounts}</Typography>
         <Typography variant="subtitle2" color="text.secondary">
