@@ -28,7 +28,6 @@ export default function AddForm() {
         toast.error(response.data.error);
       } else {
         toast.success("Link created successfully");
-        // Optionally reset the form fields
         setTitle("");
         setLink("");
         navigate("/links_list");

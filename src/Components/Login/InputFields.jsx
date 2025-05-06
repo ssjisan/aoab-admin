@@ -86,80 +86,99 @@ export default function InputFields() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: "20px",
+        gap: "32px",
         width: "100%",
         mt: "40px",
         mb: forBelow776 ? "80px" : "160px",
       }}
     >
-       {errorMessage && (
-        <Stack
-          flexDirection="row"
-          justifyContent="flex-start"
-          alignItems="center"
-          sx={{ background: "#FFE9D5", p: "8px 16px", borderRadius: "12px", height:"48px" }}
+      <Stack gap="24px">
+        {errorMessage && (
+          <Stack
+            flexDirection="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            sx={{
+              background: "#FFE9D5",
+              p: "8px 16px",
+              borderRadius: "12px",
+              height: "48px",
+            }}
+          >
+            <Alert size="24" color="#FF5630" />
+            <Typography variant="body2" sx={{ color: "#FF5630" }}>
+              {errorMessage}
+            </Typography>
+          </Stack>
+        )}
+        <TextField
+          id="email"
+          label="Your Email"
+          variant="outlined"
+          type="email"
+          value={email}
+          fullWidth
+          onChange={(e) => setEmail(e.target.value)}
+          required // Ensures that the field is required
+        />
+        <FormControl sx={{}} variant="outlined" required>
+          <InputLabel htmlFor="outlined-adornment-password">
+            Password
+          </InputLabel>
+          <OutlinedInput
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? (
+                    <EyeOn color="#918EAF" size="24px" />
+                  ) : (
+                    <EyeOff color="#918EAF" size="24px" />
+                  )}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          />
+        </FormControl>
+      </Stack>
+      <Stack gap="16px">
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+              size="small"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                sx={{borderRadius: "8px",}}
+              />
+            }
+            label="Remember me"
+            sx={{
+              '& .MuiFormControlLabel-label': {
+                fontSize: "14px",
+                fontWeight: 500,
+              },
+            }}
+          />
+        </FormGroup>
+        <Button
+          variant="contained"
+          type="submit" // Changes the button type to submit for form submission
+          endIcon={loading ? <img src="/spinner.gif" width="24px" /> : null}
+          disabled={loading}
         >
-          <Alert size="24" color="#FF5630" />
-          <Typography variant="body2" sx={{ color: "#FF5630" }}>
-            {errorMessage}
-          </Typography>
-        </Stack>
-      )}
-      <TextField
-        id="email"
-        label="Your Email"
-        variant="outlined"
-        type="email"
-        value={email}
-        fullWidth
-        onChange={(e) => setEmail(e.target.value)}
-        required // Ensures that the field is required
-      />
-      <FormControl sx={{}} variant="outlined" required>
-        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-        <OutlinedInput
-          id="password"
-          type={showPassword ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={handleClickShowPassword}
-                onMouseDown={handleMouseDownPassword}
-                edge="end"
-              >
-                {showPassword ? (
-                  <EyeOn color="#918EAF" size="24px" />
-                ) : (
-                  <EyeOff color="#918EAF" size="24px" />
-                )}
-              </IconButton>
-            </InputAdornment>
-          }
-          label="Password"
-        />
-      </FormControl>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-          }
-          label="Remember me"
-        />
-      </FormGroup>
-      <Button
-        variant="contained"
-        type="submit" // Changes the button type to submit for form submission
-        endIcon={loading ? <img src="/spinner.gif" width="24px" /> : null}
-        disabled={loading}
-      >
-        Login
-      </Button>
+          Login
+        </Button>
+      </Stack>
     </Box>
   );
 }

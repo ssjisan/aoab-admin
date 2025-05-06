@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
       ),
     },
     plugins: [react()],
-    build: { chunkSizeWarningLimit: 2000 },
+    build: { chunkSizeWarningLimit: 16000 },
     // Add the server configuration here
     server: {
       host: true, // This enables access from other devices on the network

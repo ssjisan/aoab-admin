@@ -1,77 +1,26 @@
 import PropTypes from "prop-types";
 import { TableBody, TableCell, TableRow } from "@mui/material";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Body({ profile }) {
-  const courses = [
-    {
-      name: "aoBasicCourse",
-      label: "AO Basic Course",
-      question: "Did you complete AO Basic Course?",
-    },
-    {
-      name: "aoAdvanceCourse",
-      label: "AO Advanced Course",
-      question: "Did you complete AO Advanced Course?",
-    },
-    {
-      name: "aoMastersCourse",
-      label: "AO Masters Course",
-      question: "Have you completed AO Masters Course?",
-    },
-    {
-      name: "aoaPediatricSeminar",
-      label: "AOA Pediatric Seminar",
-      question: "Have you completed AOA Pediatric Seminar?",
-    },
-    {
-      name: "aoaPelvicSeminar",
-      label: "AOA Pelvic Seminar",
-      question: "Have you completed AOA Pelvic Seminar?",
-    },
-    {
-      name: "aoaFootAnkleSeminar",
-      label: "AOA Foot & Ankle Seminar",
-      question: "Have you completed AOA Foot & Ankle Seminar?",
-    },
-    {
-      name: "aoPeer",
-      label: "AO Peer",
-      question: "Have you completed AO Peer Seminar?",
-    },
-    {
-      name: "aoaOtherCourses",
-      label: "AOA Other Courses",
-      question:
-        "Have you completed any other AOA Course (e.g., Non-Operative, Hybrid, etc.)?",
-    },
-    {
-      name: "aoNonOperativeCourse",
-      label: "Ao Non Operative Course",
-      question: "Have you completed any Ao Non Operative Course?",
-    },
-    {
-      name: "aoaFellowship",
-      label: "AOA Fellowship",
-      question: "Have you completed any AOA Fellowship?",
-    },
-    {
-      name: "tableFaculty",
-      label: "Table Faculty",
-      question: "Have you worked as Table Faculty yet?",
-    },
-    {
-      name: "nationalFaculty",
-      label: "National Faculty",
-      question: "Have you joined as National Faculty yet?",
-    },
-    {
-      name: "regionalFaculty",
-      label: "Regional Faculty",
-      question: "Have you joined as Regional Faculty yet?",
-    },
-  ];
+  const [courses, setCourses] = useState([]); // State to hold fetched courses
 
-  if (!profile) {
+  useEffect(() => {
+    // Fetch course data from the API
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get("/setup_course");
+        setCourses(response.data); // Assuming response is an array of course data
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  if (!profile || !courses.length) {
     return (
       <TableBody>
         <TableRow>
@@ -89,21 +38,23 @@ export default function Body({ profile }) {
   return (
     <TableBody>
       {courses.map((course) => {
-        const courseData = profile[course.name] || {};
+        const courseData =
+          profile.courses.find((c) => c._id === course._id) || {};
         const courseStatus =
-          courseData.status === null
-            ? "N/A"
-            : courseData.status === "yes"
-            ? "Yes"
-            : "No";
+          courseData && courseData.status != null
+            ? courseData.status === "yes"
+              ? "Yes"
+              : "No"
+            : "N/A";
+
+        const completionYear = courseData?.completionYear || "N/A";
 
         const hasDocument =
-          courseData.documents && courseData.documents.length > 0;
-        const completionYear = courseData.completionYear || "N/A";
+          courseData?.documents && courseData.documents.length > 0;
         return (
-          <TableRow key={course.name}>
+          <TableRow key={course._id}>
             <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
-              {course.label}
+              {course.courseName}
             </TableCell>
             <TableCell
               sx={{ border: "1px solid #ddd", p: "8px 16px", width: "64px" }}
@@ -157,85 +108,18 @@ export default function Body({ profile }) {
 
 Body.propTypes = {
   profile: PropTypes.shape({
-    aoBasicCourse: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    aoAdvanceCourse: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    aoMastersCourse: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    aoaPediatricSeminar: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    aoaPelvicSeminar: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    aoaFootAnkleSeminar: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    aoaOtherCourses: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    aoaFellowship: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    tableFaculty: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    nationalFaculty: PropTypes.shape({
-      status: PropTypes.string,
-      documents: PropTypes.arrayOf(
-        PropTypes.shape({
-          url: PropTypes.string.isRequired,
-        })
-      ),
-    }),
+    courses: PropTypes.arrayOf(
+      PropTypes.shape({
+        courseId: PropTypes.string.isRequired, // Assuming courseId is a string that matches _id from the API
+        status: PropTypes.string,
+        documents: PropTypes.arrayOf(
+          PropTypes.shape({
+            url: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+          })
+        ),
+        completionYear: PropTypes.string,
+      })
+    ),
   }),
 };

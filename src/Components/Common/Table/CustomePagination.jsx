@@ -13,7 +13,6 @@ export default function CustomePagination({
 
   return (
     <TablePagination
-    //   className="custom-pagination"
       count={count}
       page={page}
       onPageChange={(event, newPage) => setPage(newPage)}

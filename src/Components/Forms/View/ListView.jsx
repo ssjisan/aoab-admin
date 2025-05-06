@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import CustomeHeader from "../../Common/Table/CustomeHeader";
 import CustomePagination from "../../Common/Table/CustomePagination";
 import ConfirmationModal from "../../Common/RemoveConfirmation/ConfirmationModal";
+import Certificate from "../../Common/Certificate/Certificate";
 
 export default function ListView() {
   const navigate = useNavigate();
@@ -156,6 +157,22 @@ export default function ListView() {
         itemName={dataToDelete?.title || ""}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleRemove}
+      />
+      <Certificate
+        name="Sadman Sakib"
+        course="Basic"
+        signatureUrl="/signatures/dr-smith-sign.png"
+        // backgroundUrl="certificate.png"
+        backgroundUrl="certificate_main.png"
+        asRole="Faculty"
+        date="April 20-21, 2050"
+        location="Khulna, Bangladesh"
+        firstSignature={"/dummy1.png"}
+        firstSignatureName={"Ainoon Nahar Aakhi"}
+        firstSignatureDesignation={"Global Steering Committee Head"}
+        secondSignature={"/dummy2.png"}
+        secondSignatureName={"Sadman Sakib Jisan"}
+        secondSignatureDesignation={"Asia Steering Committee Chain"}
       />
     </Box>
   );

@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   Drawer,
   IconButton,
@@ -19,6 +20,9 @@ export default function FilterDrawer({
   setYearFrom,
   yearTo,
   setYearTo,
+  courses,
+  selectedCourses,
+  setSelectedCourses,
 }) {
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
@@ -61,7 +65,7 @@ export default function FilterDrawer({
               onChange={(e) => setSearch(e.target.value)}
               fullWidth
               size="small"
-               placeholder="Search"
+              placeholder="Search"
             />
           </Stack>
 
@@ -105,15 +109,23 @@ export default function FilterDrawer({
             />
           </Stack>
 
-          {/* <Stack gap="4px">
-            <Typography
-              variant="body1"
-              sx={{ fontWeight: "600" }}
-              color="text.primary"
-            >
-              Select Course
-            </Typography>
-          </Stack> */}
+          <Autocomplete
+            multiple
+            options={courses}
+            getOptionLabel={(option) => option.courseName}
+            value={selectedCourses}
+            onChange={(event, newValue) => {
+              setSelectedCourses(newValue);
+              console.log(
+                "Selected Course IDs:",
+                newValue.map((course) => course._id)
+              ); // ✅ Confirm you're getting the IDs
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label="Ao Courses" />
+            )}
+            sx={{ width: "100%" }}
+          />
         </Stack>
 
         <Stack

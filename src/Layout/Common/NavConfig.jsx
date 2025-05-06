@@ -64,7 +64,8 @@ const navConfig = ({ pathname }) => {
         <CoursesEvents
           color={
             pathname.startsWith("/add_courses_events") ||
-            pathname.startsWith("/courses_events_list")
+            pathname.startsWith("/courses_events_list") ||
+            pathname.startsWith("/course_setup")
               ? "#00AE60"
               : "#637381"
           }
@@ -72,6 +73,10 @@ const navConfig = ({ pathname }) => {
         />
       ),
       items: [
+        {
+          title: "Course Setup",
+          link: "/course_setup",
+        },
         {
           title: "Add Courses and Events",
           link: "/add_courses_events",

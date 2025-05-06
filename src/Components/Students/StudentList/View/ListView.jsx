@@ -22,7 +22,9 @@ import {
 } from "../../../../assets/IconSet";
 import FilterDrawer from "../Filter/FilterDrawer";
 import Papa from "papaparse";
+
 export default function ListView() {
+  const DownArrowIcon = () => <DownArrow color="grey" size={16} />;
   const [studentProfiles, setStudentProfiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
@@ -34,22 +36,44 @@ export default function ListView() {
   const [yearFrom, setYearFrom] = useState("");
   const [yearTo, setYearTo] = useState("");
 
-  const DownArrowIcon = () => <DownArrow color="grey" size={16} />;
+  const [courses, setCourses] = useState([]); // State to hold fetched courses
+  const [selectedCourses, setSelectedCourses] = useState([]);
+
+  useEffect(() => {
+    // Fetch course data from the API
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get("/setup_course");
+        setCourses(response.data); // Assuming response is an array of course data
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   useEffect(() => {
     loadStudentsProfile();
   }, []);
 
   const handleApplyFilters = () => {
-    console.log("Applied Search Filter:", search);
-    loadStudentsProfile(search, yearFrom, yearTo);
+    console.log("Applied Filters:", {
+      search,
+      yearFrom,
+      yearTo,
+      selectedCourses,
+    });
+
+    loadStudentsProfile(search, yearFrom, yearTo, selectedCourses);
     setOpenFilterDrawer(false); // Close filter drawer
   };
 
   const loadStudentsProfile = async (
     search = "",
     yearFrom = "",
-    yearTo = ""
+    yearTo = "",
+    selectedCourses = []
   ) => {
     try {
       setLoading(true);
@@ -58,6 +82,11 @@ export default function ListView() {
       if (search) params.append("search", search);
       if (yearFrom) params.append("yearFrom", yearFrom);
       if (yearTo) params.append("yearTo", yearTo);
+      if (selectedCourses.length > 0) {
+        selectedCourses.forEach(
+          ({ _id }) => _id && params.append("courses", _id)
+        );
+      }
 
       const { data } = await axios.get(
         `/verified-accounts?${params.toString()}`
@@ -73,19 +102,31 @@ export default function ListView() {
 
   const handleClearSearch = () => {
     setSearch("");
-    loadStudentsProfile("", yearFrom, yearTo); // Keep the year filters intact
+    loadStudentsProfile("", yearFrom, yearTo, selectedCourses); // Keep the course filters intact
   };
-  const handleClearYear = () => {
-    setYearFrom("");
-    setYearTo("");
-    loadStudentsProfile(search, "", ""); // Keep the year filters intact
-  };
+
   const handleClearFilter = () => {
     setSearch("");
     setYearFrom("");
     setYearTo("");
-    loadStudentsProfile("", "", "");
+    setSelectedCourses([]); // Clear selected courses
+    loadStudentsProfile("", "", "", []); // Clear course filter and reload data
   };
+
+  const handleRemoveCourse = (courseId) => {
+    setSelectedCourses((prevSelectedCourses) =>
+      prevSelectedCourses.filter((course) => course._id !== courseId)
+    );
+
+    // Reload the data with the updated course filters (if any)
+    loadStudentsProfile(
+      search,
+      yearFrom,
+      yearTo,
+      selectedCourses.filter((course) => course._id !== courseId)
+    );
+  };
+
   const handleViewProfile = async (studentId) => {
     try {
       const { data } = await axios.get(`/student/${studentId}`);
@@ -103,12 +144,14 @@ export default function ListView() {
     }
 
     const now = new Date();
-    const formattedDate = `${now.getFullYear()}_${String(now.getMonth() + 1).padStart(2, '0')}_${String(now.getDate()).padStart(2, '0')}`;
+    const formattedDate = `${now.getFullYear()}_${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}_${String(now.getDate()).padStart(2, "0")}`;
 
-  
-    const formattedTime = now.getHours().toString().padStart(2, "0") + now.getMinutes().toString().padStart(2, "0"); // e.g., 1350
-  
-  
+    const formattedTime =
+      now.getHours().toString().padStart(2, "0") +
+      now.getMinutes().toString().padStart(2, "0");
+
     const fileName = `Student_Profile_${formattedDate}_${formattedTime}.csv`;
 
     // Extract only the required fields
@@ -157,7 +200,7 @@ export default function ListView() {
             sx={{ width: "100%" }}
             alignItems="center"
           >
-            {(search || yearFrom || yearTo) && (
+            {(search || yearFrom || yearTo || selectedCourses.length > 0) && (
               <Typography variant="body2">
                 <Box component={"span"} sx={{ fontWeight: "700" }}>
                   {studentProfiles.length}
@@ -165,6 +208,7 @@ export default function ListView() {
                 result found
               </Typography>
             )}
+
             {search && (
               <Chip
                 size="small"
@@ -185,7 +229,22 @@ export default function ListView() {
                 sx={{ color: "#00AE60", background: "#dbf1e8" }}
               />
             )}
-            {(search || yearFrom || yearTo) && (
+            {selectedCourses.length > 0 && (
+              <Stack direction="row" spacing={1}>
+                {selectedCourses.map((course) => (
+                  <Chip
+                    key={course._id}
+                    size="small"
+                    label={course.courseName}
+                    onDelete={() => handleRemoveCourse(course._id)}
+                    color="primary"
+                    sx={{ color: "#00AE60", background: "#dbf1e8" }}
+                  />
+                ))}
+              </Stack>
+            )}
+
+            {(search || yearFrom || yearTo || selectedCourses.length > 0) && (
               <Button
                 onClick={handleClearFilter}
                 variant="text"
@@ -251,7 +310,7 @@ export default function ListView() {
         onClose={() => setOpenDrawer(false)}
         studentProfile={selectedStudent}
       />
-      <FilterDrawer // 🔹 New drawer component
+      <FilterDrawer
         open={openFilterDrawer}
         onClose={() => setOpenFilterDrawer(false)}
         handleApplyFilters={handleApplyFilters}
@@ -261,6 +320,9 @@ export default function ListView() {
         setYearFrom={setYearFrom}
         yearTo={yearTo}
         setYearTo={setYearTo}
+        courses={courses}
+        setSelectedCourses={setSelectedCourses}
+        selectedCourses={selectedCourses}
       />
     </Box>
   );
