@@ -1,4 +1,4 @@
-import { InputAdornment, Stack, TextField } from "@mui/material";
+import { Autocomplete, InputAdornment, Stack, TextField } from "@mui/material";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import PropTypes from "prop-types"; // Import PropTypes
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -24,13 +24,40 @@ export default function BasicInformation({
   endDateError,
   handleStartDateChange,
   handleEndDateChange,
+  courses,
+  selectedCourses,
+  setSelectedCourses,
 }) {
   const CalenderIcon = () => {
     return <Calender color="grey" size={24} />;
   };
 
   return (
-    <Stack gap="24px">
+    <Stack
+      gap="24px"
+      sx={{
+        width: {
+          xs: "100%", // ≤600px
+          sm: "100%", // >600px
+          md: "50%", // >900px
+        },
+      }}
+    >
+      <Autocomplete
+        multiple
+        options={courses}
+        getOptionLabel={(option) => option.courseName}
+        value={selectedCourses}
+        onChange={(event, newValue) => {
+          setSelectedCourses(newValue);
+          console.log(
+            "Selected Course IDs:",
+            newValue.map((course) => course._id)
+          ); // ✅ Confirm you're getting the IDs
+        }}
+        renderInput={(params) => <TextField {...params} label="Ao Courses" />}
+        sx={{ width: "100%" }}
+      />
       <TextField
         label="Title"
         value={title}
@@ -135,4 +162,7 @@ BasicInformation.propTypes = {
   handleEndDateChange: PropTypes.func.isRequired,
   startDateError: PropTypes.string,
   endDateError: PropTypes.string,
+  courses:PropTypes.any,
+  selectedCourses:PropTypes.any,
+  setSelectedCourses:PropTypes.any,
 };

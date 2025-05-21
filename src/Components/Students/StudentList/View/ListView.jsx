@@ -58,13 +58,6 @@ export default function ListView() {
   }, []);
 
   const handleApplyFilters = () => {
-    console.log("Applied Filters:", {
-      search,
-      yearFrom,
-      yearTo,
-      selectedCourses,
-    });
-
     loadStudentsProfile(search, yearFrom, yearTo, selectedCourses);
     setOpenFilterDrawer(false); // Close filter drawer
   };
@@ -105,6 +98,12 @@ export default function ListView() {
     loadStudentsProfile("", yearFrom, yearTo, selectedCourses); // Keep the course filters intact
   };
 
+  const handleClearYear = () => {
+    setYearFrom("");
+    setYearTo("");
+    loadStudentsProfile(search, "", "", selectedCourses);
+  };
+  
   const handleClearFilter = () => {
     setSearch("");
     setYearFrom("");

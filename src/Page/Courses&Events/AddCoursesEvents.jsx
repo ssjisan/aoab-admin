@@ -1,10 +1,9 @@
-import { Box, Grid, Stack, Toolbar, Typography, useMediaQuery } from "@mui/material";
+import { Box, Stack, Toolbar, Typography } from "@mui/material";
 import Sidebar from "../../Layout/Sidebar";
-import AddForm from "../../Components/CoursesEvents/Add/AddForm";
+import Create from "../../Components/CoursesEvents/Create/Create";
 
 export default function AddCoursesEvents() {
-    const drawerWidth = 280;
-    const forBelow1200 = useMediaQuery("(max-width:1200px)");
+  const drawerWidth = 280;
 
   return (
     <Box>
@@ -19,22 +18,18 @@ export default function AddCoursesEvents() {
       >
         <Toolbar />
         <Box>
-          <Box sx={{ p: forBelow1200 ? "24px 0px" : "24px" }}>
-            <Grid container justifyContent="center">
-              <Grid item xs={12} sm={12} md={8} lg={7}>
-                <Stack spacing={5}>
-                  <Stack gap={2} sx={{ pb: "64px", width: "100%" }}>
-                    <Typography variant="h4" sx={{ mb: "40px" }}>
-                      Create a new Event/Course
-                    </Typography>
-                    <AddForm/>
-                  </Stack>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Box>
+          <Stack
+            sx={{
+              p: "12px 0px",
+              mb:"24px"
+            }}
+          >
+            <Typography variant="h5">Create a new Event/Course</Typography>
+          </Stack>
+          <Create />
         </Box>
       </Box>
     </Box>
-  )
+  );
 }
+

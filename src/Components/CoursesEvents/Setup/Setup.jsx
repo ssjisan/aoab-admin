@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, useMediaQuery } from "@mui/material";
 import Form from "./Form";
 import View from "./View";
 import { useEffect, useState } from "react";
@@ -69,6 +69,7 @@ export default function Setup() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [courseSetup, setCourseSetup] = useState([]);
+const isSmDown = useMediaQuery("(max-width:767px)");
 
   useEffect(() => {
     loadLinks();
@@ -152,8 +153,25 @@ export default function Setup() {
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={12} md={3} lg={3}>
+    <Grid
+      container
+      spacing={2}
+      
+    >
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={3}
+        lg={3}
+        sx={{
+          position: isSmDown ? "static" : "sticky",
+          top: isSmDown ? "auto" : "80px", // adjust depending on your header height
+          alignSelf: "flex-start",
+          zIndex: 1,
+          backgroundColor: "#fff",
+        }}
+      >
         <Form
           name={name}
           setName={setName}
@@ -163,7 +181,18 @@ export default function Setup() {
           handleSubmit={handleSubmit}
         />
       </Grid>
-      <Grid item xs={12} sm={12} md={9} lg={9}>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={9}
+        lg={9}
+        sx={{
+          height: "100%",
+          overflowY: "auto",
+          pr: 1,
+        }}
+      >
         <View
           courseSetup={courseSetup}
           onDragEnd={onDragEnd}

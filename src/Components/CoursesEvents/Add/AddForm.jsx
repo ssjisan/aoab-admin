@@ -148,6 +148,7 @@ export default function AddForm() {
   return (
     <>
       <Stack gap="40px">
+        
         <BasicInformation
           title={title}
           setTitle={setTitle}
