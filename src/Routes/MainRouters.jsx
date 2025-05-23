@@ -28,7 +28,7 @@ import UploadAlbum from "../Page/Albums/UploadAlbum";
 import StudentsList from "../Page/Students/StudentsList";
 import StudentsApproval from "../Page/Students/StudentsApproval";
 import EmailVerificationError from "../Page/Students/EmailVerificationError";
-import CourseSetup from "../Page/Courses&Events/CourseSetup";
+import CategorySetup from "../Page/Courses&Events/CategorySetup";
 
 export default function MainRouters() {
   return (
@@ -63,7 +63,7 @@ export default function MainRouters() {
           <Route path="/" element={<Dashboard />} />
 
           {/* Courses & Events Routes Start */}
-          <Route path="/course_setup" element={<CourseSetup />} />
+          <Route path="/setup_category" element={<CategorySetup />} />
           <Route path="/add_courses_events" element={<AddCoursesEvents />} />
           <Route path="/courses_events_list" element={<CoursesEventsList />} />
           <Route path="/course_event/:id" element={<PreviewCourseEvent />} />

@@ -17,7 +17,7 @@ import axios from "axios";
 import { DownArrow } from "./../../../../../assets/IconSet";
 import toast from "react-hot-toast";
 
-export default function Recipients({}) {
+export default function Recipients({courses}) {
   const ExpandMoreIcon = () => {
     return (
       <div style={{ marginRight: "12px" }}>
@@ -26,7 +26,6 @@ export default function Recipients({}) {
     );
   };
   const [search, setSearch] = useState("");
-  const [courses, setCourses] = useState([]); // State to hold fetched courses
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [studentProfiles, setStudentProfiles] = useState([]);
   const [addedStudents, setAddedStudents] = useState([]);

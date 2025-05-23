@@ -23,7 +23,7 @@ export default function View({
   // ***************** Table Header Columns ************************* //
 
   const columns = [
-    { key: "name", label: "Course Name" },
+    { key: "name", label: "Category Name" },
     { key: "typeOfParticipation	", label: "Type of Participation" },
   ];
 

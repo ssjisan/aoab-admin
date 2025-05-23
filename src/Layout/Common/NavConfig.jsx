@@ -74,8 +74,8 @@ const navConfig = ({ pathname }) => {
       ),
       items: [
         {
-          title: "Course Setup",
-          link: "/course_setup",
+          title: "Category Setup",
+          link: "/setup_category",
         },
         {
           title: "Add Courses and Events",

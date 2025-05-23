@@ -26,7 +26,7 @@ export default function Setup() {
     try {
       if (selectedRowId) {
         // Editing existing
-        const response = await axios.put(`/course_setup/${selectedRowId._id}`, {
+        const response = await axios.put(`/category_list/${selectedRowId._id}`, {
           courseName: name,
           typeOfParticipation: Number(typeOfParticipation),
         });
@@ -39,7 +39,7 @@ export default function Setup() {
         }
       } else {
         // Adding new
-        const response = await axios.post("/course_setup", {
+        const response = await axios.post("/category_setup", {
           courseName: name,
           typeOfParticipation: Number(typeOfParticipation),
         });
@@ -67,7 +67,7 @@ export default function Setup() {
   };
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [courseSetup, setCourseSetup] = useState([]);
 const isSmDown = useMediaQuery("(max-width:767px)");
 
@@ -77,7 +77,7 @@ const isSmDown = useMediaQuery("(max-width:767px)");
 
   const loadLinks = async () => {
     try {
-      const { data } = await axios.get("/setup_course");
+      const { data } = await axios.get("/category_list");
       setCourseSetup(data);
     } catch (err) {
       toast.error("Internal Error", err);
@@ -98,7 +98,7 @@ const isSmDown = useMediaQuery("(max-width:767px)");
     console.log("Sending reordered links to the server:", reorderedIds);
 
     try {
-      await axios.post("/update-setup-course-order", { reorderedSetupCourse });
+      await axios.post("/update-category-list-order", { reorderedSetupCourse });
       toast.success("List order updated successfully!");
     } catch (error) {
       console.error("Error updating list order:", error);
@@ -123,7 +123,7 @@ const isSmDown = useMediaQuery("(max-width:767px)");
 
     try {
       setLoading(true);
-      const response = await axios.delete(`/course_setup/${dataToDelete._id}`);
+      const response = await axios.delete(`/category_list/${dataToDelete._id}`);
 
       if (response.data.error) {
         toast.error(response.data.error);

@@ -10,7 +10,7 @@ export default function Body({ profile }) {
     // Fetch course data from the API
     const fetchCourses = async () => {
       try {
-        const response = await axios.get("/setup_course");
+        const response = await axios.get("/category_list");
         setCourses(response.data); // Assuming response is an array of course data
       } catch (error) {
         console.error("Error fetching courses:", error);
