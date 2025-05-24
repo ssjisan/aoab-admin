@@ -21,7 +21,7 @@ export default function AddForm() {
   const [endDate, setEndDate] = useState(null);
   const [startDateError, setStartDateError] = useState("");
   const [endDateError, setEndDateError] = useState("");
-  const [details, setDetails] = useState("");
+  const [dd, setdd] = useState("");
   const [coverPhoto, setCoverPhoto] = useState("");
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,10 +81,10 @@ export default function AddForm() {
     setCoverPhoto(null);
   };
 
-  // Upload Event Details Handler Starts Here
+  // Upload Event dd Handler Starts Here
 
   const handleQuillChange = (content) => {
-    setDetails(content);
+    setdd(content);
   };
 
   const handleSubmit = async () => {
@@ -97,7 +97,7 @@ export default function AddForm() {
       !contactMail.trim() ||
       !startDate ||
       !endDate ||
-      !details.trim()||
+      !dd.trim()||
       !coverPhoto
     ) {
       toast.error("Please fill in all required fields!");

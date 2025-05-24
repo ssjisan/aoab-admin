@@ -1,60 +1,54 @@
 import {
-  Autocomplete,
+  Box,
   Button,
   FormControl,
-  IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import PropTypes from "prop-types"; // Import PropTypes
+import { useState } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { DownArrow } from "./../../../../../assets/IconSet";
 import toast from "react-hot-toast";
+import CustomeHeader from "../../../../Common/Table/CustomeHeader";
 
-export default function Recipients({courses}) {
-  const ExpandMoreIcon = () => {
-    return (
-      <div style={{ marginRight: "12px" }}>
-        <DownArrow size="20px" color="#000" />
-      </div>
-    );
-  };
+// Icon for Select
+const ExpandMoreIcon = () => (
+  <div style={{ marginRight: "12px" }}>
+    <DownArrow size="20px" color="#000" />
+  </div>
+);
+
+export default function Recipients({ courses }) {
+  const columns = [
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "category", label: "Category" },
+    { key: "action", label: "Action" },
+  ];
+
   const [search, setSearch] = useState("");
-  const [selectedCourses, setSelectedCourses] = useState([]);
+  const [selectedCourse, setSelectedCategoryCourse] = useState(null);
   const [studentProfiles, setStudentProfiles] = useState([]);
-  const [addedStudents, setAddedStudents] = useState([]);
-
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    // Fetch course data from the API
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get("/setup_course");
-        setCourses(response.data); // Assuming response is an array of course data
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
-
-    fetchCourses();
-  }, []);
+  const [courseWiseStudents, setCourseWiseStudents] = useState({});
 
   const loadStudentsProfile = async (search = "") => {
     try {
       setLoading(true);
-
       const params = new URLSearchParams();
       if (search) params.append("search", search);
-
-      const { data } = await axios.get(
-        `/verified-accounts?${params.toString()}`
-      );
+      const { data } = await axios.get(`/verified-accounts?${params.toString()}`);
       setStudentProfiles(data);
     } catch (err) {
       console.error("Error loading student profiles:", err);
@@ -63,36 +57,87 @@ export default function Recipients({courses}) {
       setLoading(false);
     }
   };
+
   const handleApplyFilters = () => {
     loadStudentsProfile(search);
   };
 
+  const isStudentAlreadyAdded = (studentId) => {
+    return Object.values(courseWiseStudents).some((students) =>
+      students.some((student) => student._id === studentId)
+    );
+  };
+
+  const handleAddStudent = (student) => {
+    if (!selectedCourse) {
+      toast.error("Please select a course first");
+      return;
+    }
+
+    const courseId = selectedCourse._id;
+
+    if (isStudentAlreadyAdded(student._id)) {
+      toast("This student is already added to a course.");
+      return;
+    }
+
+    setCourseWiseStudents((prev) => {
+      const updated = { ...prev };
+      if (!updated[courseId]) {
+        updated[courseId] = [];
+      }
+      updated[courseId].push(student);
+      return updated;
+    });
+  };
+
+  const handleRemoveStudent = (courseId, studentId) => {
+    setCourseWiseStudents((prev) => {
+      const updated = { ...prev };
+      updated[courseId] = updated[courseId].filter((s) => s._id !== studentId);
+      if (updated[courseId].length === 0) {
+        delete updated[courseId];
+      }
+      return updated;
+    });
+  };
+
+  const handlePreviewSubmit = () => {
+    const dataToSubmit = Object.entries(courseWiseStudents).map(([courseId, students]) => ({
+      courseId,
+      courseName: courses.find((c) => c._id === courseId)?.courseName || "N/A",
+      students: students.map(({ _id, name, email, bmdcNo, contactNumber }) => ({
+        _id,
+        name,
+        email,
+        bmdcNo,
+        contactNumber,
+      })),
+    }));
+
+    console.log("📦 Data to be submitted:", dataToSubmit);
+    toast.success("Check console for submission preview");
+  };
+
   return (
     <Stack flexDirection="row" gap="24px">
+      {/* Left Panel */}
       <Stack
         gap="16px"
         sx={{
-          width: {
-            xs: "100%",
-            sm: "100%",
-            md: "25%",
-            lg: "25%",
-          },
+          width: { xs: "100%", sm: "100%", md: "25%", lg: "25%" },
         }}
       >
+        {/* Select Course */}
         <FormControl fullWidth size="small">
           <InputLabel id="course-select-label">AO Course</InputLabel>
           <Select
             labelId="course-select-label"
-            id="course-select"
-            value={selectedCourses ? selectedCourses._id : ""}
+            value={selectedCourse ? selectedCourse._id : ""}
             label="AO Course"
             onChange={(event) => {
-              const selectedCourse = courses.find(
-                (course) => course._id === event.target.value
-              );
-              setSelectedCourses(selectedCourse);
-              console.log("Selected Course ID:", selectedCourse._id);
+              const course = courses.find((c) => c._id === event.target.value);
+              setSelectedCategoryCourse(course);
             }}
             IconComponent={ExpandMoreIcon}
           >
@@ -103,6 +148,8 @@ export default function Recipients({courses}) {
             ))}
           </Select>
         </FormControl>
+
+        {/* Search */}
         <TextField
           label="Search"
           value={search}
@@ -111,12 +158,12 @@ export default function Recipients({courses}) {
           size="small"
           InputProps={{
             endAdornment: (
-              <InputAdornment position="end" sx={{ mr: 0 }}>
+              <InputAdornment position="end">
                 <Button
                   variant="soft"
                   onClick={handleApplyFilters}
                   size="small"
-                  sx={{ ml: 0, height: "30px" }} // Adjust button height to fit nicely
+                  sx={{ height: "30px" }}
                 >
                   Search
                 </Button>
@@ -124,91 +171,124 @@ export default function Recipients({courses}) {
             ),
           }}
         />
-        {studentProfiles.map((data, i) => {
-          return (
+
+        {/* Student Search Results */}
+        {loading ? (
+          <Typography color="text.secondary" sx={{ mt: 2 }}>
+            Loading...
+          </Typography>
+        ) : studentProfiles.length === 0 ? (
+          <Typography
+            sx={{ mt: 2, fontStyle: "italic", color: "text.secondary" }}
+          >
+            No students found matching your search.
+          </Typography>
+        ) : (
+          studentProfiles.map((student, i) => (
             <Stack
               key={i}
-              sx={{ p: 2, border: "1px solid red", borderRadius: "12px" }}
+              sx={{
+                p: 2,
+                boxShadow:
+                  "0 0 2px 0 rgba(145 158 171 / 0.2), 0 12px 24px -4px rgba(145 158 171 / 0.12)",
+                borderRadius: "12px",
+              }}
             >
-              <Typography>Name: {data.name}</Typography>
-              <Typography>BM&DC No:{data.bmdcNo}</Typography>
-              <Typography>Contact No: 0{data.contactNumber}</Typography>
-              <Typography>Email:{data.email}</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                Name: <Box component="span" fontWeight={600}>{student.name}</Box>
+              </Typography>
+
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                BM&DC No: <Box component="span" fontWeight={600}>{student.bmdcNo}</Box>
+              </Typography>
+
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                Contact No: <Box component="span" fontWeight={600}>0{student.contactNumber}</Box>
+              </Typography>
+
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                Email: <Box component="span" fontWeight={600}>{student.email}</Box>
+              </Typography>
+
               <Button
-                variant="outlined"
+                variant="soft"
                 sx={{ mt: "16px" }}
-                onClick={() => {
-                  if (!selectedCourses) {
-                    toast.error("Please select a course first");
-                    return;
-                  }
-
-                  const alreadyAdded = addedStudents.some(
-                    (item) =>
-                      item.student._id === data._id &&
-                      item.course._id === selectedCourses._id
-                  );
-                  if (alreadyAdded) {
-                    toast("This student is already added to the course.");
-                    return;
-                  }
-
-                  setAddedStudents((prev) => [
-                    ...prev,
-                    { student: data, course: selectedCourses },
-                  ]);
-                }}
+                disabled={isStudentAlreadyAdded(student._id)}
+                onClick={() => handleAddStudent(student)}
               >
-                Add to list
+                {isStudentAlreadyAdded(student._id)
+                  ? "Already added"
+                  : "Add to list"}
               </Button>
             </Stack>
-          );
-        })}
+          ))
+        )}
       </Stack>
+
+      {/* Right Panel */}
       <Stack
         gap="16px"
         sx={{
-          width: {
-            xs: "100%",
-            sm: "100%",
-            md: "75%",
-            lg: "75%",
-          },
+          width: { xs: "100%", sm: "100%", md: "75%", lg: "75%" },
         }}
       >
-        <Typography variant="h6" sx={{ mb: 1 }}>
-          Added Students
-        </Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6">Added by Category</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePreviewSubmit}
+            disabled={Object.keys(courseWiseStudents).length === 0}
+          >
+            Preview Submission
+          </Button>
+        </Stack>
 
-        {addedStudents.length === 0 ? (
+        {Object.keys(courseWiseStudents).length === 0 ? (
           <Typography color="text.secondary">No students added yet.</Typography>
         ) : (
-          addedStudents.map((entry, index) => (
-            <Stack
-              key={index}
-              sx={{
-                p: 2,
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                background: "#f9f9f9",
-              }}
-            >
-              <Typography>
-                <strong>Course:</strong> {entry.course.courseName}
-              </Typography>
-              <Typography>
-                <strong>Name:</strong> {entry.student.name}
-              </Typography>
-            </Stack>
-          ))
+          <TableContainer elevation={2}>
+            <Table>
+              <CustomeHeader
+                columns={columns}
+                includeActions={true}
+                includeDrag={false}
+              />
+              <TableBody>
+                {Object.entries(courseWiseStudents).map(
+                  ([courseId, students]) =>
+                    students.map((student) => {
+                      const course = courses.find((c) => c._id === courseId);
+                      return (
+                        <TableRow key={student._id}>
+                          <TableCell>{student.name}</TableCell>
+                          <TableCell>{student.email}</TableCell>
+                          <TableCell>{course?.courseName || "N/A"}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              size="small"
+                              onClick={() =>
+                                handleRemoveStudent(courseId, student._id)
+                              }
+                            >
+                              Remove
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Stack>
     </Stack>
   );
 }
-// Define PropTypes
+
 Recipients.propTypes = {
-  courses: PropTypes.any,
-  selectedCourses: PropTypes.any,
-  setSelectedCourses: PropTypes.any,
+  courses: PropTypes.array.isRequired,
 };

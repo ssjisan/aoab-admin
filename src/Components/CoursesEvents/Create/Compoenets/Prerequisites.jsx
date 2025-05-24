@@ -1,29 +1,32 @@
 import {
   Checkbox,
   FormControlLabel,
+  Grid,
   Radio,
   RadioGroup,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import PropTypes from "prop-types";
 
-export default function Prerequisites({ courses }) {
-  const [postGradRequired, setPostGradRequired] = useState("");
-  const [requiresPrerequisite, setRequiresPrerequisite] = useState("");
-  const [selectedCourses, setSelectedCourses] = useState([]);
-
-  const handleCourseToggle = (courseId) => {
-    setSelectedCourses((prev) =>
-      prev.includes(courseId)
-        ? prev.filter((id) => id !== courseId)
-        : [...prev, courseId]
-    );
-  };
-
+export default function Prerequisites({
+  courses,
+  postGradRequired,
+  setPostGradRequired,
+  yearFrom,
+  setYearFrom,
+  yearTo,
+  setYearTo,
+  requiresPrerequisite,
+  setRequiresPrerequisite,
+  selectedPrerequisiteCourses,
+  handleCourseToggle,
+  restrictReenrollment,
+  setRestrictReenrollment,
+}) {
   return (
-    <Stack gap="24px">
+    <Stack gap="24px" mb="40px">
       {/* Post Graduation Requirement */}
       <Stack gap="8px" sx={{ mb: "24px" }}>
         <Typography sx={{ fontWeight: 600 }} variant="body2">
@@ -55,6 +58,8 @@ export default function Prerequisites({ courses }) {
                 size="small"
                 type="number"
                 placeholder="Start Year (e.g., 2015)"
+                value={yearFrom}
+                onChange={(e) => setYearFrom(e.target.value)}
               />
             </Stack>
             <Stack gap="4px">
@@ -71,6 +76,8 @@ export default function Prerequisites({ courses }) {
                 size="small"
                 type="number"
                 placeholder="End Year (e.g., 2023)"
+                value={yearTo}
+                onChange={(e) => setYearTo(e.target.value)}
               />
             </Stack>
           </Stack>
@@ -80,7 +87,8 @@ export default function Prerequisites({ courses }) {
       {/* Prerequisite Courses */}
       <Stack>
         <Typography sx={{ fontWeight: 600 }} variant="body2">
-          Are there any prerequisite courses that need to be completed before enrolling in this course?
+          Are there any prerequisite courses that need to be completed before
+          enrolling in this course?
         </Typography>
         <RadioGroup
           row
@@ -94,26 +102,67 @@ export default function Prerequisites({ courses }) {
         {/* Conditionally show course list */}
         {requiresPrerequisite === "yes" && (
           <>
-            <Typography sx={{ fontWeight: 700, mt:"24px" }} variant="h6">
+            <Typography sx={{ fontWeight: 700, mt: "24px" }} variant="h6">
               List of course type
             </Typography>
-            <Stack gap={1} pl={2}>
+            <Grid container spacing={2} pl={2}>
               {courses.map((course) => (
-                <FormControlLabel
-                  key={course._id}
-                  control={
-                    <Checkbox
-                      checked={selectedCourses.includes(course._id)}
-                      onChange={() => handleCourseToggle(course._id)}
-                    />
-                  }
-                  label={course.courseName}
-                />
+                <Grid item xs={12} sm={4} key={course._id}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={selectedPrerequisiteCourses.includes(
+                          course._id
+                        )}
+                        onChange={() => handleCourseToggle(course._id)}
+                      />
+                    }
+                    label={course.courseName}
+                  />
+                </Grid>
               ))}
-            </Stack>
+            </Grid>
+
+            <FormControlLabel
+              sx={{ mt: 2 }}
+              control={
+                <Checkbox
+                  checked={restrictReenrollment}
+                  onChange={(e) => setRestrictReenrollment(e.target.checked)}
+                />
+              }
+              label="Restrict Re-enrollment to this course category"
+            />
           </>
         )}
       </Stack>
     </Stack>
   );
 }
+
+Prerequisites.propTypes = {
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      courseName: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+
+  postGradRequired: PropTypes.oneOf(["yes", "no", ""]).isRequired,
+  setPostGradRequired: PropTypes.func.isRequired,
+
+  yearFrom: PropTypes.string.isRequired,
+  setYearFrom: PropTypes.func.isRequired,
+
+  yearTo: PropTypes.string.isRequired,
+  setYearTo: PropTypes.func.isRequired,
+
+  requiresPrerequisite: PropTypes.oneOf(["yes", "no", ""]).isRequired,
+  setRequiresPrerequisite: PropTypes.func.isRequired,
+
+  selectedPrerequisiteCourses: PropTypes.arrayOf(PropTypes.string).isRequired,
+  handleCourseToggle: PropTypes.func.isRequired,
+
+  restrictReenrollment: PropTypes.bool.isRequired,
+  setRestrictReenrollment: PropTypes.func.isRequired,
+};
