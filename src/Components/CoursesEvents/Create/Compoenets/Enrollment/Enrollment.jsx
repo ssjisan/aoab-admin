@@ -16,6 +16,12 @@ export default function Enrollment({
   setStudentCap,
   waitlistCap,
   setWaitlistCap,
+  paymentReceiveStartDate,
+  paymentReceiveStartDateError,
+  handlePaymentReceiveStartDateChange,
+  paymentReceiveEndDate,
+  paymentReceiveEndDateError,
+  handlePaymentReceiveEndDateChange,
 }) {
   const CalenderIcon = () => {
     return <Calender color="grey" size={24} />;
@@ -32,6 +38,21 @@ export default function Enrollment({
         },
       }}
     >
+      <Stack direction="row" gap="24px">
+        <TextField
+          label="Total Seat"
+          value={studentCap}
+          onChange={(e) => setStudentCap(e.target.value)}
+          fullWidth
+        />
+        <TextField
+          label="Waiting List"
+          type="number"
+          value={waitlistCap}
+          onChange={(e) => setWaitlistCap(e.target.value)}
+          fullWidth
+        />
+      </Stack>
       <Stack direction="row" gap="24px">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DesktopDatePicker
@@ -71,19 +92,44 @@ export default function Enrollment({
         </LocalizationProvider>
       </Stack>
       <Stack direction="row" gap="24px">
-        <TextField
-          label="Total Seat"
-          value={studentCap}
-          onChange={(e) => setStudentCap(e.target.value)}
-          fullWidth
-        />
-        <TextField
-          label="Waiting List"
-          type="number"
-          value={waitlistCap}
-          onChange={(e) => setWaitlistCap(e.target.value)}
-          fullWidth
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DesktopDatePicker
+            slots={{
+              openPickerIcon: CalenderIcon,
+            }}
+            label="Payment Receive Start Date"
+            value={
+              paymentReceiveStartDate ? dayjs(paymentReceiveStartDate) : null
+            } // Convert stored date back to dayjs object for display
+            format="DD/MM/YYYY"
+            onChange={handlePaymentReceiveStartDateChange}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                error: !!paymentReceiveStartDateError, // Show red outline if there's an error
+                helperText: paymentReceiveStartDateError, // Show error message
+              },
+            }}
+          />
+        </LocalizationProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DesktopDatePicker
+            slots={{
+              openPickerIcon: CalenderIcon,
+            }}
+            label="Payment Receive End Date"
+            value={paymentReceiveEndDate ? dayjs(paymentReceiveEndDate) : null} // Convert stored date back to dayjs object for display
+            format="DD/MM/YYYY"
+            onChange={handlePaymentReceiveEndDateChange}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                error: !!paymentReceiveEndDateError, // Show red outline if there's an error
+                helperText: paymentReceiveEndDateError, // Show error message
+              },
+            }}
+          />
+        </LocalizationProvider>
       </Stack>
     </Stack>
   );
@@ -108,4 +154,10 @@ Enrollment.propTypes = {
   registrationStartDateError: PropTypes.string,
 
   registrationEndDateError: PropTypes.string,
+  paymentReceiveStartDate: PropTypes.string,
+  paymentReceiveStartDateError: PropTypes.string,
+  handlePaymentReceiveStartDateChange: PropTypes.func.isRequired,
+  paymentReceiveEndDate: PropTypes.string,
+  paymentReceiveEndDateError: PropTypes.string,
+  handlePaymentReceiveEndDateChange: PropTypes.func.isRequired,
 };

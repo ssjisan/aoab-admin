@@ -1,7 +1,7 @@
 import Preview from "./Preview";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+// import { PDFDownloadLink } from "@react-pdf/renderer";
 import PropTypes from "prop-types";
-import DownloadCertificate from "./DownloadCertificate";
+// import DownloadCertificate from "./DownloadCertificate";
 
 export default function Certificate({
   name,

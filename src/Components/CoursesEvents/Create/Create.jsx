@@ -16,8 +16,18 @@ export default function Create() {
   const forBelow1200 = useMediaQuery("(max-width:1200px)");
   const [currentTab, setCurrentTab] = useState(0);
 
-  //-------------------------------------------------------- Course Load using api from db Start Here--------------------------------------------------------//
-
+  //-------------------------------------------------------- Basic Info Data State Start Here --------------------------------------------------//
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [fees, setFees] = useState("");
+  const [contactPersons, setContactPersons] = useState([
+    { name: "", email: "" },
+  ]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [startDateError, setStartDateError] = useState("");
+  const [endDateError, setEndDateError] = useState("");
+  const [courseId, setCourseId] = useState("");
   const [courses, setCourses] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState(null);
 
@@ -33,20 +43,7 @@ export default function Create() {
 
     fetchCourses();
   }, []);
-  //-------------------------------------------------------- Course Load using api from db end Here--------------------------------------------------------//
 
-  //-------------------------------------------------------- Basic Info Data State Start Here --------------------------------------------------//
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [fees, setFees] = useState("");
-  const [contactPersons, setContactPersons] = useState([
-    { name: "", email: "" },
-  ]);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [startDateError, setStartDateError] = useState("");
-  const [endDateError, setEndDateError] = useState("");
-  const [courseId, setCourseId] = useState("");
   const handleStartDateChange = (newDate) => {
     const formattedDate = dayjs(newDate).toISOString();
     if (newDate && newDate.isBefore(dayjs(), "day")) {
@@ -88,11 +85,36 @@ export default function Create() {
 
   //-------------------------------------------------------- Details & Cover Data State Here --------------------------------------------------//
   const [details, setDetails] = useState("");
+  const [coverPhoto, setCoverPhoto] = useState("");
+  const [photoUploadError, setPhotoUploadError] = useState(null);
 
   const handleQuillChange = (content) => {
     setDetails(content);
   };
+  const handleCoverPhoto = (event) => {
+    const file = event.target.files[0];
+    const MAX_SIZE_MB = 3; // Changed max size to 3 MB
 
+    if (file) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2); // Convert bytes to MB and round to two decimals
+
+      if (fileSizeMB > MAX_SIZE_MB) {
+        setPhotoUploadError({
+          fileName: file.name,
+          fileSize: fileSizeMB,
+          message: "File is larger than 3MB.",
+        });
+        return;
+      }
+
+      setPhotoUploadError(null); // Clear any previous error
+      setCoverPhoto(file); // Set the uploaded file
+    }
+  };
+
+  const removeImage = () => {
+    setCoverPhoto(null);
+  };
   //-------------------------------------------------------- Details & Cover Data End Here --------------------------------------------------//
 
   //-------------------------------------------------------- Prerequisites Data State Here --------------------------------------------------//
@@ -119,9 +141,15 @@ export default function Create() {
   const [waitlistCap, setWaitlistCap] = useState("");
   const [registrationStartDate, setRegistrationStartDate] = useState(null);
   const [registrationEndDate, setRegistrationEndDate] = useState(null);
+  const [paymentReceiveStartDate, setPaymentReceiveStartDate] = useState(null);
+  const [paymentReceiveEndDate, setPaymentReceiveEndDate] = useState(null);
   const [registrationStartDateError, setRegistrationStartDateError] =
     useState("");
   const [registrationEndDateError, setRegistrationEndDateError] = useState("");
+  const [paymentReceiveStartDateError, setPaymentReceiveStartDateError] =
+    useState("");
+  const [paymentReceiveEndDateError, setPaymentReceiveEndDateError] =
+    useState("");
   const handleRegistrationStartDateChange = (newDate) => {
     const formattedDate = dayjs(newDate).toISOString();
     if (newDate && newDate.isBefore(dayjs(), "day")) {
@@ -145,21 +173,43 @@ export default function Create() {
       setRegistrationEndDate(formattedDate);
     }
   };
+  const handlePaymentReceiveStartDateChange = (newDate) => {
+    const formattedDate = dayjs(newDate).toISOString();
+    if (newDate && newDate.isBefore(dayjs(), "day")) {
+      setPaymentReceiveStartDateError("Start date cannot be in the past!");
+    } else {
+      setPaymentReceiveStartDateError("");
+      setPaymentReceiveStartDate(formattedDate);
+    }
+  };
+  const handlePaymentReceiveEndDateChange = (newDate) => {
+    const formattedDate = dayjs(newDate).toISOString();
+    if (newDate && newDate.isBefore(dayjs(), "day")) {
+      setPaymentReceiveEndDateError("Start date cannot be in the past!");
+    } else {
+      setPaymentReceiveEndDateError("");
+      setPaymentReceiveEndDate(formattedDate);
+    }
+  };
   //-------------------------------------------------------- Enrollment Funcation end Here--------------------------------------------------------//
 
+  //-------------------------------------------------------- Receipents Funcation Start Here--------------------------------------------------------//
 
-  const [search, setSearch] = useState("");
-  const [selectedCategoryForRecipients, setSelectedCategoryForRecipients] = useState(null);
+  const [searchForProfile, setSearchForProfile] = useState("");
+  const [selectedCategoryForRecipients, setSelectedCategoryForRecipients] =
+    useState(null);
   const [studentProfiles, setStudentProfiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [courseWiseStudents, setCourseWiseStudents] = useState({});
 
-  const loadStudentsProfile = async (search = "") => {
+  const loadStudentsProfile = async (searchForProfile = "") => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      const { data } = await axios.get(`/verified-accounts?${params.toString()}`);
+      if (searchForProfile) params.append("search", searchForProfile);
+      const { data } = await axios.get(
+        `/verified-accounts?${params.toString()}`
+      );
       setStudentProfiles(data);
     } catch (err) {
       console.error("Error loading student profiles:", err);
@@ -170,7 +220,7 @@ export default function Create() {
   };
 
   const handleApplyFilters = () => {
-    loadStudentsProfile(search);
+    loadStudentsProfile(searchForProfile);
   };
 
   const isStudentAlreadyAdded = (studentId) => {
@@ -185,7 +235,7 @@ export default function Create() {
       return;
     }
 
-    const courseId = selectedCategoryForRecipients._id;
+    const categoryId = selectedCategoryForRecipients._id;
 
     if (isStudentAlreadyAdded(student._id)) {
       toast("This student is already added to a course.");
@@ -194,44 +244,39 @@ export default function Create() {
 
     setCourseWiseStudents((prev) => {
       const updated = { ...prev };
-      if (!updated[courseId]) {
-        updated[courseId] = [];
+      if (!updated[categoryId]) {
+        updated[categoryId] = [];
       }
-      updated[courseId].push(student);
+      updated[categoryId].push(student);
       return updated;
     });
   };
+  const transformedRecipients = Object.entries(courseWiseStudents).map(
+    ([categoryId, students]) => ({
+      role: categoryId,
+      profiles: students.map((student) => student._id),
+    })
+  );
 
-  const handleRemoveStudent = (courseId, studentId) => {
+  const handleRemoveStudent = (categoryId, studentId) => {
     setCourseWiseStudents((prev) => {
       const updated = { ...prev };
-      updated[courseId] = updated[courseId].filter((s) => s._id !== studentId);
-      if (updated[courseId].length === 0) {
-        delete updated[courseId];
+      updated[categoryId] = updated[categoryId].filter(
+        (s) => s._id !== studentId
+      );
+      if (updated[categoryId].length === 0) {
+        delete updated[categoryId];
       }
       return updated;
     });
   };
 
-  const handlePreviewSubmit = () => {
-    const dataToSubmit = Object.entries(courseWiseStudents).map(([courseId, students]) => ({
-      courseId,
-      courseName: courses.find((c) => c._id === courseId)?.courseName || "N/A",
-      students: students.map(({ _id, name, email, bmdcNo, contactNumber }) => ({
-        _id,
-        name,
-        email,
-        bmdcNo,
-        contactNumber,
-      })),
-    }));
+  //-------------------------------------------------------- Receipents Funcation End Here--------------------------------------------------------//
 
-    console.log("📦 Data to be submitted:", dataToSubmit);
-    toast.success("Check console for submission preview");
-  };
-
+  //-------------------------------------------------------- Handle Submit function start Here--------------------------------------------------------//
 
   const handleSubmit = async () => {
+    let toastId;
     try {
       if (currentTab === 0) {
         const payload = {
@@ -245,20 +290,34 @@ export default function Create() {
           status: "draft",
         };
 
-        if (courseId) {
-          await axios.put(`/courses/${courseId}`, payload);
-        } else {
-          const res = await axios.post(`/courses`, payload);
+        const res = courseId
+          ? await axios.put(`/courses/${courseId}`, payload)
+          : await axios.post(`/courses`, payload);
+
+        if (!courseId) {
           setCourseId(res.data._id);
         }
       } else if (currentTab === 1 && courseId) {
-        const payload = {
-          category: selectedCourses?._id,
-          title,
-          details,
-        };
+        const formData = new FormData();
+        formData.append("category", selectedCourses?._id);
+        formData.append("title", title);
+        formData.append("details", details);
 
-        await axios.put(`/courses/${courseId}`, payload);
+        if (coverPhoto) {
+          formData.append("coverPhoto", coverPhoto);
+        }
+
+        // Show loader toast
+        toastId = toast.loading("Uploading cover image...");
+
+        await axios.put(`/courses/${courseId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        toast.dismiss(toastId);
+        toast.success("Cover image uploaded successfully!");
       } else if (currentTab === 2 && courseId) {
         const payload = {
           category: selectedCourses?._id,
@@ -268,11 +327,10 @@ export default function Create() {
           yearFrom,
           yearTo,
           restrictReenrollment,
-          selectedPrerequisiteCourses: selectedPrerequisiteCourses,
+          selectedPrerequisiteCourses,
         };
 
         await axios.put(`/courses/${courseId}`, payload);
-        2;
       } else if (currentTab === 3 && courseId) {
         const payload = {
           category: selectedCourses?._id,
@@ -281,20 +339,35 @@ export default function Create() {
           waitlistCap,
           registrationStartDate,
           registrationEndDate,
+          paymentReceiveStartDate,
+          paymentReceiveEndDate,
         };
 
         await axios.put(`/courses/${courseId}`, payload);
-        2;
+      } else if (currentTab === 4 && courseId) {
+        const payload = {
+          category: selectedCourses?._id,
+          title,
+          recipients: transformedRecipients,
+        };
+
+        await axios.put(`/courses/${courseId}`, payload);
       }
 
-      toast.success("Saved!");
+      if (currentTab !== 1) {
+        toast.success("Saved!");
+      }
+
       return true;
     } catch (err) {
-      toast.error("Something went wrong");
+      if (toastId) toast.dismiss(toastId); // dismiss upload toast if shown
       console.error(err);
+      toast.error("Something went wrong!");
       return false;
     }
   };
+
+  //-------------------------------------------------------- Handle Submit function end Here--------------------------------------------------------//
 
   const formSections = [
     {
@@ -330,6 +403,10 @@ export default function Create() {
         <DetailsAndCover
           details={details}
           handleQuillChange={handleQuillChange}
+          coverPhoto={coverPhoto}
+          photoUploadError={photoUploadError}
+          handleCoverPhoto={handleCoverPhoto}
+          removeImage={removeImage}
         />
       ),
     },
@@ -363,6 +440,14 @@ export default function Create() {
           registrationEndDate={registrationEndDate}
           registrationEndDateError={registrationEndDateError}
           handleRegistrationEndDateChange={handleRegistrationEndDateChange}
+          paymentReceiveStartDate={paymentReceiveStartDate}
+          paymentReceiveStartDateError={paymentReceiveStartDateError}
+          handlePaymentReceiveStartDateChange={
+            handlePaymentReceiveStartDateChange
+          }
+          paymentReceiveEndDate={paymentReceiveEndDate}
+          paymentReceiveEndDateError={paymentReceiveEndDateError}
+          handlePaymentReceiveEndDateChange={handlePaymentReceiveEndDateChange}
           studentCap={studentCap}
           setStudentCap={setStudentCap}
           waitlistCap={waitlistCap}
@@ -372,11 +457,26 @@ export default function Create() {
     },
     {
       label: "Recipients",
-      content: <Recipients courses={courses} />,
+      content: (
+        <Recipients
+          courses={courses}
+          loading={loading}
+          selectedCategoryForRecipients={selectedCategoryForRecipients}
+          setSelectedCategoryForRecipients={setSelectedCategoryForRecipients}
+          searchForProfile={searchForProfile}
+          setSearchForProfile={setSearchForProfile}
+          handleApplyFilters={handleApplyFilters}
+          studentProfiles={studentProfiles}
+          isStudentAlreadyAdded={isStudentAlreadyAdded}
+          courseWiseStudents={courseWiseStudents}
+          handleRemoveStudent={handleRemoveStudent}
+          handleAddStudent={handleAddStudent}
+        />
+      ),
     },
     {
       label: "Certificate Setup",
-      content: <CertificateDesign />,
+      content: <CertificateDesign courseWiseStudents={courseWiseStudents} courses={courses}/>
     },
   ];
 
