@@ -33,15 +33,17 @@ export default function CourseEventCover({
       >
         {coverPhoto ? (
           <>
-            <img
-              src={
-                typeof coverPhoto === "string"
-                  ? coverPhoto
-                  : URL.createObjectURL(coverPhoto)
-              }
-              alt="Cover"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
+           <img
+  src={
+    coverPhoto
+      ? coverPhoto.url // if backend object or local file wrapped with url
+        ? coverPhoto.url
+        : URL.createObjectURL(coverPhoto) // fallback for raw File object
+      : ""
+  }
+  alt="Cover"
+  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+/>
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();

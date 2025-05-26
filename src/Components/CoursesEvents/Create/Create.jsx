@@ -11,10 +11,13 @@ import BasicInfo from "./Compoenets/BasicInfo/BasicInfo";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import Enrollment from "./Compoenets/Enrollment/Enrollment";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Create() {
   const forBelow1200 = useMediaQuery("(max-width:1200px)");
   const [currentTab, setCurrentTab] = useState(0);
+  const navigate = useNavigate(); // Add this inside your component
+  const { id } = useParams();
 
   //-------------------------------------------------------- Basic Info Data State Start Here --------------------------------------------------//
   const [title, setTitle] = useState("");
@@ -273,6 +276,46 @@ export default function Create() {
 
   //-------------------------------------------------------- Receipents Funcation End Here--------------------------------------------------------//
 
+  //-------------------------------------------------------- Certificate Signature Funcation Start Here--------------------------------------------------------//
+  const [selectedCategoryForSignature, setSelectedCategoryForSignature] =
+    useState("");
+  const [selectedProfilesForSignature, setSelectedProfilesForSignature] =
+    useState([]); // [ObjectId strings]
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategoryForSignature(event.target.value);
+  };
+
+  const roleOptions = Object.keys(courseWiseStudents).map((categoryId) => {
+    const matchedCourse = courses.find(
+      (course) => String(course._id) === String(categoryId)
+    );
+    return {
+      id: categoryId,
+      title: matchedCourse ? matchedCourse.courseName : "Unknown Course",
+    };
+  });
+
+  const selectedStudents =
+    courseWiseStudents[selectedCategoryForSignature] || [];
+  const selectedCourse = roleOptions.find(
+    (opt) => opt.id === selectedCategoryForSignature
+  );
+
+  const toggleProfile = (studentId) => {
+    setSelectedProfilesForSignature((prev) => {
+      if (prev.includes(studentId)) {
+        // Deselect: remove the ID
+        return prev.filter((id) => id !== studentId);
+      } else {
+        // Select: add the ID
+        return [...prev, studentId];
+      }
+    });
+  };
+
+  //-------------------------------------------------------- Certificate Signature Funcation End Here--------------------------------------------------------//
+
   //-------------------------------------------------------- Handle Submit function start Here--------------------------------------------------------//
 
   const handleSubmit = async () => {
@@ -352,9 +395,22 @@ export default function Create() {
         };
 
         await axios.put(`/courses/${courseId}`, payload);
+      } else if (currentTab === 5 && courseId) {
+        const payload = {
+          category: selectedCourses?._id,
+          title,
+          signatures: selectedProfilesForSignature,
+          status: "complete", // <- Set status to complete
+        };
+
+        await axios.put(`/courses/${courseId}`, payload);
+
+        toast.success("Course event created successfully!");
+        navigate("/courses_events_list"); // <- Redirect after success
+        return true;
       }
 
-      if (currentTab !== 1) {
+      if (currentTab !== 1 && currentTab !== 5) {
         toast.success("Saved!");
       }
 
@@ -368,6 +424,133 @@ export default function Create() {
   };
 
   //-------------------------------------------------------- Handle Submit function end Here--------------------------------------------------------//
+
+  const [courseData, setCourseData] = useState(null);
+
+  useEffect(() => {
+    if (id) {
+      const fetchCourse = async () => {
+        try {
+          const { data } = await axios.get(`/courses_events/${id}`);
+          setCourseData(data);
+        } catch (err) {
+          console.error("Failed to fetch course:", err);
+          toast.error("Failed to load course data.");
+        }
+      };
+
+      fetchCourse();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const loadRecipients = async () => {
+      if (!courseData?.recipients || courseData.recipients.length === 0) return;
+
+      try {
+        setLoading(true);
+
+        // Fetch all verified student profiles
+        const { data: allProfiles } = await axios.get("/verified-accounts");
+
+        // Group profiles by role (category) based on courseData.recipients
+        const groupedByRole = {};
+        courseData.recipients.forEach(({ role, profiles }) => {
+          groupedByRole[role] = allProfiles.filter((profile) =>
+            profiles.includes(profile._id)
+          );
+        });
+
+        setCourseWiseStudents(groupedByRole);
+
+        // Load saved signature info if any
+        if (courseData?.signatures?.length) {
+          let found = false;
+
+          for (const [categoryId, students] of Object.entries(groupedByRole)) {
+            const studentIds = students.map((s) => s._id);
+            const matched = courseData.signatures.every((id) =>
+              studentIds.includes(id)
+            );
+
+            if (matched) {
+              setSelectedCategoryForSignature(categoryId);
+              setSelectedProfilesForSignature(courseData.signatures);
+              found = true;
+              break;
+            }
+          }
+
+          if (!found) {
+            console.warn("Signatures do not match any known student group.");
+          }
+        }
+      } catch (err) {
+        console.error("Error loading recipients:", err);
+        toast.error("Failed to load student recipients.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (courseData) {
+      // ** IMPORTANT: set courseId to the course's own _id, NOT the category id **
+      setCourseId(courseData._id || "");
+
+      // Set selectedCourses (category) by matching the courseData.category id in courses list
+      if (courses.length > 0 && courseData.category) {
+        const matchedCategory = courses.find(
+          (c) => String(c._id) === String(courseData.category)
+        );
+        setSelectedCourses(matchedCategory || null);
+      } else {
+        setSelectedCourses(null);
+      }
+      // Set basic course info
+      setTitle(courseData.title || "");
+      setLocation(courseData.location || "");
+      setFees(courseData.fee || "");
+      setStartDate(courseData.startDate || null);
+      setEndDate(courseData.endDate || null);
+      setContactPersons(
+        courseData.contactPersons?.length
+          ? courseData.contactPersons
+          : [{ name: "", email: "" }]
+      );
+      setDetails(courseData.details || "");
+      setCoverPhoto(courseData.coverPhoto || "");
+
+      // Set prerequisites
+      if (courseData.prerequisites) {
+        const prerequisites = courseData?.prerequisites;
+        console.log(prerequisites?.postGraduationYearRange?.start);
+
+        setPostGradRequired(prerequisites?.postGraduationRequired ?? false);
+        setYearFrom(prerequisites?.postGraduationYearRange?.start ?? "");
+        setYearTo(prerequisites?.postGraduationYearRange?.end ?? "");
+        setRequiresPrerequisite(prerequisites?.mustHave ?? "no");
+        setSelectedPrerequisiteCourses(
+          prerequisites.requiredCourseCategory || []
+        );
+        setRestrictReenrollment(prerequisites.restrictReenrollment ?? true);
+      }
+
+      // Set other fields
+      setYearFrom(courseData.yearFrom || "");
+      setYearTo(courseData.yearTo || "");
+      setStudentCap(courseData.studentCap || "");
+      setWaitlistCap(courseData.waitlistCap || "");
+      setRegistrationStartDate(courseData.registrationStartDate || null);
+      setRegistrationEndDate(courseData.registrationEndDate || null);
+      setPaymentReceiveStartDate(courseData.paymentReceiveStartDate || null);
+      setPaymentReceiveEndDate(courseData.paymentReceiveEndDate || null);
+
+      // Load recipients async
+      loadRecipients();
+    }
+  }, [courseData, courses]);
+
+  console.log(typeof courseData?.prerequisites?.postGraduationYearRange?.start);
 
   const formSections = [
     {
@@ -476,7 +659,19 @@ export default function Create() {
     },
     {
       label: "Certificate Setup",
-      content: <CertificateDesign courseWiseStudents={courseWiseStudents} courses={courses}/>
+      content: (
+        <CertificateDesign
+          courseWiseStudents={courseWiseStudents}
+          courses={courses}
+          selectedCategoryForSignature={selectedCategoryForSignature}
+          handleCategoryChange={handleCategoryChange}
+          roleOptions={roleOptions}
+          selectedCourse={selectedCourse}
+          selectedStudents={selectedStudents}
+          selectedProfilesForSignature={selectedProfilesForSignature}
+          toggleProfile={toggleProfile}
+        />
+      ),
     },
   ];
 

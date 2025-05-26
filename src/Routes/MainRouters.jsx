@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../Page/Dashboard";
 import { Toaster } from "react-hot-toast";
@@ -15,7 +15,6 @@ import UpdateVideo from "../Page/Videos/UpdateVideo";
 import AddCoursesEvents from "../Page/Courses&Events/AddCoursesEvents";
 import CoursesEventsList from "../Page/Courses&Events/CoursesEventsList";
 import PreviewCourseEvent from "../Page/Courses&Events/PreviewCourseEvent";
-import UpdateCoursesEvents from "../Page/Courses&Events/UpdateCoursesEvents";
 import AddLink from "../Page/Links/AddLink";
 import LinksList from "../Page/Links/LinksList";
 import UpdateLink from "../Page/Links/UpdateLink";
@@ -31,6 +30,10 @@ import EmailVerificationError from "../Page/Students/EmailVerificationError";
 import CategorySetup from "../Page/Courses&Events/CategorySetup";
 
 export default function MainRouters() {
+  function RoutedAddCoursesEvents() {
+  const location = useLocation();
+  return <AddCoursesEvents key={location.pathname} />;
+}
   return (
     <>
       <Toaster
@@ -63,11 +66,12 @@ export default function MainRouters() {
           <Route path="/" element={<Dashboard />} />
 
           {/* Courses & Events Routes Start */}
+          
           <Route path="/setup_category" element={<CategorySetup />} />
-          <Route path="/add_courses_events" element={<AddCoursesEvents />} />
+          <Route path="/add_courses_events" element={<RoutedAddCoursesEvents />} />
+          <Route path="/course/:id" element={<RoutedAddCoursesEvents />} />
           <Route path="/courses_events_list" element={<CoursesEventsList />} />
           <Route path="/course_event/:id" element={<PreviewCourseEvent />} />
-          <Route path="/courses_events/:id" element={<UpdateCoursesEvents />} />
           {/* Courses & Events Routes End */}
 
           {/* Online Learning Start */}
