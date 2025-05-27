@@ -285,6 +285,16 @@ export default function Create() {
   const handleCategoryChange = (event) => {
     setSelectedCategoryForSignature(event.target.value);
   };
+  console.log(
+    "When Create",
+    selectedCategoryForSignature,
+    selectedProfilesForSignature
+  );
+  console.log(
+    "When CallFrom Backedn",
+    selectedCategoryForSignature,
+    selectedProfilesForSignature
+  );
 
   const roleOptions = Object.keys(courseWiseStudents).map((categoryId) => {
     const matchedCourse = courses.find(
@@ -444,60 +454,8 @@ export default function Create() {
   }, [id]);
 
   useEffect(() => {
-    const loadRecipients = async () => {
-      if (!courseData?.recipients || courseData.recipients.length === 0) return;
-
-      try {
-        setLoading(true);
-
-        // Fetch all verified student profiles
-        const { data: allProfiles } = await axios.get("/verified-accounts");
-
-        // Group profiles by role (category) based on courseData.recipients
-        const groupedByRole = {};
-        courseData.recipients.forEach(({ role, profiles }) => {
-          groupedByRole[role] = allProfiles.filter((profile) =>
-            profiles.includes(profile._id)
-          );
-        });
-
-        setCourseWiseStudents(groupedByRole);
-
-        // Load saved signature info if any
-        if (courseData?.signatures?.length) {
-          let found = false;
-
-          for (const [categoryId, students] of Object.entries(groupedByRole)) {
-            const studentIds = students.map((s) => s._id);
-            const matched = courseData.signatures.every((id) =>
-              studentIds.includes(id)
-            );
-
-            if (matched) {
-              setSelectedCategoryForSignature(categoryId);
-              setSelectedProfilesForSignature(courseData.signatures);
-              found = true;
-              break;
-            }
-          }
-
-          if (!found) {
-            console.warn("Signatures do not match any known student group.");
-          }
-        }
-      } catch (err) {
-        console.error("Error loading recipients:", err);
-        toast.error("Failed to load student recipients.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (courseData) {
-      // ** IMPORTANT: set courseId to the course's own _id, NOT the category id **
       setCourseId(courseData._id || "");
-
-      // Set selectedCourses (category) by matching the courseData.category id in courses list
       if (courses.length > 0 && courseData.category) {
         const matchedCategory = courses.find(
           (c) => String(c._id) === String(courseData.category)
@@ -506,6 +464,7 @@ export default function Create() {
       } else {
         setSelectedCourses(null);
       }
+
       // Set basic course info
       setTitle(courseData.title || "");
       setLocation(courseData.location || "");
@@ -517,14 +476,14 @@ export default function Create() {
           ? courseData.contactPersons
           : [{ name: "", email: "" }]
       );
+      // Set Details & Cover info
+
       setDetails(courseData.details || "");
       setCoverPhoto(courseData.coverPhoto || "");
 
       // Set prerequisites
       if (courseData.prerequisites) {
         const prerequisites = courseData?.prerequisites;
-        console.log(prerequisites?.postGraduationYearRange?.start);
-
         setPostGradRequired(prerequisites?.postGraduationRequired ?? false);
         setYearFrom(prerequisites?.postGraduationYearRange?.start ?? "");
         setYearTo(prerequisites?.postGraduationYearRange?.end ?? "");
@@ -535,9 +494,7 @@ export default function Create() {
         setRestrictReenrollment(prerequisites.restrictReenrollment ?? true);
       }
 
-      // Set other fields
-      setYearFrom(courseData.yearFrom || "");
-      setYearTo(courseData.yearTo || "");
+      // Set Enrollment
       setStudentCap(courseData.studentCap || "");
       setWaitlistCap(courseData.waitlistCap || "");
       setRegistrationStartDate(courseData.registrationStartDate || null);
@@ -545,12 +502,61 @@ export default function Create() {
       setPaymentReceiveStartDate(courseData.paymentReceiveStartDate || null);
       setPaymentReceiveEndDate(courseData.paymentReceiveEndDate || null);
 
-      // Load recipients async
+      const loadRecipients = async () => {
+        if (!courseData?.recipients || courseData.recipients.length === 0)
+          return;
+
+        try {
+          setLoading(true);
+
+          // Fetch all verified student profiles
+          const { data: allProfiles } = await axios.get("/verified-accounts");
+
+          // Group profiles by role (category) based on courseData.recipients
+          const groupedByRole = {};
+          courseData.recipients.forEach(({ role, profiles }) => {
+            groupedByRole[role] = allProfiles.filter((profile) =>
+              profiles.includes(profile._id)
+            );
+          });
+
+          setCourseWiseStudents(groupedByRole);
+
+          // Load saved signature info if any
+          if (courseData?.signatures?.length) {
+            const signatureIds = courseData.signatures.map((id) => String(id));
+
+            // Flatten all student profiles into a single array
+            const allStudents = Object.values(groupedByRole).flat();
+
+            // Filter students whose IDs are in the signatureIds array
+            const matchedStudents = allStudents.filter((student) =>
+              signatureIds.includes(String(student._id))
+            );
+
+            if (matchedStudents.length > 0) {
+              setSelectedProfilesForSignature(
+                matchedStudents.map((s) => s._id)
+              );
+            } else {
+              console.warn(
+                "No matching student profiles found for signatures."
+              );
+            }
+          }
+        } catch (err) {
+          console.error("Error loading recipients:", err);
+          toast.error("Failed to load student recipients.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       loadRecipients();
     }
   }, [courseData, courses]);
 
-  console.log(typeof courseData?.prerequisites?.postGraduationYearRange?.start);
+  console.log("SIGNATURES from DB:", courseData?.signatures);
 
   const formSections = [
     {

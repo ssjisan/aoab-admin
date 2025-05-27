@@ -46,7 +46,6 @@ export default function CoursesEventsListView() {
       const { data } = await axios.get("/courses_events", {
         params: { limit, skip: currentSkip, status: selectedTab },
       });
-      console.log("Fetched data:", data);
 
       if (initial) {
         // Reset state on initial load or tab change
