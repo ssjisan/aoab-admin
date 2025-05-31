@@ -6,7 +6,7 @@ export default function Header({ selectedTab }) {
   return (
     <TableHead sx={{ borderRadius: "1em 0 0 1em" }}>
       <TableRow>
-        {selectedTab === "running" && <TableCell align="center"></TableCell>}
+        {selectedTab === "upcoming" && <TableCell align="center"></TableCell>}
         <TableCell align="left" sx={{ p: "16px" }}>
           Title
         </TableCell>
@@ -14,16 +14,7 @@ export default function Header({ selectedTab }) {
           Location
         </TableCell>
         <TableCell align="left" sx={{ p: "16px" }}>
-          Language
-        </TableCell>
-        <TableCell align="left" sx={{ p: "16px" }}>
           Fee
-        </TableCell>
-        <TableCell align="left" sx={{ p: "16px" }}>
-          Contact Person
-        </TableCell>
-        <TableCell align="left" sx={{ p: "16px" }}>
-          Contact Email
         </TableCell>
         <TableCell align="left" sx={{ p: "16px" }}>
           Start Date

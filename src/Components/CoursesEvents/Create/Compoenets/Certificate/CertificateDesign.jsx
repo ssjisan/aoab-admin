@@ -22,7 +22,7 @@ export default function CertificateDesign({
   return (
     <Stack gap="24px" sx={{ width: { xs: "100%", md: "80%" }, mb: "40px" }}>
       <Typography variant="h6">
-        All Students Across All Courses
+        All Profiles 
       </Typography>
 
       {allStudents.length > 0 ? (
@@ -76,7 +76,7 @@ export default function CertificateDesign({
           </Table>
         </TableContainer>
       ) : (
-        <Typography>No students available.</Typography>
+        <Typography>No profiles available.</Typography>
       )}
     </Stack>
   );

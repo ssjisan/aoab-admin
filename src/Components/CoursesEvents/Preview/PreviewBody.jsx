@@ -36,16 +36,14 @@ export default function PreviewBody() {
     }
   );
   return (
-    <Box>
+    <Box sx={{ background: "#f0f0f0", pb: "48px" }}>
       <PreviewTopBar id={id} />
-      <Container
-        sx={{ mt: "64px", mb: "64px", width: "960px", maxWidth: "100%" }}
-      >
-        <Box sx={{ width: "100%", height: "480px", mb: "48px" }}>
+      <Container sx={{ mt: "64px", width: "960px", maxWidth: "100%" }}>
+        <Box sx={{ width: "100%", height: "480px" }}>
           {/* Check if coverPhoto and coverPhoto[0] exist before rendering */}
-          {courseEvent.coverPhoto && courseEvent.coverPhoto[0] ? (
+          {courseEvent.coverPhoto ? (
             <img
-              src={courseEvent.coverPhoto[0].url}
+              src={courseEvent.coverPhoto.url}
               alt={courseEvent.title}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
@@ -56,21 +54,89 @@ export default function PreviewBody() {
         <Typography variant="h3" sx={{ mt: 2 }}>
           {courseEvent.title}
         </Typography>
-        <Stack gap="16px" sx={{mt:"48px"}} flexDirection="row" justifyContent="space-between">
-          <Stack gap="8px" flexDirection="row">
-            <Calender color="#008549" size={24}/>
-            <Typography variant="body1" color="text.secondary">
-              {formattedDate} &nbsp; - &nbsp; {formattedDate}
-            </Typography>
-          </Stack>
-          <Stack gap="0px" flexDirection="column">
-          <Typography variant="body2" color="text.secondary">Enrollment Fee</Typography>
-            <Typography variant="h6" color="text.primary">
-              {courseEvent.fees}
-            </Typography>
+        <Stack
+          gap="16px"
+          sx={{ mt: "48px" }}
+          flexDirection="row"
+          justifyContent="space-between"
+        >
+          <Stack gap="16px">
+            <Stack gap="8px" flexDirection="row">
+              <Calender color="#008549" size={24} />
+              <Typography variant="body1" color="text.primary">
+                {formattedDate} &nbsp; - &nbsp; {formattedDate}
+              </Typography>
+            </Stack>
+            <Stack gap="0px" flexDirection="column">
+              <Stack gap="8px" flexDirection="row">
+                <Calender color="#008549" size={24} />
+                <Typography variant="body1" color="text.primary">
+                  Enrollment Fee {courseEvent.fee} taka
+                </Typography>
+              </Stack>
+            </Stack>
           </Stack>
           <Button variant="contained">Register</Button>
         </Stack>
+        {courseEvent.contactPersons &&
+          courseEvent.contactPersons.length > 0 && (
+            <Stack direction="row" spacing={2} mt={4} flexWrap="wrap">
+              {courseEvent.contactPersons.map((person, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    borderRadius: "12px",
+                    backgroundColor: "#fafafa",
+                    padding: "16px",
+                    minWidth: "240px",
+                    flex: "1 1 auto",
+                  }}
+                >
+                  <Typography variant="subtitle1" fontWeight="700" gutterBottom>
+                    Contact Person {index + 1}
+                  </Typography>
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      component="span"
+                    >
+                      Name:&nbsp;
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.primary"
+                      component="span"
+                      fontWeight="600"
+                    >
+                      {person.name}
+                    </Typography>
+                  </Box>
+                  {person.email && (
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        component="span"
+                      >
+                        Email:&nbsp;
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.primary"
+                        component="span"
+                        fontWeight="600"
+                      >
+                        {person.email}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </Stack>
+          )}
+
         <Typography
           sx={{ whiteSpace: "pre-wrap" }} // Ensure white space is preserved
           dangerouslySetInnerHTML={{ __html: courseEvent.details }} // Render HTML content safely

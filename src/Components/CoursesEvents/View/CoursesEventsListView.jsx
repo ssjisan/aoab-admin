@@ -17,61 +17,75 @@ import RemoveCourseEventModal from "../Remove/RemoveCourseEventModal";
 import { useNavigate } from "react-router-dom";
 
 export default function CoursesEventsListView() {
-  const [coursesEvents, setCoursesEvents] = useState([]); // For set data from api
-  const [skip, setSkip] = useState(0); // Track how many events to skip
-  const [hasMore, setHasMore] = useState(true); // Whether there are more events to load
-  const [loading, setLoading] = useState(false); // Track loading state
-  const limit = 5; // Number of events to load per request
-  const [selectedTab, setSelectedTab] = useState("running"); // Active tab state
-  const navigate = useNavigate(); // For navigation
-  const [open, setOpen] = useState(null); // For open pop up menu
-  const [selectedRowId, setSelectedRowId] = useState(null); // Tracks the ID of the currently selected row to display the action menu.
-  const [isModalOpen, setIsModalOpen] = useState(false); // For open remove modal
-  const [dataToDelete, setDataToDelete] = useState(null); // For selected data to remove
+  const [upcomingCourses, setUpcomingCourses] = useState([]);
+  const [archivedCourses, setArchivedCourses] = useState([]);
+  const [upcomingSkip, setUpcomingSkip] = useState(0);
+  const [archivedSkip, setArchivedSkip] = useState(0);
+  const [upcomingHasMore, setUpcomingHasMore] = useState(true);
+  const [archivedHasMore, setArchivedHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const limit = 5;
+  const [selectedTab, setSelectedTab] = useState("upcoming");
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataToDelete, setDataToDelete] = useState(null);
 
   useEffect(() => {
-    loadCoursesEvents(true); // Initial load or on tab change
+    loadCourses(true);
   }, [selectedTab]);
 
-  const loadCoursesEvents = async (initial = false) => {
-    if (loading) return; // Prevent multiple requests
-    if (!hasMore && !initial) return; // Stop if no more events
+  const loadCourses = async (initial = false) => {
+    if (loading) return;
 
     try {
       setLoading(true);
 
-      const currentSkip = initial ? 0 : skip;
+      const currentUpcomingSkip = initial ? 0 : upcomingSkip;
+      const currentArchivedSkip = initial ? 0 : archivedSkip;
 
-      // Call the API with limit, skip, and status
-      const { data } = await axios.get("/courses_events", {
-        params: { limit, skip: currentSkip, status: selectedTab },
+      const { data } = await axios.get("/courses/status", {
+        params: {
+          limit,
+          upcomingSkip: currentUpcomingSkip,
+          archivedSkip: currentArchivedSkip,
+        },
       });
 
       if (initial) {
-        // Reset state on initial load or tab change
-        setCoursesEvents(data.coursesEvents);
-        setSkip(limit); // Reset skip for the next batch
-      } else {
-        // Append new events to the list
-        setCoursesEvents((prev) => [...prev, ...data.coursesEvents]);
-        setSkip(currentSkip + limit); // Increment skip for next batch
-      }
+        setUpcomingCourses(data.upcomingCourses);
+        setUpcomingSkip(limit);
+        setUpcomingHasMore(data.upcomingCourses.length === limit);
 
-      setHasMore(data.hasMore); // Update hasMore
+        setArchivedCourses(data.archivedCourses);
+        setArchivedSkip(limit);
+        setArchivedHasMore(data.archivedCourses.length === limit);
+      } else {
+        if (selectedTab === "upcoming") {
+          setUpcomingCourses((prev) => [...prev, ...data.upcomingCourses]);
+          setUpcomingSkip(currentUpcomingSkip + limit);
+          setUpcomingHasMore(data.upcomingCourses.length === limit);
+        } else {
+          setArchivedCourses((prev) => [...prev, ...data.archivedCourses]);
+          setArchivedSkip(currentArchivedSkip + limit);
+          setArchivedHasMore(data.archivedCourses.length === limit);
+        }
+      }
     } catch (err) {
-      toast.error("Error loading events");
+      toast.error("Error loading courses");
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
-
+// Drag and change sequence end here //
+  const coursesToDisplay =
+    selectedTab === "upcoming" ? upcomingCourses : archivedCourses;
+  const hasMore =
+    selectedTab === "upcoming" ? upcomingHasMore : archivedHasMore;
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
-    setSkip(0); // Reset skip
-    setHasMore(true); // Reset hasMore
   };
-
-  // Open the popup menu funtion start here //
 
   const handleOpenMenu = (event, eventData) => {
     setOpen(event.currentTarget);
@@ -82,18 +96,52 @@ export default function CoursesEventsListView() {
     setOpen(null);
   };
 
-  // Open the popup menu funtion end here //
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handlePreview = (event) => {
+    navigate(`/course_event/${event._id}`);
+  };
+
+  const redirectEdit = (event, data) => {
+    event.preventDefault();
+    navigate(`/course/${data._id}`);
+  };
+
+  const removeData = async (id) => {
+    const toastId = toast.loading("Deleting...");
+    try {
+      const { data } = await axios.delete(`/courses_events/${id}`);
+      toast.dismiss(toastId);
+      toast.success(data.message || "Course or Event deleted successfully");
+      const updateState =
+        selectedTab === "upcoming" ? setUpcomingCourses : setArchivedCourses;
+      updateState((prev) => prev.filter((course) => course._id !== id));
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Unable to delete course or event at the moment.");
+    }
+  };
+
+  const handleRemove = () => {
+    if (dataToDelete) {
+      removeData(dataToDelete._id);
+      setIsModalOpen(false);
+      setDataToDelete(null);
+    }
+  };
 
   // Drag and change sequence start here //
 
   const onDragEnd = async (result) => {
-    if (selectedTab !== "running") return; // Only allow drag in 'running' tab
+    if (selectedTab !== "upcoming") return; // Only allow drag in 'running' tab
     if (!result.destination) return;
 
-    const reorderedCourseEvent = Array.from(coursesEvents);
+    const reorderedCourseEvent = Array.from(upcomingCourses);
     const [movedResource] = reorderedCourseEvent.splice(result.source.index, 1);
     reorderedCourseEvent.splice(result.destination.index, 0, movedResource);
-    setCoursesEvents(reorderedCourseEvent);
+    setUpcomingCourses(reorderedCourseEvent);
 
     try {
       await axios.post("/update-course-event-order", { reorderedCourseEvent });
@@ -103,70 +151,8 @@ export default function CoursesEventsListView() {
     }
   };
 
-  // Drag and change sequence end here //
-
-  // Open Up the remove modal Start Here //
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  // Open up the remove modal end here //
-
-  //  Navigate the Preview Event or COurse Start here //
-
-  const handlePreview = (event) => {
-    navigate(`/course_event/${event._id}`);
-  };
-
-  //  Navigate the Preview Event or COurse End here //
-
-  // Navigate to update the selected row id start here //
-
-  const redirectEdit = (event, data) => {
-    event.preventDefault();
-    navigate(`/course/${data._id}`);
-  };
-
-  // Remove Event or course Start here //
-
-  const removeData = async (id) => {
-    // Show a "deleting" toast
-    const toastId = toast.loading("Deleting...");
-
-    try {
-      // Make a DELETE request to the backend to delete the resource by its ID
-      const { data } = await axios.delete(`/courses_events/${id}`);
-
-      // Notify the user of the successful deletion
-      toast.dismiss(toastId); // Close the "deleting" toast
-      toast.success(data.message || "Course or Event deleted successfully");
-
-      // Update the state by filtering out the deleted resource
-      setCoursesEvents((prevcoursesEvents) =>
-        prevcoursesEvents.filter((courseEvent) => courseEvent._id !== id)
-      );
-    } catch (err) {
-      console.error("Error deleting Course or Event:", err);
-
-      // Close the "deleting" toast and show an error toast
-      toast.dismiss(toastId);
-      toast.error("Unable to delete course or event at the moment.");
-    }
-  };
-
-  const handleRemove = () => {
-    if (dataToDelete) {
-      // Call the removeResource function with the ID of the resource to delete
-      removeData(dataToDelete._id);
-
-      // Close the modal and reset the resourceToDelete state
-      setIsModalOpen(false);
-      setDataToDelete(null);
-    }
-  };
-
-  // Remove Event or course End here //
+  
+console.log(selectedTab);
 
   return (
     <Box
@@ -184,26 +170,27 @@ export default function CoursesEventsListView() {
           onChange={handleTabChange}
           sx={{ borderBottom: 1, borderColor: "divider" }}
         >
-          <Tab label="Running Events" value="running" />
-          <Tab label="Archived Events" value="archived" />
+          <Tab label="Upcoming Courses" value="upcoming" />
+          <Tab label="Archived Courses" value="archived" />
         </Tabs>
         <Table sx={{ mt: "16px" }}>
           <Header selectedTab={selectedTab} />
           <Body
-            coursesEvents={coursesEvents}
-            selectedTab={selectedTab} // Pass the selectedTab to Body
+            coursesEvents={coursesToDisplay}
+            selectedTab={selectedTab}
             open={open}
             handleOpenMenu={handleOpenMenu}
             handleCloseMenu={handleCloseMenu}
-            onDragEnd={onDragEnd}
             showModal={showModal}
             selectedRowId={selectedRowId}
             setDataToDelete={setDataToDelete}
             setIsModalOpen={setIsModalOpen}
             handlePreview={handlePreview}
             redirectEdit={redirectEdit}
+            onDragEnd={onDragEnd}
           />
         </Table>
+
         {hasMore && !loading && (
           <Stack
             sx={{
@@ -215,20 +202,22 @@ export default function CoursesEventsListView() {
             alignItems="flex-end"
           >
             <Button
-              onClick={() => loadCoursesEvents(false)}
-              variant="contained" // Changed to 'contained' for better visibility
+              onClick={() => loadCourses(false)}
+              variant="contained"
               sx={{ width: "120px" }}
             >
               Load More
             </Button>
           </Stack>
         )}
+
         {loading && (
           <Stack alignItems="center" sx={{ pt: "16px" }}>
             <Typography variant="body1">Loading...</Typography>
           </Stack>
         )}
       </TableContainer>
+
       <RemoveCourseEventModal
         isOpen={isModalOpen}
         handleClose={() => setIsModalOpen(false)}

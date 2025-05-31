@@ -68,7 +68,7 @@ export default function Body({
                         opacity: snapshot.isDragging ? 0.5 : 1, // Optional styling during drag
                       }}
                     >
-                      {selectedTab === "running" && (
+                      {selectedTab === "upcoming" && (
                         <TableCell align="center" sx={{ width: "40px" }}>
                           <Tooltip title="Drag">
                             <IconButton sx={{ width: "40px", height: "40px" }}>
@@ -91,28 +91,11 @@ export default function Body({
                       </TableCell>
                       <TableCell
                         align="left"
-                        sx={{ padding: "16px", width: "320px" }}
-                      >
-                        {data.language}
-                      </TableCell>
-                      <TableCell
-                        align="left"
                         sx={{ padding: "16px", width: "280px" }}
                       >
-                        {data.fees} Taka
+                        {data.fee} Taka
                       </TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ padding: "16px", width: "200px" }}
-                      >
-                        {data.contactPerson}
-                      </TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ padding: "16px", width: "140px" }}
-                      >
-                        {data.contactEmail}
-                      </TableCell>
+
                       <TableCell
                         align="left"
                         sx={{ padding: "16px", width: "240px" }}
@@ -129,7 +112,7 @@ export default function Body({
                           ? format(new Date(data.endDate), "dd MMMM, yyyy")
                           : ""}
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="center" sx={{width:"64px"}}>
                         <Tooltip title="Actions">
                           <IconButton
                             sx={{ width: "40px", height: "40px" }}
@@ -158,7 +141,7 @@ export default function Body({
             icon: EyeBold,
             onClick: () => handlePreview(selectedRowId),
           },
-          ...(selectedTab === "running"
+          ...(selectedTab === "upcoming"
             ? [
                 {
                   label: "Edit",

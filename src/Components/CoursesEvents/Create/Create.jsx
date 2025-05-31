@@ -340,7 +340,6 @@ export default function Create() {
           startDate,
           endDate,
           contactPersons,
-          status: "draft",
         };
 
         const res = courseId
@@ -410,7 +409,6 @@ export default function Create() {
           category: selectedCourses?._id,
           title,
           signatures: selectedProfilesForSignature,
-          status: "complete", // <- Set status to complete
         };
 
         await axios.put(`/courses/${courseId}`, payload);

@@ -39,7 +39,7 @@ export default function Body({ profile }) {
     <TableBody>
       {courses.map((course) => {
         const courseData =
-          profile.courses.find((c) => c._id === course._id) || {};
+          profile.courses.find((c) => c.courseCategoryId === course._id) || {};
         const courseStatus =
           courseData && courseData.status != null
             ? courseData.status === "yes"

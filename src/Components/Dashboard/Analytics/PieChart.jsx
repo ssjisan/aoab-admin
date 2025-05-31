@@ -35,9 +35,7 @@ export default function PieChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axios.get("/all-student");
-        console.log(data);
-  
+        const { data } = await axios.get("/all-student");  
         const summary = data.summary;
         const {
           total = 0,

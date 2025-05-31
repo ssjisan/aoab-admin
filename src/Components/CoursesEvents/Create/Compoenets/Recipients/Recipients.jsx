@@ -113,7 +113,7 @@ export default function Recipients({
           <Typography
             sx={{ mt: 2, fontStyle: "italic", color: "text.secondary" }}
           >
-            No students found matching your search.
+            No profiles found matching your search.
           </Typography>
         ) : (
           studentProfiles.map((student, i) => (
@@ -194,7 +194,7 @@ export default function Recipients({
       >
        
         {Object.keys(courseWiseStudents).length === 0 ? (
-          <Typography color="text.secondary">No students added yet.</Typography>
+          <Typography color="text.secondary">No profiles added yet.</Typography>
         ) : (
           <TableContainer elevation={2}>
             <Table>

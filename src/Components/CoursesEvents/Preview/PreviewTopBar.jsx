@@ -7,13 +7,14 @@ export default function PreviewTopBar({id}) {
     navigate("/courses_events_list");
   };
   const redirectEdit = () => {
-    navigate(`/courses_events/${id}`);
+    navigate(`/course/${id}`);
   };
   return (
     <Stack
       sx={{
         p: "24px 16px",
         borderBottom: "1px solid rgba(145, 158, 171, 0.24)",
+        background:"#fff"
       }}
       direction="row"
       justifyContent="space-between"
