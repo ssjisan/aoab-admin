@@ -107,14 +107,14 @@ export default function Body({
           {
             label: "Approve",
             icon: Approve,
+            color: "success",
             onClick: () => openApprovalModal(selectedRow),
-            color: "success"
           },
           {
             label: "Deny",
             icon: Deny,
-            onClick: () => openDenyModal(selectedRow),
             color: "error",
+            onClick: () => openDenyModal(selectedRow),
           },
         ]}
       />

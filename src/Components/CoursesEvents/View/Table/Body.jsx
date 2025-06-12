@@ -14,6 +14,7 @@ import {
   Drag,
   NoData,
   EyeBold,
+  Enrollment
 } from "../../../../assets/IconSet";
 import { format } from "date-fns";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -31,6 +32,8 @@ export default function Body({
   setDataToDelete,
   setIsModalOpen,
   redirectEdit,
+  handleEnrollments,
+  handleFinalList
 }) {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -141,6 +144,16 @@ export default function Body({
             icon: EyeBold,
             onClick: () => handlePreview(selectedRowId),
           },
+          {
+            label: "Enrollment",
+            icon: Enrollment,
+            onClick: () => handleEnrollments(selectedRowId),
+          },
+          {
+            label: "Final List",
+            icon: Enrollment,
+            onClick: () => handleFinalList(selectedRowId),
+          },
           ...(selectedTab === "upcoming"
             ? [
                 {
@@ -191,4 +204,5 @@ Body.propTypes = {
   setDataToDelete: PropTypes.func.isRequired, // Function to set the item to delete
   setIsModalOpen: PropTypes.func.isRequired, // Function to open/close modal
   redirectEdit: PropTypes.func.isRequired,
+  handleEnrollments: PropTypes.func.isRequired,
 };

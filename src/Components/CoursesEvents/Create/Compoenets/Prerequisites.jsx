@@ -28,7 +28,7 @@ export default function Prerequisites({
   return (
     <Stack gap="24px" mb="40px">
       {/* Post Graduation Requirement */}
-      <Stack gap="8px" sx={{ mb: "24px" }}>
+      <Stack gap="8px">
         <Typography sx={{ fontWeight: 600 }} variant="body2">
           Post graduation Degree required?
         </Typography>
@@ -83,6 +83,19 @@ export default function Prerequisites({
           </Stack>
         )}
       </Stack>
+      <Stack gap="8px">
+        <Typography sx={{ fontWeight: 600 }} variant="body2">
+          Restrict Re-enrollment to this course category
+        </Typography>
+        <RadioGroup
+          row
+          value={restrictReenrollment ? "yes" : "no"}
+          onChange={(e) => setRestrictReenrollment(e.target.value === "yes")}
+        >
+          <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+          <FormControlLabel value="no" control={<Radio />} label="No" />
+        </RadioGroup>
+      </Stack>
 
       {/* Prerequisite Courses */}
       <Stack>
@@ -122,17 +135,6 @@ export default function Prerequisites({
                 </Grid>
               ))}
             </Grid>
-
-            <FormControlLabel
-              sx={{ mt: 2 }}
-              control={
-                <Checkbox
-                  checked={restrictReenrollment}
-                  onChange={(e) => setRestrictReenrollment(e.target.checked)}
-                />
-              }
-              label="Restrict Re-enrollment to this course category"
-            />
           </>
         )}
       </Stack>

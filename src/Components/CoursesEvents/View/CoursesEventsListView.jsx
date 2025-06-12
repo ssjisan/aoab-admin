@@ -78,7 +78,7 @@ export default function CoursesEventsListView() {
       setLoading(false);
     }
   };
-// Drag and change sequence end here //
+  // Drag and change sequence end here //
   const coursesToDisplay =
     selectedTab === "upcoming" ? upcomingCourses : archivedCourses;
   const hasMore =
@@ -151,9 +151,12 @@ export default function CoursesEventsListView() {
     }
   };
 
-  
-console.log(selectedTab);
-
+  const handleEnrollments = (data) => {
+    navigate(`/enrollment-history/${data._id}`);
+  };
+const handleFinalList = (data) => {
+    navigate(`/final-list/${data._id}`);
+  };
   return (
     <Box
       sx={{
@@ -188,6 +191,8 @@ console.log(selectedTab);
             handlePreview={handlePreview}
             redirectEdit={redirectEdit}
             onDragEnd={onDragEnd}
+            handleEnrollments={handleEnrollments}
+            handleFinalList={handleFinalList}
           />
         </Table>
 

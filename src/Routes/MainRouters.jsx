@@ -28,6 +28,8 @@ import StudentsList from "../Page/Students/StudentsList";
 import StudentsApproval from "../Page/Students/StudentsApproval";
 import EmailVerificationError from "../Page/Students/EmailVerificationError";
 import CategorySetup from "../Page/Courses&Events/CategorySetup";
+import EnrollmentHistory from "../Page/Courses&Events/EnrollmentHistory";
+import FinalList from "../Page/Courses&Events/FinalList";
 
 export default function MainRouters() {
   function RoutedAddCoursesEvents() {
@@ -72,6 +74,8 @@ export default function MainRouters() {
           <Route path="/course/:id" element={<RoutedAddCoursesEvents />} />
           <Route path="/courses_events_list" element={<CoursesEventsList />} />
           <Route path="/course_event/:id" element={<PreviewCourseEvent />} />
+          <Route path="/enrollment-history/:courseId" element={<EnrollmentHistory />} />
+          <Route path="/final-list/:courseId" element={<FinalList />} />
           {/* Courses & Events Routes End */}
 
           {/* Online Learning Start */}

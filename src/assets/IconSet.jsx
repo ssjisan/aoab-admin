@@ -621,8 +621,8 @@ export const Doctor = ({ color, size }) => {
       }}
     >
       <svg
-        width="24"
-        height="24"
+        width={size}
+        height={size}
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -1341,6 +1341,35 @@ export const EyeOn = ({ color, size }) => {
   );
 };
 
+export const Enrollment = ({ color, size }) => {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M19.875 20.5917C19.2334 20.0473 18.2666 20.0473 17.625 20.5917C16.9834 21.1361 16.0166 21.1361 15.375 20.5917C14.7334 20.0473 13.7666 20.0473 13.125 20.5917C12.4834 21.1361 11.5166 21.1361 10.875 20.5917C10.2334 20.0473 9.26659 20.0473 8.625 20.5917C7.98341 21.1361 7.01659 21.1361 6.375 20.5917C5.73341 20.0473 4.76659 20.0473 4.125 20.5917C3.68909 20.9616 3 20.6662 3 20.1094V3.89059C3 3.33383 3.68909 3.03842 4.125 3.40832C4.76659 3.95274 5.73341 3.95274 6.375 3.40832C7.01659 2.86389 7.98341 2.86389 8.625 3.40832C9.26659 3.95274 10.2334 3.95274 10.875 3.40832C11.5166 2.86389 12.4834 2.86389 13.125 3.40832C13.7666 3.95274 14.7334 3.95274 15.375 3.40832C16.0166 2.86389 16.9834 2.86389 17.625 3.40832C18.2666 3.95274 19.2334 3.95274 19.875 3.40832C20.3109 3.03842 21 3.33383 21 3.89059V20.1094C21 20.6662 20.3109 20.9616 19.875 20.5917ZM6.75 12C6.75 11.5858 7.08579 11.25 7.5 11.25H16.5C16.9142 11.25 17.25 11.5858 17.25 12C17.25 12.4142 16.9142 12.75 16.5 12.75H7.5C7.08579 12.75 6.75 12.4142 6.75 12ZM7.5 7.75C7.08579 7.75 6.75 8.08579 6.75 8.5C6.75 8.91421 7.08579 9.25 7.5 9.25H16.5C16.9142 9.25 17.25 8.91421 17.25 8.5C17.25 8.08579 16.9142 7.75 16.5 7.75H7.5ZM6.75 15.5C6.75 15.0858 7.08579 14.75 7.5 14.75H16.5C16.9142 14.75 17.25 15.0858 17.25 15.5C17.25 15.9142 16.9142 16.25 16.5 16.25H7.5C7.08579 16.25 6.75 15.9142 6.75 15.5Z"
+          fill={color}
+        />
+      </svg>
+    </div>
+  );
+};
+
 export const Remove = ({ color, size }) => {
   return (
     <div
@@ -1365,6 +1394,33 @@ export const Remove = ({ color, size }) => {
         />
         <path
           d="M11.6068 21.9998H12.3937C15.1012 21.9998 16.4549 21.9998 17.3351 21.1366C18.2153 20.2734 18.3054 18.8575 18.4855 16.0256L18.745 11.945C18.8427 10.4085 18.8916 9.6402 18.45 9.15335C18.0084 8.6665 17.2628 8.6665 15.7714 8.6665H8.22905C6.73771 8.6665 5.99204 8.6665 5.55047 9.15335C5.10891 9.6402 5.15777 10.4085 5.25549 11.945L5.515 16.0256C5.6951 18.8575 5.78515 20.2734 6.66534 21.1366C7.54553 21.9998 8.89927 21.9998 11.6068 21.9998Z"
+          fill={color}
+        />
+      </svg>
+    </div>
+  );
+};
+
+export const Move = ({ color, size }) => {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2C16.714 2 19.0707 2.00038 20.5352 3.46484C21.9996 4.92931 22 7.28595 22 12C22 16.714 21.9996 19.0707 20.5352 20.5352C19.0707 21.9996 16.714 22 12 22C7.28595 22 4.92931 21.9996 3.46484 20.5352C2.00038 19.0707 2 16.714 2 12C2 7.28595 2.00038 4.92931 3.46484 3.46484C4.92931 2.00038 7.28595 2 12 2ZM9.25 8C8.83579 8.00001 8.5 8.33579 8.5 8.75V13.6787L7.32617 12.2695C7.06097 11.9515 6.58767 11.9087 6.26953 12.1738C5.95151 12.439 5.90871 12.9123 6.17383 13.2305L8.67383 16.2305C8.81632 16.4013 9.0275 16.5 9.25 16.5C9.4725 16.5 9.68368 16.4013 9.82617 16.2305L12.3262 13.2305C12.5913 12.9123 12.5485 12.439 12.2305 12.1738C11.9123 11.9087 11.439 11.9515 11.1738 12.2695L10 13.6787V8.75C10 8.33579 9.66421 8 9.25 8ZM15.75 6.5C15.75 6.5 15.3165 6.59866 15.1738 6.76953L12.6738 9.76953C12.4087 10.0877 12.4515 10.561 12.7695 10.8262C13.0877 11.0913 13.561 11.0485 13.8262 10.7305L15 9.32129V14.25C15 14.6642 15.3358 15 15.75 15C16.1642 15 16.5 14.6642 16.5 14.25V9.32129L17.6738 10.7305C17.939 11.0485 18.4123 11.0913 18.7305 10.8262C19.0485 10.561 19.0913 10.0877 18.8262 9.76953L16.3262 6.76953C16.184 6.59928 15.7532 6.50073 15.75 6.5Z"
           fill={color}
         />
       </svg>
@@ -1616,9 +1672,9 @@ export const CheckRead = ({ color, size }) => {
 export const MailNotification = () => {
   return (
     <svg
-      height="24"
+      height={size}
       viewBox="0 0 24 24"
-      width="24"
+      width={size}
       xmlns="http://www.w3.org/2000/svg"
     >
       <linearGradient
@@ -2370,8 +2426,8 @@ export const Approve = ({ color, size }) => {
       }}
     >
       <svg
-        width="24"
-        height="24"
+        width={size}
+        height={size}
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -2399,8 +2455,8 @@ export const Deny = ({ color, size }) => {
       }}
     >
       <svg
-        width="24"
-        height="24"
+        width={size}
+        height={size}
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -2483,6 +2539,7 @@ BurgerMenu.propTypes = {
   color: PropTypes.string.isRequired,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
+
 Calender.propTypes = {
   color: PropTypes.string.isRequired,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -2555,6 +2612,11 @@ EyeOn.propTypes = {
   color: PropTypes.string.isRequired,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
+Enrollment.propTypes = {
+  color: PropTypes.string.isRequired,
+  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
 Form.propTypes = {
   color: PropTypes.string.isRequired,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -2652,6 +2714,10 @@ Deny.propTypes = {
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
 Filter.propTypes = {
+  color: PropTypes.string.isRequired,
+  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+Move.propTypes = {
   color: PropTypes.string.isRequired,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
