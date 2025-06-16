@@ -14,7 +14,8 @@ import {
   Drag,
   NoData,
   EyeBold,
-  Enrollment
+  Enrollment,
+  FinalList
 } from "../../../../assets/IconSet";
 import { format } from "date-fns";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -151,7 +152,7 @@ export default function Body({
           },
           {
             label: "Final List",
-            icon: Enrollment,
+            icon: FinalList,
             onClick: () => handleFinalList(selectedRowId),
           },
           ...(selectedTab === "upcoming"

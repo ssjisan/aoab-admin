@@ -1,83 +1,17 @@
-import {
-  Box,
-  Stack,
-  Table,
-  TableContainer,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Table, TableContainer, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Body from "./Table/Body";
-import { useNavigate, useParams } from "react-router-dom";
-import CustomeHeader from "../../Common/Table/CustomeHeader";
+import Header from "./Table/Header";
+import { useParams } from "react-router-dom";
 
 export default function FinalListView() {
   const [loading, setLoading] = useState(false);
-  const { courseId: courseId } = useParams();
-
-  const limit = 5;
-  const navigate = useNavigate();
+  const { courseId } = useParams();
   const [enrollmentDetails, setEnrollmentDetails] = useState([]);
-  const [open, setOpen] = useState(null);
-  const [selectedRowId, setSelectedRowId] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
-  const [remarks, setRemarks] = useState("");
-  const [rejectLoading, setRejectLoading] = useState(false);
-  console.log("Here=>",selectedRowId);
-  
-  const handleRejectClick = (row) => {
-    console.log("row", row);
-    setSelectedEnrollment({
-      id: row._id,
-      name: row.studentId?.name || "Unknown",
-    });
-    setRemarks("");
-    setIsModalOpen(true);
-    setOpen(false);
-  };
+  const [selectedIds, setSelectedIds] = useState([]);
 
-  const handleRejectEnrollments = async () => {
-    if (!selectedEnrollment?.id || !remarks) {
-      toast.error("Remarks are required.");
-      return;
-    }
-
-    setRejectLoading(true); // Still update local loading state if needed
-
-    await toast
-      .promise(
-        axios.patch("/enrollment/reject", {
-          id: selectedEnrollment.id,
-          remark: remarks,
-        }),
-        {
-          loading: "Rejecting enrollment...",
-          success: (res) =>
-            res.data.message || "Enrollment rejected successfully",
-          error: (err) =>
-            err?.response?.data?.error || "Failed to reject the enrollment.",
-        }
-      )
-      .then(() => {
-        setIsModalOpen(false);
-        setRemarks("");
-        loadEnrollmentHistory();
-      })
-      .finally(() => {
-        setRejectLoading(false);
-      });
-  };
-  const columns = [
-    { key: "name", label: "Name" },
-    { key: "bmdcNo	", label: "BM&DC No" },
-    { key: "contact	", label: "Contact" },
-    { key: "enrollmentDate", label: "Enrollment Date" },
-    { key: "status	", label: "Status" },
-    { key: "payment	", label: "Payment" },
-    { key: "paymentInfo	", label: "Payment Info" },
-  ];
   useEffect(() => {
     loadEnrollmentHistory(true);
   }, []);
@@ -98,59 +32,22 @@ export default function FinalListView() {
     }
   };
 
-  const handleOpenMenu = (event, eventData) => {
-    setOpen(event.currentTarget);
-    setSelectedRowId(eventData);
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handlePaymentAccept = async (id) => {
-    if (!id) {
-      toast.error("Enrollment ID is missing.");
-      return;
-    }
-
-    const loadingToast = toast.loading("Accepting payment...");
-
-    try {
-      const { data } = await axios.patch("/enrollment/accept", { id });
-
-      toast.success(data.message || "Payment accepted successfully", {
-        id: loadingToast,
-      });
-
-      setIsModalOpen(false); // If you're using a modal
-      loadEnrollmentHistory();
-    } catch (error) {
-      toast.error(error?.response?.data?.error || "Failed to accept payment.", {
-        id: loadingToast,
-      });
+  // ✅ Select all rows
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedIds(enrollmentDetails.map((item) => item._id));
+    } else {
+      setSelectedIds([]);
     }
   };
-  const handleMoveToEnrolled = async (enrollment) => {
-  try {
-    const res = await axios.post("/enrollment/move", {
-      studentId: enrollment.studentId,
-      courseId: enrollment.courseId,
-    });
 
-    toast.success("Moved to Enrolled successfully");
-    loadEnrollmentHistory(); // Refresh the data if needed
-  } catch (error) {
-    console.error("Move to enrolled error:", error);
+  // ✅ Select one row
+  const handleSelectOne = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
-    const errorMessage =
-      error.response?.data?.error || "Failed to move to Enrolled";
-    toast.error(errorMessage);
-  }
-};
   return (
     <Box
       sx={{
@@ -163,38 +60,22 @@ export default function FinalListView() {
     >
       <TableContainer>
         <Table sx={{ mt: "16px" }}>
-          <CustomeHeader
-            columns={columns}
-            includeActions={true}
-            includeDrag={false}
+          <Header
+            allSelected={selectedIds.length === enrollmentDetails.length}
+            someSelected={
+              selectedIds.length > 0 &&
+              selectedIds.length < enrollmentDetails.length
+            }
+            handleSelectAll={handleSelectAll}
+            selectedCount={selectedIds.length}
           />
           <Body
             enrollmentDetails={enrollmentDetails}
-            open={open}
-            setOpen={setOpen}
             loading={loading}
-            handleOpenMenu={handleOpenMenu}
-            handleCloseMenu={handleCloseMenu}
-            showModal={showModal}
-            selectedRowId={selectedRowId}
-            setIsModalOpen={setIsModalOpen}
-            handleRejectClick={handleRejectClick}
-            selectedEnrollment={selectedEnrollment}
-            handleRejectEnrollments={handleRejectEnrollments}
-            remarks={remarks}
-            setRemarks={setRemarks}
-            rejectLoading={rejectLoading}
-            isModalOpen={isModalOpen}
-            handlePaymentAccept={handlePaymentAccept}
-            handleMoveToEnrolled={handleMoveToEnrolled}
+            selectedIds={selectedIds}
+            handleSelectOne={handleSelectOne}
           />
         </Table>
-
-        {loading && (
-          <Stack alignItems="center" sx={{ pt: "16px" }}>
-            <Typography variant="body1">Loading...</Typography>
-          </Stack>
-        )}
       </TableContainer>
     </Box>
   );
