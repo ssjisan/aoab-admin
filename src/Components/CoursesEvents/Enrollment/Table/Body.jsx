@@ -29,8 +29,11 @@ export default function Body({
   setRemarks,
   rejectLoading,
   handlePaymentAccept,
-  handleMoveToEnrolled
+  handleMoveToEnrolled,
+  courseId,
 }) {
+  const enrollments = enrollmentDetails?.enrollments || [];
+
   return (
     <TableBody>
       {loading ? (
@@ -46,7 +49,7 @@ export default function Body({
             </Typography>
           </TableCell>
         </TableRow>
-      ) : enrollmentDetails.length === 0 ? (
+      ) : enrollments.length === 0 ? (
         <TableRow>
           <TableCell colSpan={9} align="center" sx={{ height: 200 }}>
             <NoData />
@@ -55,13 +58,13 @@ export default function Body({
               color="text.secondary"
               sx={{ fontWeight: 600 }}
             >
-              No Data
+              No Enrollments
             </Typography>
           </TableCell>
         </TableRow>
       ) : (
-        enrollmentDetails.map((data) => (
-          <TableRow key={data.id}>
+        enrollments.map((data) => (
+          <TableRow key={data._id}>
             <TableCell align="left" sx={{ padding: "16px", width: "280px" }}>
               {data.studentId?.name}
             </TableCell>
@@ -128,7 +131,9 @@ export default function Body({
                 <span>
                   <IconButton
                     sx={{ width: "40px", height: "40px" }}
-                    onClick={(event) => handleOpenMenu(event, data)}
+                    onClick={(event) =>
+                      handleOpenMenu(event, { courseId, enrollment: data })
+                    }
                     disabled={["confirmed", "expired"].includes(data?.status)}
                   >
                     <More color="#919EAB" size={24} />
@@ -148,7 +153,7 @@ export default function Body({
             ? [
                 {
                   label: "Move",
-                  icon: Move, // Replace this with your actual Move icon
+                  icon: Move,
                   onClick: () => handleMoveToEnrolled(selectedRowId),
                 },
               ]
@@ -157,13 +162,21 @@ export default function Body({
                   label: "Approve",
                   icon: Approve,
                   color: "success",
-                  onClick: () => handlePaymentAccept(selectedRowId),
+                  onClick: () =>
+                    handlePaymentAccept(
+                      selectedRowId.courseId,
+                      selectedRowId.studentId
+                    ),
                 },
                 {
                   label: "Reject",
                   icon: Deny,
                   color: "error",
-                  onClick: () => handleRejectClick(selectedRowId),
+                  onClick: () =>
+                    handleRejectClick(
+                      selectedRowId.courseId,
+                      selectedRowId.studentId
+                    ),
                 },
               ]
         }
@@ -182,38 +195,21 @@ export default function Body({
 }
 
 Body.propTypes = {
-  enrollmentDetails: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      location: PropTypes.string.isRequired,
-      language: PropTypes.string.isRequired,
-      fees: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-        .isRequired,
-      contactPerson: PropTypes.string.isRequired,
-      contactEmail: PropTypes.string.isRequired,
-      startDate: PropTypes.string,
-      endDate: PropTypes.string,
-    })
-  ).isRequired,
-  selectedRowId: PropTypes.string, // Assuming the ID is a string
-  selectedTab: PropTypes.string.isRequired, // Validated as string
-  onDragEnd: PropTypes.func.isRequired, // Function for drag-and-drop end event
-  handlePreview: PropTypes.func.isRequired, // Function to handle preview action
-  handleCloseMenu: PropTypes.func.isRequired, // Function to close the menu
-  handleOpenMenu: PropTypes.func.isRequired, // Function to open the menu
-  open: PropTypes.object, // Reference to the anchor element for the popover
-  setDataToDelete: PropTypes.func.isRequired, // Function to set the item to delete
-  setIsModalOpen: PropTypes.func.isRequired, // Function to open/close modal
-  redirectEdit: PropTypes.func.isRequired,
-  handleEnrollments: PropTypes.func.isRequired,
+  enrollmentDetails: PropTypes.object.isRequired,
+  selectedRowId: PropTypes.object,
+  handleCloseMenu: PropTypes.func.isRequired,
+  handleOpenMenu: PropTypes.func.isRequired,
+  open: PropTypes.object,
+  loading: PropTypes.bool.isRequired,
+  isModalOpen: PropTypes.bool.isRequired,
+  setIsModalOpen: PropTypes.func.isRequired,
   handleRejectClick: PropTypes.func.isRequired,
-  loading: PropTypes.string,
-  isModalOpen: PropTypes.string,
-  selectedEnrollment: PropTypes.string,
-  handleRejectEnrollments: PropTypes.string,
-  remarks: PropTypes.string,
-  setRemarks: PropTypes.string,
-  rejectLoading: PropTypes.string,
+  selectedEnrollment: PropTypes.object,
+  handleRejectEnrollments: PropTypes.func.isRequired,
+  remarks: PropTypes.string.isRequired,
+  setRemarks: PropTypes.func.isRequired,
+  rejectLoading: PropTypes.bool.isRequired,
   handlePaymentAccept: PropTypes.func.isRequired,
+  handleMoveToEnrolled: PropTypes.func.isRequired,
+  courseId: PropTypes.string.isRequired,
 };

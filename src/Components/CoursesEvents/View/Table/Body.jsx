@@ -13,9 +13,10 @@ import {
   Edit,
   Drag,
   NoData,
-  EyeBold,
   Enrollment,
-  FinalList
+  FinalList,
+  Attendance,
+  EyeOn,
 } from "../../../../assets/IconSet";
 import { format } from "date-fns";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -34,7 +35,8 @@ export default function Body({
   setIsModalOpen,
   redirectEdit,
   handleEnrollments,
-  handleFinalList
+  handleFinalList,
+  handleConfirmList,
 }) {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -116,7 +118,7 @@ export default function Body({
                           ? format(new Date(data.endDate), "dd MMMM, yyyy")
                           : ""}
                       </TableCell>
-                      <TableCell align="center" sx={{width:"64px"}}>
+                      <TableCell align="center" sx={{ width: "64px" }}>
                         <Tooltip title="Actions">
                           <IconButton
                             sx={{ width: "40px", height: "40px" }}
@@ -142,13 +144,18 @@ export default function Body({
         menuItems={[
           {
             label: "Preview",
-            icon: EyeBold,
+            icon: EyeOn,
             onClick: () => handlePreview(selectedRowId),
           },
           {
             label: "Enrollment",
             icon: Enrollment,
             onClick: () => handleEnrollments(selectedRowId),
+          },
+          {
+            label: "Attendance",
+            icon: Attendance,
+            onClick: () => handleConfirmList(selectedRowId),
           },
           {
             label: "Final List",
@@ -206,4 +213,6 @@ Body.propTypes = {
   setIsModalOpen: PropTypes.func.isRequired, // Function to open/close modal
   redirectEdit: PropTypes.func.isRequired,
   handleEnrollments: PropTypes.func.isRequired,
+  handleFinalList: PropTypes.func.isRequired,
+  handleConfirmList: PropTypes.func.isRequired,
 };

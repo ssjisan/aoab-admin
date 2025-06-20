@@ -154,7 +154,10 @@ export default function CoursesEventsListView() {
   const handleEnrollments = (data) => {
     navigate(`/enrollment-history/${data._id}`);
   };
-const handleFinalList = (data) => {
+const handleConfirmList = (data) => {
+    navigate(`/confirm/${data._id}`);
+  };
+  const handleFinalList = (data) => {
     navigate(`/final-list/${data._id}`);
   };
   return (
@@ -193,6 +196,7 @@ const handleFinalList = (data) => {
             onDragEnd={onDragEnd}
             handleEnrollments={handleEnrollments}
             handleFinalList={handleFinalList}
+            handleConfirmList={handleConfirmList}
           />
         </Table>
 

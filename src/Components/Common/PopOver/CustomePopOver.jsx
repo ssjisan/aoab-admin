@@ -17,8 +17,8 @@ export default function CustomePopOver({
       slotProps={{
         paper: {
           sx: {
-            width: 160,
-            p: "8px",
+            width: 180,
+            p: "4px",
             borderRadius: "8px",
             boxShadow: "-20px 20px 40px -4px rgba(145, 158, 171, 0.24)",
           },
@@ -27,7 +27,7 @@ export default function CustomePopOver({
     >
       {menuItems.map(
         (
-          { label, icon: Icon, onClick, color = "#060415", hide = false },
+          { label, icon: Icon, onClick, color = "#838383", hide = false },
           index
         ) =>
           !hide && (
@@ -36,17 +36,17 @@ export default function CustomePopOver({
               onClick={onClick}
               sx={{
                 display: "flex",
-                gap: "8px",
-                mt: "4px",
-                mb: "4px",
+                alignItems:"center",
+                gap: "12px",
                 borderRadius: "8px",
                 fontSize: "14px",
+                fontWeight:"400",
                 color:
                   color === "error"
                     ? "error.main"
                     : color === "success"
                     ? "#6cba46"
-                    : color,
+                    : "#060415",
               }}
             >
               {Icon && (
@@ -58,7 +58,7 @@ export default function CustomePopOver({
                       ? "#6cba46"
                       : color
                   }
-                  size={18}
+                  size={16}
                 />
               )}
               {label}

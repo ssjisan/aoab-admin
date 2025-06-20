@@ -1,8 +1,8 @@
 import { Box, Toolbar, Typography } from "@mui/material";
 import Sidebar from "../../Layout/Sidebar";
-import FinalListView from "../../Components/CoursesEvents/FinalList/FinalListView";
+import ConfirmedListView from "../../Components/CoursesEvents/ConfirmList/ConfirmedListView";
 
-export default function FinalList() {
+export default function ConfirmList() {
       const drawerWidth = 280;
 
   return (
@@ -19,9 +19,9 @@ export default function FinalList() {
         <Toolbar />
         <Box>
           <Box sx={{ p: "16px 16px 0px 16px" }}>
-            <Typography variant="h4">Final participants List</Typography>
+            <Typography variant="h4">Confirm participants List</Typography>
           </Box>
-          <FinalListView/>
+          <ConfirmedListView/>
         </Box>
       </Box>
     </Box>

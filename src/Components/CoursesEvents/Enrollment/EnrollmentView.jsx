@@ -1,34 +1,23 @@
-import {
-  Box,
-  Stack,
-  Table,
-  TableContainer,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Table, TableContainer, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Body from "./Table/Body";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CustomeHeader from "../../Common/Table/CustomeHeader";
 
 export default function EnrollmentView() {
   const [loading, setLoading] = useState(false);
   const { courseId: courseId } = useParams();
-
-  const limit = 5;
-  const navigate = useNavigate();
   const [enrollmentDetails, setEnrollmentDetails] = useState([]);
   const [open, setOpen] = useState(null);
-  const [selectedRowId, setSelectedRowId] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [remarks, setRemarks] = useState("");
   const [rejectLoading, setRejectLoading] = useState(false);
-  console.log("Here=>",selectedRowId);
-  
+
   const handleRejectClick = (row) => {
-    console.log("row", row);
     setSelectedEnrollment({
       id: row._id,
       name: row.studentId?.name || "Unknown",
@@ -38,37 +27,6 @@ export default function EnrollmentView() {
     setOpen(false);
   };
 
-  const handleRejectEnrollments = async () => {
-    if (!selectedEnrollment?.id || !remarks) {
-      toast.error("Remarks are required.");
-      return;
-    }
-
-    setRejectLoading(true); // Still update local loading state if needed
-
-    await toast
-      .promise(
-        axios.patch("/enrollment/reject", {
-          id: selectedEnrollment.id,
-          remark: remarks,
-        }),
-        {
-          loading: "Rejecting enrollment...",
-          success: (res) =>
-            res.data.message || "Enrollment rejected successfully",
-          error: (err) =>
-            err?.response?.data?.error || "Failed to reject the enrollment.",
-        }
-      )
-      .then(() => {
-        setIsModalOpen(false);
-        setRemarks("");
-        loadEnrollmentHistory();
-      })
-      .finally(() => {
-        setRejectLoading(false);
-      });
-  };
   const columns = [
     { key: "name", label: "Name" },
     { key: "bmdcNo	", label: "BM&DC No" },
@@ -100,7 +58,14 @@ export default function EnrollmentView() {
 
   const handleOpenMenu = (event, eventData) => {
     setOpen(event.currentTarget);
-    setSelectedRowId(eventData);
+
+    // eventData now contains courseId and enrollment
+    setSelectedRowId({
+      courseId: eventData.courseId,
+      studentId: eventData.enrollment?.studentId?._id || "",
+      status: eventData.enrollment?.status || "", // <-- add status here
+      enrollment: eventData.enrollment,
+    });
   };
 
   const handleCloseMenu = () => {
@@ -110,23 +75,28 @@ export default function EnrollmentView() {
   const showModal = () => {
     setIsModalOpen(true);
   };
+  // ------------------------------------------------ Start Payment Accept Start ------------------------------------------------ //
 
-  const handlePaymentAccept = async (id) => {
-    if (!id) {
-      toast.error("Enrollment ID is missing.");
+  const handlePaymentAccept = async (courseId, studentId) => {
+    if (!courseId || !studentId) {
+      toast.error("Missing course or student ID.");
       return;
     }
+    setOpen(null);
 
     const loadingToast = toast.loading("Accepting payment...");
 
     try {
-      const { data } = await axios.patch("/enrollment/accept", { id });
+      const { data } = await axios.patch("/enrollment/accept", {
+        courseId,
+        studentId,
+      });
 
       toast.success(data.message || "Payment accepted successfully", {
         id: loadingToast,
       });
 
-      setIsModalOpen(false); // If you're using a modal
+      setIsModalOpen(false);
       loadEnrollmentHistory();
     } catch (error) {
       toast.error(error?.response?.data?.error || "Failed to accept payment.", {
@@ -134,23 +104,67 @@ export default function EnrollmentView() {
       });
     }
   };
+
+  // ------------------------------------------------ Start Payment Accept End ------------------------------------------------ //
+
+  // ------------------------------------------------ Payment Rejection Start ------------------------------------------------ //
+
+  const handleRejectEnrollments = async () => {
+    if (!selectedRowId.courseId || !selectedRowId.studentId || !remarks) {
+      toast.error("Remarks and IDs are required.");
+      return;
+    }
+
+    setRejectLoading(true);
+
+    await toast
+      .promise(
+        axios.patch("/enrollment/reject", {
+          courseId: selectedRowId.courseId,
+          studentId: selectedRowId.studentId,
+          remark: remarks,
+        }),
+        {
+          loading: "Rejecting enrollment...",
+          success: (res) =>
+            res.data.message || "Enrollment rejected successfully",
+          error: (err) =>
+            err?.response?.data?.error || "Failed to reject the enrollment.",
+        }
+      )
+      .then(() => {
+        setIsModalOpen(false);
+        setRemarks("");
+        setOpen(null); // close menu on success
+        loadEnrollmentHistory();
+      })
+      .finally(() => {
+        setRejectLoading(false);
+      });
+  };
+  // ------------------------------------------------ Payment Rejection End ------------------------------------------------ //
+
+  // ------------------------------------------------ Handle Move to enrollment Start ------------------------------------------------ //
+
   const handleMoveToEnrolled = async (enrollment) => {
-  try {
-    const res = await axios.post("/enrollment/move", {
-      studentId: enrollment.studentId,
-      courseId: enrollment.courseId,
-    });
+    try {
+      const res = await axios.post("/enrollment/move", {
+        studentId: enrollment.studentId._id || enrollment.studentId, // handle if studentId is object or string
+        courseId: enrollment.courseId, // make sure enrollment object contains courseId
+      });
 
-    toast.success("Moved to Enrolled successfully");
-    loadEnrollmentHistory(); // Refresh the data if needed
-  } catch (error) {
-    console.error("Move to enrolled error:", error);
+      toast.success("Moved to Enrolled successfully");
+      loadEnrollmentHistory(); // Refresh the data if needed
+    } catch (error) {
+      console.error("Move to enrolled error:", error);
 
-    const errorMessage =
-      error.response?.data?.error || "Failed to move to Enrolled";
-    toast.error(errorMessage);
-  }
-};
+      const errorMessage =
+        error.response?.data?.error || "Failed to move to Enrolled";
+      toast.error(errorMessage);
+    }
+  };
+  // ------------------------------------------------ Handle Move to enrollment End ------------------------------------------------ //
+
   return (
     <Box
       sx={{
@@ -187,6 +201,7 @@ export default function EnrollmentView() {
             isModalOpen={isModalOpen}
             handlePaymentAccept={handlePaymentAccept}
             handleMoveToEnrolled={handleMoveToEnrolled}
+            courseId={courseId}
           />
         </Table>
 

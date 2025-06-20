@@ -63,30 +63,24 @@ const navConfig = ({ pathname }) => {
       icon: (
         <CoursesEvents
           color={
-            pathname.startsWith("/add_courses_events") ||
-            pathname.startsWith("/courses_events_list") ||
-            pathname.startsWith("/course_setup")
+            pathname.startsWith("/add_album") ||
+            pathname.startsWith("/album_list")
               ? "#00AE60"
               : "#637381"
           }
           size={20}
         />
-      ),
+      ), // just reference the component
+
       items: [
-        {
-          title: "Category Setup",
-          link: "/setup_category",
-        },
-        {
-          title: "Add Courses and Events",
-          link: "/add_courses_events",
-        },
-        {
-          title: "Courses and Events List",
-          link: "/courses_events_list",
-        },
+        { title: "Category Setup", link: "/setup_category" },
+        { title: "Add Courses and Events", link: "/add_courses_events" },
+        { title: "Courses and Events List", link: "/courses_events_list" },
       ],
+      // ✅ Add extra active path triggers
+      extraActivePaths: ["/course/", "/enrollment-history/", "/final-list/"],
     },
+
     {
       title: "Album",
       icon: (
@@ -269,7 +263,6 @@ const navConfig = ({ pathname }) => {
     },
   ];
   return role === 2 ? ForRole2 : ForCommonRole;
-
 };
 
 export default navConfig;

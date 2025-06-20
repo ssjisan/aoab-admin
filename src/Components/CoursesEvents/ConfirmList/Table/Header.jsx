@@ -8,6 +8,7 @@ import {
   Button,
 } from "@mui/material";
 import PropTypes from "prop-types";
+import { Download } from "./../../../../assets/IconSet";
 
 export default function Header({
   allSelected,
@@ -15,6 +16,7 @@ export default function Header({
   handleSelectAll,
   selectedCount,
   handleMarkAsPresent,
+  handleDownloadCSV,
 }) {
   return (
     <TableHead>
@@ -42,12 +44,20 @@ export default function Header({
               {/* Right side: mark button */}
               <Stack flexDirection="row" gap="16px">
                 <Button
+                  onClick={handleDownloadCSV}
+                  color="primary"
+                  size="small"
+                  startIcon={<Download color="#00ae60" size={20} />}
+                >
+                  Download
+                </Button>
+                <Button
                   variant="contained"
                   color="primary"
                   size="small"
                   onClick={handleMarkAsPresent}
                 >
-                  Issue Certificate
+                  Mark as present
                 </Button>
               </Stack>
             </Stack>

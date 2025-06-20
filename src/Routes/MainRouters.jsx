@@ -29,6 +29,7 @@ import StudentsApproval from "../Page/Students/StudentsApproval";
 import EmailVerificationError from "../Page/Students/EmailVerificationError";
 import CategorySetup from "../Page/Courses&Events/CategorySetup";
 import EnrollmentHistory from "../Page/Courses&Events/EnrollmentHistory";
+import ConfirmList from "../Page/Courses&Events/ConfirmList";
 import FinalList from "../Page/Courses&Events/FinalList";
 
 export default function MainRouters() {
@@ -75,6 +76,7 @@ export default function MainRouters() {
           <Route path="/courses_events_list" element={<CoursesEventsList />} />
           <Route path="/course_event/:id" element={<PreviewCourseEvent />} />
           <Route path="/enrollment-history/:courseId" element={<EnrollmentHistory />} />
+          <Route path="/confirm/:courseId" element={<ConfirmList />} />
           <Route path="/final-list/:courseId" element={<FinalList />} />
           {/* Courses & Events Routes End */}
 
