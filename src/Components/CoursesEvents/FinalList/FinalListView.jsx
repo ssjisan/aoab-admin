@@ -1,18 +1,17 @@
-import { Box, Table, TableContainer } from "@mui/material";
+import { Box, Button, Stack, Table, TableContainer } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Body from "./Table/Body";
 import Header from "./Table/Header";
 import { useParams } from "react-router-dom";
-import Papa from "papaparse";
 
 export default function FinalListView() {
   const [loading, setLoading] = useState(false);
   const { courseId } = useParams();
   const [enrollmentDetails, setEnrollmentDetails] = useState([]);
-  const [selectedIds, setSelectedIds] = useState([]);
-
+  console.log("here",enrollmentDetails);
+  
   useEffect(() => {
     loadEnrollmentHistory(true);
   }, []);
@@ -22,11 +21,9 @@ export default function FinalListView() {
 
     try {
       setLoading(true);
-      const res = await axios.get(`/enrollment-history/final/${courseId}`);
-
+      const res = await axios.get(`/enrollment-history/final/${courseId}`);      
       // res.data is already an array of enrollments
       setEnrollmentDetails(res.data);
-      setSelectedIds(res.data.map((item) => item._id));
     } catch (err) {
       toast.error(
         err?.response?.data?.error || "Error loading enrollment details"
@@ -35,85 +32,27 @@ export default function FinalListView() {
       setLoading(false);
     }
   };
+const handleIssueCertificate = async () => {
+  try {
+    setLoading(true);
 
-  // ✅ Select all rows
-  const handleSelectAll = (checked) => {
-    if (checked) {
-      setSelectedIds(enrollmentDetails.map((item) => item._id));
-    } else {
-      setSelectedIds([]);
-    }
-  };
+    const res = await axios.post(`/certificate/issue/${courseId}`, {
+      courseCategoryId: enrollmentDetails.categoryId, // 💡 pass it explicitly
+    });
 
-  // ✅ Select one row
-  const handleSelectOne = (id) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    toast.success(res.data.message || "Certificates issued successfully");
+
+    // Optionally reload data
+    loadEnrollmentHistory();
+  } catch (err) {
+    toast.error(
+      err?.response?.data?.error || "Failed to issue certificates"
     );
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleMarkAsPresent = async () => {
-    if (selectedIds.length === 0) {
-      toast.error("No students selected.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const res = await axios.put(`/mark-attendance/${courseId}`, {
-        ids: selectedIds,
-        courseId,
-      });
-
-      toast.success(res.data.message || "Students marked as present.");
-      loadEnrollmentHistory(); // Refresh the list
-    } catch (err) {
-      toast.error(err?.response?.data?.error || "Failed to mark attendance");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ------------------------------------------------- Download CSV file start here ----------------------------------------------- //
-
-  const handleDownloadCSV = () => {
-    if (!enrollmentDetails.length) {
-      toast.error("No data to download");
-      return;
-    }
-
-    const now = new Date();
-    const formattedDate = `${now.getFullYear()}_${String(
-      now.getMonth() + 1
-    ).padStart(2, "0")}_${String(now.getDate()).padStart(2, "0")}`;
-
-    const formattedTime =
-      now.getHours().toString().padStart(2, "0") +
-      now.getMinutes().toString().padStart(2, "0");
-
-    const fileName = `Enrollment_List_${formattedDate}_${formattedTime}.csv`;
-
-    // Map enrollment data to CSV fields
-    const filteredData = enrollmentDetails.map((enrollment) => ({
-      Name: enrollment.studentId?.name || "",
-      "BM&DC No": enrollment.studentId?.bmdcNo || "",
-      Mobile: enrollment.studentId?.contactNumber || "",
-      Email: enrollment.studentId?.email || "",
-      Status: "", // always empty
-    }));
-
-    const csv = Papa.unparse(filteredData);
-
-    // Trigger download
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <Box
@@ -126,24 +65,24 @@ export default function FinalListView() {
       }}
     >
       <TableContainer>
+        <Stack
+          justifyContent="flex-end"
+          flexDirection="row"
+          sx={{ width: "100%" }}
+        >
+          <Button
+            sx={{ width: "fit-content" }}
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={handleIssueCertificate}
+          >
+            Issue Certificate
+          </Button>
+        </Stack>
         <Table sx={{ mt: "16px" }}>
-          <Header
-            allSelected={selectedIds.length === enrollmentDetails.length}
-            someSelected={
-              selectedIds.length > 0 &&
-              selectedIds.length < enrollmentDetails.length
-            }
-            handleSelectAll={handleSelectAll}
-            selectedCount={selectedIds.length}
-            handleMarkAsPresent={handleMarkAsPresent}
-            handleDownloadCSV={handleDownloadCSV}
-          />
-          <Body
-            enrollmentDetails={enrollmentDetails}
-            loading={loading}
-            selectedIds={selectedIds}
-            handleSelectOne={handleSelectOne}
-          />
+          <Header />
+          <Body enrollmentDetails={enrollmentDetails} loading={loading} />
         </Table>
       </TableContainer>
     </Box>

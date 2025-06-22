@@ -3,7 +3,7 @@ import Sidebar from "../../Layout/Sidebar";
 import ConfirmedListView from "../../Components/CoursesEvents/ConfirmList/ConfirmedListView";
 
 export default function ConfirmList() {
-      const drawerWidth = 280;
+  const drawerWidth = 280;
 
   return (
     <Box>
@@ -21,9 +21,9 @@ export default function ConfirmList() {
           <Box sx={{ p: "16px 16px 0px 16px" }}>
             <Typography variant="h4">Confirm participants List</Typography>
           </Box>
-          <ConfirmedListView/>
+          <ConfirmedListView />
         </Box>
       </Box>
     </Box>
-  )
+  );
 }

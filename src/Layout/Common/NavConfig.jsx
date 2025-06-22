@@ -78,7 +78,12 @@ const navConfig = ({ pathname }) => {
         { title: "Courses and Events List", link: "/courses_events_list" },
       ],
       // ✅ Add extra active path triggers
-      extraActivePaths: ["/course/", "/enrollment-history/", "/final-list/"],
+      extraActivePaths: [
+        "/course/",
+        "/enrollment-history/",
+        "/final-list/",
+        "/confirm",
+      ],
     },
 
     {

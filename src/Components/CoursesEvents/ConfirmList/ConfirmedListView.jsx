@@ -17,35 +17,34 @@ export default function ConfirmedListView() {
     loadEnrollmentHistory(true);
   }, []);
 
- const loadEnrollmentHistory = async () => {
-  if (loading) return;
+  const loadEnrollmentHistory = async () => {
+    if (loading) return;
 
-  try {
-    setLoading(true);
-    const res = await axios.get(`/enrollment-history/confirmed/${courseId}`);
-    const enrollments = res.data;
+    try {
+      setLoading(true);
+      const res = await axios.get(`/enrollment-history/confirmed/${courseId}`);
+      const enrollments = res.data;
 
-    // Check how many have isAttend = true
-    const marked = enrollments.filter((e) => e.isAttend);
+      // Check how many have isAttend = true
+      const marked = enrollments.filter((e) => e.isAttend);
 
-    // If some are marked, select only them
-    // If none are marked, select all
-    const idsToSelect =
-      marked.length > 0
-        ? marked.map((e) => e._id)
-        : enrollments.map((e) => e._id);
+      // If some are marked, select only them
+      // If none are marked, select all
+      const idsToSelect =
+        marked.length > 0
+          ? marked.map((e) => e._id)
+          : enrollments.map((e) => e._id);
 
-    setEnrollmentDetails(enrollments);
-    setSelectedIds(idsToSelect);
-  } catch (err) {
-    toast.error(
-      err?.response?.data?.error || "Error loading enrollment details"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setEnrollmentDetails(enrollments);
+      setSelectedIds(idsToSelect);
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.error || "Error loading enrollment details"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ✅ Select all rows
   const handleSelectAll = (checked) => {

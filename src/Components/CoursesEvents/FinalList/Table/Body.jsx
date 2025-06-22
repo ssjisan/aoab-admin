@@ -1,5 +1,4 @@
 import {
-  Checkbox,
   CircularProgress,
   TableBody,
   TableRow,
@@ -7,15 +6,9 @@ import {
 } from "@mui/material";
 import TableCell from "@mui/material/TableCell";
 import { NoData } from "../../../../assets/IconSet";
-import CustomChip from "../../../Common/Chip/CustomeChip";
 import PropTypes from "prop-types";
 
-export default function Body({
-  enrollmentDetails,
-  loading,
-  selectedIds,
-  handleSelectOne,
-}) {
+export default function Body({ enrollmentDetails, loading }) {
   return (
     <TableBody>
       {loading ? (
@@ -25,7 +18,7 @@ export default function Body({
             <Typography sx={{ mt: 2, fontWeight: 600 }}>Loading...</Typography>
           </TableCell>
         </TableRow>
-      ) : enrollmentDetails.length === 0 ? (
+      ) : !enrollmentDetails.enrollments || enrollmentDetails.enrollments.length === 0 ? (
         <TableRow>
           <TableCell colSpan={10} align="center" sx={{ height: 200 }}>
             <NoData />
@@ -33,43 +26,29 @@ export default function Body({
           </TableCell>
         </TableRow>
       ) : (
-        enrollmentDetails.map((data) => (
+        enrollmentDetails.enrollments.map((data) => (
           <TableRow key={data._id}>
-            <TableCell padding="checkbox">
-              <Checkbox
-                checked={selectedIds.includes(data._id)}
-                onChange={() => handleSelectOne(data._id)}
-              />
+            <TableCell sx={{ p: "12px 16px" }}>
+              {data.studentId?.name}
             </TableCell>
-            <TableCell>{data.studentId?.name}</TableCell>
-            <TableCell>A-{data.studentId?.bmdcNo}</TableCell>
-            <TableCell>
+            <TableCell sx={{ p: "12px 16px" }}>
+              A-{data.studentId?.bmdcNo}
+            </TableCell>
+            <TableCell sx={{ p: "12px 16px" }}>
               {data.studentId?.email}
-              <br />
-              <span style={{ fontSize: "12px" }}>
-                0{data.studentId?.contactNumber}
-              </span>
             </TableCell>
-            <TableCell>
-              {new Date(data.enrolledAt).toLocaleDateString("en-US", {
+            <TableCell sx={{ p: "12px 16px" }}>
+              0{data.studentId?.contactNumber}
+            </TableCell>
+            <TableCell sx={{ p: "12px 16px" }}>
+              {new Date(data.enrolledAt).toLocaleString("en-US", {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
               })}
-              <br />
-              <span style={{ fontSize: "12px" }}>
-                {new Date(data.enrolledAt).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </span>
-            </TableCell>
-            <TableCell>
-              <CustomChip label={data.status} />
-            </TableCell>
-            <TableCell>
-              <CustomChip label={data.paymentReceived} />
             </TableCell>
           </TableRow>
         ))
