@@ -68,7 +68,15 @@ export default function Body({ profile }) {
             </TableCell>
             <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
               {hasDocument ? (
-                courseData.documents.length === 1 ? (
+                courseData.systemUpload ? (
+                  <a
+                    href={courseData.documents[0].url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {courseData.documents[0].name}
+                  </a>
+                ) : courseData.documents.length === 1 ? (
                   <a
                     href={`https://docs.google.com/viewer?url=${encodeURIComponent(
                       courseData.documents[0].url
