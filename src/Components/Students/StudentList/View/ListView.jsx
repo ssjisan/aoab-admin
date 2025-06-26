@@ -103,7 +103,7 @@ export default function ListView() {
     setYearTo("");
     loadStudentsProfile(search, "", "", selectedCourses);
   };
-  
+
   const handleClearFilter = () => {
     setSearch("");
     setYearFrom("");

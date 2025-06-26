@@ -18,7 +18,8 @@ export default function Body({ enrollmentDetails, loading }) {
             <Typography sx={{ mt: 2, fontWeight: 600 }}>Loading...</Typography>
           </TableCell>
         </TableRow>
-      ) : !enrollmentDetails.enrollments || enrollmentDetails.enrollments.length === 0 ? (
+      ) : !enrollmentDetails.enrollments ||
+        enrollmentDetails.enrollments.length === 0 ? (
         <TableRow>
           <TableCell colSpan={10} align="center" sx={{ height: 200 }}>
             <NoData />

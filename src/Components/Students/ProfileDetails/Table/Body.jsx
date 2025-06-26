@@ -68,39 +68,55 @@ export default function Body({ profile }) {
             </TableCell>
             <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
               {hasDocument ? (
-                courseData.systemUpload ? (
-                  <a
-                    href={courseData.documents[0].url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {courseData.documents[0].name}
-                  </a>
-                ) : courseData.documents.length === 1 ? (
-                  <a
-                    href={`https://docs.google.com/viewer?url=${encodeURIComponent(
-                      courseData.documents[0].url
-                    )}&embedded=true`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {courseData.documents[0].name}
-                  </a>
+                courseData.documents.length === 1 ? (
+                  // Single document
+                  courseData.systemUpload ? (
+                    // Direct link for systemUpload docs
+                    <a
+                      href={courseData.documents[0].url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {courseData.documents[0].name}
+                    </a>
+                  ) : (
+                    // Google Docs viewer for others
+                    <a
+                      href={`https://docs.google.com/viewer?url=${encodeURIComponent(
+                        courseData.documents[0].url
+                      )}&embedded=true`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {courseData.documents[0].name}
+                    </a>
+                  )
                 ) : (
+                  // Multiple documents — show all
                   <ol style={{ margin: 0, paddingLeft: "16px" }}>
-                    {courseData.documents.map((doc) => (
-                      <li key={doc.url} style={{ marginBottom: "8px" }}>
-                        <a
-                          href={`https://docs.google.com/viewer?url=${encodeURIComponent(
-                            doc.url
-                          )}&embedded=true`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {doc.name}
-                        </a>
-                      </li>
-                    ))}
+                    {courseData.documents.map((doc) => {
+                      const isSystemUploadDoc = courseData.systemUpload;
+                      // Or, optionally, detect by URL pattern if needed:
+                      // const isSystemUploadDoc = doc.url.includes('cloudinary.com');
+
+                      return (
+                        <li key={doc.url} style={{ marginBottom: "8px" }}>
+                          <a
+                            href={
+                              isSystemUploadDoc
+                                ? doc.url // direct link
+                                : `https://docs.google.com/viewer?url=${encodeURIComponent(
+                                    doc.url
+                                  )}&embedded=true` // Google Docs viewer
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {doc.name}
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ol>
                 )
               ) : (
