@@ -62,7 +62,7 @@ export default function Body({ profile }) {
               {courseStatus}
             </TableCell>
             <TableCell
-              sx={{ border: "1px solid #ddd", p: "8px 16px", width: "64px" }}
+              sx={{ border: "1px solid #ddd", p: "8px 16px", width: "240px" }}
             >
               {completionYear}
             </TableCell>
