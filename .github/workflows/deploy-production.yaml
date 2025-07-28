@@ -1,0 +1,38 @@
+on:
+    push:
+        branches:
+            - main
+name: Deploy Production
+jobs:
+    web-deploy:
+        name: Deploy Production
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build application
+              run: npm run build
+              env:
+                  NODE_OPTIONS: '--max-old-space-size=4096 --no-experimental-fetch'
+
+            - name: Install SSH Key
+              uses: shimataro/ssh-key-action@v2
+              with:
+                  key: ${{ secrets.PROD_SSH_KEY }}
+                  known_hosts: "Started known host"
+
+            - name: Adding Known Hosts
+              run: ssh-keyscan -H ${{ secrets.PROD_SERVER }} >> ~/.ssh/known_hosts
+
+            - name: Deploy built files with rsync
+              run: rsync -avz --delete ./dist/ ${{ secrets.PROD_USERNAME }}@${{ secrets.PROD_SERVER }}:${{ secrets.PROD_UPLOAD_PATH }}
