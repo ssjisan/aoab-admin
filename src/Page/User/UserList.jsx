@@ -27,7 +27,7 @@ export default function UserList() {
         {auth?.user?.role === 0 && (
           <Box mt={4}>
             <Typography variant="h6" gutterBottom>
-              Backup the database
+              Backup the database all.
             </Typography>
             <Button variant="contained" onClick={handleBackupDownload}>
               Download
