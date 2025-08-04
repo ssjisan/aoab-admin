@@ -55,6 +55,7 @@ export default function BasicInfo({
           sm: "100%", // >600px
           md: "50%", // >900px
         },
+        mb:"40px"
       }}
     >
       <FormControl fullWidth>

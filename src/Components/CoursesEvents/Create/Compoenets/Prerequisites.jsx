@@ -11,6 +11,8 @@ import {
 import PropTypes from "prop-types";
 
 export default function Prerequisites({
+  registrationRequired,
+  setRegistrationRequired,
   courses,
   postGradRequired,
   setPostGradRequired,
@@ -27,117 +29,135 @@ export default function Prerequisites({
 }) {
   return (
     <Stack gap="24px" mb="40px">
-      {/* Post Graduation Requirement */}
-      <Stack gap="8px">
-        <Typography sx={{ fontWeight: 600 }} variant="body2">
-          Post graduation Degree required?
-        </Typography>
-        <RadioGroup
-          row
-          value={postGradRequired}
-          onChange={(e) => setPostGradRequired(e.target.value)}
-        >
-          <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-          <FormControlLabel value="no" control={<Radio />} label="No" />
-        </RadioGroup>
+      {/* ✅ Registration Required */}
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={registrationRequired}
+            onChange={(e) => setRegistrationRequired(e.target.checked)}
+          />
+        }
+        label="Is Registration Required?"
+      />
 
-        {/* Conditionally show Year From and To */}
-        {postGradRequired === "yes" && (
-          <Stack flexDirection="row" gap="8px">
-            <Stack gap="4px">
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: "600" }}
-                color="text.primary"
-              >
-                Year From
-              </Typography>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                type="number"
-                placeholder="Start Year (e.g., 2015)"
-                value={yearFrom}
-                onChange={(e) => setYearFrom(e.target.value)}
-              />
-            </Stack>
-            <Stack gap="4px">
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: "600" }}
-                color="text.primary"
-              >
-                Year To
-              </Typography>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                type="number"
-                placeholder="End Year (e.g., 2023)"
-                value={yearTo}
-                onChange={(e) => setYearTo(e.target.value)}
-              />
-            </Stack>
-          </Stack>
-        )}
-      </Stack>
-      <Stack gap="8px">
-        <Typography sx={{ fontWeight: 600 }} variant="body2">
-          Restrict Re-enrollment to this course category
-        </Typography>
-        <RadioGroup
-          row
-          value={restrictReenrollment ? "yes" : "no"}
-          onChange={(e) => setRestrictReenrollment(e.target.value === "yes")}
-        >
-          <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-          <FormControlLabel value="no" control={<Radio />} label="No" />
-        </RadioGroup>
-      </Stack>
-
-      {/* Prerequisite Courses */}
-      <Stack>
-        <Typography sx={{ fontWeight: 600 }} variant="body2">
-          Are there any prerequisite courses that need to be completed before
-          enrolling in this course?
-        </Typography>
-        <RadioGroup
-          row
-          value={requiresPrerequisite}
-          onChange={(e) => setRequiresPrerequisite(e.target.value)}
-        >
-          <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-          <FormControlLabel value="no" control={<Radio />} label="No" />
-        </RadioGroup>
-
-        {/* Conditionally show course list */}
-        {requiresPrerequisite === "yes" && (
-          <>
-            <Typography sx={{ fontWeight: 700, mt: "24px" }} variant="h6">
-              List of course type
+      {/* ✅ Show this section only if registration is required */}
+      {registrationRequired && (
+        <>
+          {/* Post Graduation Requirement */}
+          <Stack gap="8px">
+            <Typography sx={{ fontWeight: 600 }} variant="body2">
+              Post graduation Degree required?
             </Typography>
-            <Grid container spacing={2} pl={2}>
-              {courses.map((course) => (
-                <Grid item xs={12} sm={4} key={course._id}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={selectedPrerequisiteCourses.includes(
-                          course._id
-                        )}
-                        onChange={() => handleCourseToggle(course._id)}
-                      />
-                    }
-                    label={course.courseName}
+            <RadioGroup
+              row
+              value={postGradRequired}
+              onChange={(e) => setPostGradRequired(e.target.value)}
+            >
+              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="no" control={<Radio />} label="No" />
+            </RadioGroup>
+
+            {postGradRequired === "yes" && (
+              <Stack flexDirection="row" gap="8px">
+                <Stack gap="4px">
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: "600" }}
+                    color="text.primary"
+                  >
+                    Year From
+                  </Typography>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    type="number"
+                    placeholder="Start Year (e.g., 2015)"
+                    value={yearFrom}
+                    onChange={(e) => setYearFrom(e.target.value)}
                   />
+                </Stack>
+                <Stack gap="4px">
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: "600" }}
+                    color="text.primary"
+                  >
+                    Year To
+                  </Typography>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    type="number"
+                    placeholder="End Year (e.g., 2023)"
+                    value={yearTo}
+                    onChange={(e) => setYearTo(e.target.value)}
+                  />
+                </Stack>
+              </Stack>
+            )}
+          </Stack>
+
+          {/* Restrict Re-enrollment */}
+          <Stack gap="8px">
+            <Typography sx={{ fontWeight: 600 }} variant="body2">
+              Restrict Re-enrollment to this course category
+            </Typography>
+            <RadioGroup
+              row
+              value={restrictReenrollment ? "yes" : "no"}
+              onChange={(e) =>
+                setRestrictReenrollment(e.target.value === "yes")
+              }
+            >
+              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="no" control={<Radio />} label="No" />
+            </RadioGroup>
+          </Stack>
+
+          {/* Prerequisite Courses */}
+          <Stack>
+            <Typography sx={{ fontWeight: 600 }} variant="body2">
+              Are there any prerequisite courses that need to be completed
+              before enrolling in this course?
+            </Typography>
+            <RadioGroup
+              row
+              value={requiresPrerequisite}
+              onChange={(e) => setRequiresPrerequisite(e.target.value)}
+            >
+              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="no" control={<Radio />} label="No" />
+            </RadioGroup>
+
+            {requiresPrerequisite === "yes" && (
+              <>
+                <Typography sx={{ fontWeight: 700, mt: "24px" }} variant="h6">
+                  List of course type
+                </Typography>
+                <Grid container spacing={2} pl={2}>
+                  {courses.map((course) => (
+                    <Grid item xs={12} sm={4} key={course._id}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={selectedPrerequisiteCourses.includes(
+                              course._id
+                            )}
+                            onChange={() => handleCourseToggle(course._id)}
+                          />
+                        }
+                        label={course.courseName}
+                      />
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
-          </>
-        )}
-      </Stack>
+              </>
+            )}
+          </Stack>
+        </>
+      )}
     </Stack>
   );
 }

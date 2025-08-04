@@ -128,7 +128,7 @@ export default function Create() {
   const [selectedPrerequisiteCourses, setSelectedPrerequisiteCourses] =
     useState([]);
   const [restrictReenrollment, setRestrictReenrollment] = useState(true);
-
+  const [registrationRequired, setRegistrationRequired] = useState(true)
   const handleCourseToggle = (courseId) => {
     setSelectedPrerequisiteCourses((prev) =>
       prev.includes(courseId)
@@ -374,6 +374,7 @@ export default function Create() {
         const payload = {
           category: selectedCourses?._id,
           title,
+          registrationRequired,
           requiresPrerequisite,
           postGradRequired,
           yearFrom,
@@ -469,6 +470,7 @@ export default function Create() {
       setFees(courseData.fee || "");
       setStartDate(courseData.startDate || null);
       setEndDate(courseData.endDate || null);
+      setRegistrationRequired(courseData.registrationRequired ?? false);
       setContactPersons(
         courseData.contactPersons?.length
           ? courseData.contactPersons
@@ -614,6 +616,8 @@ export default function Create() {
           handleCourseToggle={handleCourseToggle}
           restrictReenrollment={restrictReenrollment}
           setRestrictReenrollment={setRestrictReenrollment}
+          registrationRequired={registrationRequired}
+          setRegistrationRequired={setRegistrationRequired}
         />
       ),
     },
@@ -722,11 +726,11 @@ export default function Create() {
           onClick={
             currentTab === 0
               ? () => {
-                  window.history.back();
-                }
+                window.history.back();
+              }
               : handleBack
           }
-          //   disabled={isSubmitting}
+        //   disabled={isSubmitting}
         >
           {currentTab === 0 ? "Cancel" : "Back"}
         </Button>
@@ -734,7 +738,7 @@ export default function Create() {
           variant="contained"
           color="primary"
           onClick={handleNext}
-          //   disabled={isSubmitting}
+        //   disabled={isSubmitting}
         >
           {currentTab === formSections.length - 1 ? "Complete" : "Save & Next"}
         </Button>
