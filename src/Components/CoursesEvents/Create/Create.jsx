@@ -128,7 +128,8 @@ export default function Create() {
   const [selectedPrerequisiteCourses, setSelectedPrerequisiteCourses] =
     useState([]);
   const [restrictReenrollment, setRestrictReenrollment] = useState(true);
-  const [registrationRequired, setRegistrationRequired] = useState(true)
+  const [registrationRequired, setRegistrationRequired] = useState(true);
+
   const handleCourseToggle = (courseId) => {
     setSelectedPrerequisiteCourses((prev) =>
       prev.includes(courseId)
@@ -285,16 +286,6 @@ export default function Create() {
   const handleCategoryChange = (event) => {
     setSelectedCategoryForSignature(event.target.value);
   };
-  console.log(
-    "When Create",
-    selectedCategoryForSignature,
-    selectedProfilesForSignature
-  );
-  console.log(
-    "When CallFrom Backedn",
-    selectedCategoryForSignature,
-    selectedProfilesForSignature
-  );
 
   const roleOptions = Object.keys(courseWiseStudents).map((categoryId) => {
     const matchedCourse = courses.find(
@@ -390,6 +381,7 @@ export default function Create() {
           title,
           studentCap,
           waitlistCap,
+          registrationRequired,
           registrationStartDate,
           registrationEndDate,
           paymentReceiveStartDate,
@@ -555,8 +547,6 @@ export default function Create() {
       loadRecipients();
     }
   }, [courseData, courses]);
-
-  console.log("SIGNATURES from DB:", courseData?.signatures);
 
   const formSections = [
     {
