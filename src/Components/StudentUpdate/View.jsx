@@ -51,7 +51,7 @@ export default function View() {
   const handleUpdateUser = async () => {
     if (!selectedUser?._id) return;
     try {
-      const { data } = await axios.put(`/studentss/${selectedUser._id}`, {
+      const { data } = await axios.put(`/students/${selectedUser._id}`, {
         name,
         email,
       });
