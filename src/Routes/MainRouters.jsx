@@ -31,6 +31,7 @@ import CategorySetup from "../Page/Courses&Events/CategorySetup";
 import EnrollmentHistory from "../Page/Courses&Events/EnrollmentHistory";
 import ConfirmList from "../Page/Courses&Events/ConfirmList";
 import FinalList from "../Page/Courses&Events/FinalList";
+import StudentUpdateView from "../Page/StudentUpdate/StudentUpdateView";
 
 export default function MainRouters() {
   function RoutedAddCoursesEvents() {
@@ -124,6 +125,7 @@ export default function MainRouters() {
           <Route path="album_list" element={<AlbumList />} />
           <Route path="album/:albumId" element={<UpdateAlbum />} />
 
+          <Route path="/user_update" element={<StudentUpdateView/>}/>
           {/* <Route path="album_list" element={<AlbumList />} />
           <Route path="album/:albumId" element={<UpdateAlbum />} /> */}
           {/* Album Routes End */}
