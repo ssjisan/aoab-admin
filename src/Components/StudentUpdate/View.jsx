@@ -3,9 +3,11 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 import Search from "./Search";
-import { Typography, Box, Button, Paper } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import BasicInfo from "./BasicInfo";
 import CourseTable from "./CourseTable";
+import Signature from "./Signature";
+import PostGradCertificate from "./PostGradCertificate";
 
 export default function View() {
   const [search, setSearch] = useState("");
@@ -69,7 +71,7 @@ export default function View() {
         bmdcNo,
         contactNumber,
       });
-      toast.success("User updated successfully");
+      toast.success(data.message || "Student updated successfully");
       setSelectedUser("");
       setSearch("");
       setName("");
@@ -79,7 +81,7 @@ export default function View() {
       setCourses([]);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to update user", err.message);
+      toast.error(`Failed to update user: ${err.message}`);
     }
   };
 
@@ -131,29 +133,28 @@ export default function View() {
             setContactNumber={setContactNumber}
             handleUpdateUser={handleUpdateUser}
           />
-
+          <Signature
+            studentId={studentId}
+            existingSignature={
+              selectedUser?.signature?.length > 0
+                ? selectedUser.signature[0]
+                : null
+            }
+          />
+          <PostGradCertificate
+            studentId={studentId}
+            existingCertificate={
+              selectedUser?.postGraduationCertificates?.length > 0
+                ? selectedUser.postGraduationCertificates[0]
+                : null
+            }
+          />
           <CourseTable
             courses={courses}
             studentId={studentId}
             onEditCourse={(course) => console.log("Edit course", course)}
           />
         </div>
-      )}
-      {/* Sticky Update Button */}
-      {selectedUser && (
-        <Paper
-          elevation={3}
-          sx={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            p: 2,
-            textAlign: "right",
-            bgcolor: "white",
-          }}
-        >
-        </Paper>
       )}
     </Box>
   );
