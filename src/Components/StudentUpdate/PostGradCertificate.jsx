@@ -99,7 +99,7 @@ export default function PostGradCertificate({
   return (
     <Box sx={{ margin: "24px 16px" }}>
       <Accordion>
-        <AccordionSummary expandIcon={<ArrowDown size={"24px"} color="#000" />}>
+        <AccordionSummary expandIcon={<ArrowDown size={"24px"} color="#290303ff" />}>
           <Typography fontWeight="bold">Post Graduation Certificate</Typography>
         </AccordionSummary>
         <AccordionDetails>
