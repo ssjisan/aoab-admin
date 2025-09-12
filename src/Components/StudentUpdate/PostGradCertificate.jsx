@@ -135,7 +135,7 @@ export default function PostGradCertificate({
               </Box>
             ) : (
               <Typography color="text.secondary">
-                No certificate uploaded yet.
+                No certificate.
               </Typography>
             )}
 
