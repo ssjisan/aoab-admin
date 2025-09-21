@@ -1,3 +1,4 @@
+// Body.jsx
 import {
   CircularProgress,
   IconButton,
@@ -8,31 +9,45 @@ import {
 } from "@mui/material";
 import TableCell from "@mui/material/TableCell";
 import PropTypes from "prop-types";
-import { More, NoData, Approve, Deny, Move } from "../../../../assets/IconSet";
-import CustomePopOver from "../../../Common/PopOver/CustomePopOver";
-import ConfirmationModal from "../Modal/ConfirmationModal";
+import { Approve, Deny, More, NoData } from "../../../../assets/IconSet";
 import CustomChip from "../../../Common/Chip/CustomeChip";
+import CustomePopOver from "../../../Common/PopOver/CustomePopOver";
 
 export default function Body({
   enrollmentDetails,
-  selectedRowId,
-  handleCloseMenu,
-  handleOpenMenu,
-  open,
   loading,
-  isModalOpen,
-  setIsModalOpen,
-  handleRejectClick,
-  selectedEnrollment,
-  handleRejectEnrollments,
-  remarks,
-  setRemarks,
-  rejectLoading,
-  handlePaymentAccept,
-  handleMoveToEnrolled,
-  courseId,
+  open,
+  handleOpenMenu,
+  redirectEdit,
+  handleCloseMenu,
+  selectedRowId,
+  activeTab, 
 }) {
   const enrollments = enrollmentDetails?.enrollments || [];
+
+  // 👇 decide menu items based on tab
+  const getMenuItems = () => {
+    switch (activeTab) {
+      case "Enrolled":
+        return [{ label: "Reject", icon: Deny, color: "error" }];
+      case "Payment":
+        return [
+          {
+            label: "Approve",
+            icon: Approve,
+            onClick: (e) => redirectEdit(e, selectedRowId),
+          },
+          { label: "Reject", icon: Deny, color: "error" },
+        ];
+      case "Waitlist":
+        return [{ label: "Move to Enrolled", icon: Approve }];
+      case "Confirmed":
+      case "Rejected":
+        return []; // no actions
+      default:
+        return [];
+    }
+  };
 
   return (
     <TableBody>
@@ -65,46 +80,37 @@ export default function Body({
       ) : (
         enrollments.map((data) => (
           <TableRow key={data._id}>
-            <TableCell align="left" sx={{ padding: "16px", width: "280px" }}>
-              {data.studentId?.name}
+            <TableCell>{data.studentId?.name}</TableCell>
+            <TableCell>A-{data.studentId?.bmdcNo}</TableCell>
+            <TableCell>
+              {data.studentId?.email}
+              <br />
+              <span style={{ fontSize: "12px" }}>
+                0{data.studentId?.contactNumber}
+              </span>
             </TableCell>
-            <TableCell align="left" sx={{ padding: "16px", width: "280px" }}>
-              A-{data.studentId?.bmdcNo}
-            </TableCell>
-            <TableCell align="left" sx={{ padding: "16px", width: "240px" }}>
-              <>
-                {data.studentId?.email}
-                <br />
-                <span style={{ fontSize: "12px" }}>
-                  0{data.studentId?.contactNumber}
-                </span>
-              </>
-            </TableCell>
-
-            <TableCell align="left" sx={{ padding: "16px", width: "240px" }}>
-              <>
-                {new Date(data.enrolledAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
+            <TableCell>
+              {new Date(data.enrolledAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+              <br />
+              <span style={{ fontSize: "12px" }}>
+                {new Date(data.enrolledAt).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
                 })}
-                <br />
-                <span style={{ fontSize: "12px" }}>
-                  {new Date(data.enrolledAt).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </span>
-              </>
+              </span>
             </TableCell>
-            <TableCell align="left" sx={{ padding: "16px", width: "280px" }}>
+            <TableCell>
               <CustomChip label={data.status} />
             </TableCell>
-            <TableCell align="left" sx={{ padding: "16px", width: "280px" }}>
+            <TableCell>
               <CustomChip label={data.paymentReceived} />
             </TableCell>
-            <TableCell align="left" sx={{ padding: "16px", width: "280px" }}>
+            <TableCell>
               {data?.paymentProof?.url ? (
                 <a
                   href={data?.paymentProof?.url}
@@ -119,22 +125,12 @@ export default function Body({
               )}
             </TableCell>
             <TableCell align="center">
-              <Tooltip
-                title={
-                  data?.status === "confirmed"
-                    ? "No actions for confirmed enrollment"
-                    : data?.status === "expired"
-                    ? "No actions for expired enrollment"
-                    : "Actions"
-                }
-              >
+              <Tooltip title="Actions">
                 <span>
                   <IconButton
                     sx={{ width: "40px", height: "40px" }}
-                    onClick={(event) =>
-                      handleOpenMenu(event, { courseId, enrollment: data })
-                    }
-                    disabled={["confirmed", "expired"].includes(data?.status)}
+                    onClick={(event) => handleOpenMenu(event, data)}
+                    disabled={["Confirmed", "Rejected"].includes(activeTab)} // 👈 disable in confirmed/rejected
                   >
                     <More color="#919EAB" size={24} />
                   </IconButton>
@@ -148,68 +144,16 @@ export default function Body({
         open={Boolean(open)}
         anchorEl={open}
         onClose={handleCloseMenu}
-        menuItems={
-          selectedRowId?.status === "waitlist"
-            ? [
-                {
-                  label: "Move",
-                  icon: Move,
-                  onClick: () => handleMoveToEnrolled(selectedRowId),
-                },
-              ]
-            : [
-                {
-                  label: "Approve",
-                  icon: Approve,
-                  color: "success",
-                  onClick: () =>
-                    handlePaymentAccept(
-                      selectedRowId.courseId,
-                      selectedRowId.studentId
-                    ),
-                },
-                {
-                  label: "Reject",
-                  icon: Deny,
-                  color: "error",
-                  onClick: () =>
-                    handleRejectClick(
-                      selectedRowId.courseId,
-                      selectedRowId.studentId
-                    ),
-                },
-              ]
-        }
-      />
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        handleClose={() => setIsModalOpen(false)}
-        data={selectedEnrollment}
-        handleRejectEnrollments={handleRejectEnrollments}
-        remarks={remarks}
-        setRemarks={setRemarks}
-        loading={rejectLoading}
+        menuItems={getMenuItems()}
       />
     </TableBody>
   );
 }
 
 Body.propTypes = {
-  enrollmentDetails: PropTypes.object.isRequired,
-  selectedRowId: PropTypes.object,
-  handleCloseMenu: PropTypes.func.isRequired,
-  handleOpenMenu: PropTypes.func.isRequired,
-  open: PropTypes.object,
+  enrollmentDetails: PropTypes.shape({
+    enrollments: PropTypes.array,
+  }).isRequired,
   loading: PropTypes.bool.isRequired,
-  isModalOpen: PropTypes.bool.isRequired,
-  setIsModalOpen: PropTypes.func.isRequired,
-  handleRejectClick: PropTypes.func.isRequired,
-  selectedEnrollment: PropTypes.object,
-  handleRejectEnrollments: PropTypes.func.isRequired,
-  remarks: PropTypes.string.isRequired,
-  setRemarks: PropTypes.func.isRequired,
-  rejectLoading: PropTypes.bool.isRequired,
-  handlePaymentAccept: PropTypes.func.isRequired,
-  handleMoveToEnrolled: PropTypes.func.isRequired,
-  courseId: PropTypes.string.isRequired,
+  activeTab: PropTypes.string.isRequired,
 };

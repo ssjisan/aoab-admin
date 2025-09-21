@@ -1,169 +1,86 @@
-import { Box, Stack, Table, TableContainer, Typography } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Table,
+  TableContainer,
+  Typography,
+  Tabs,
+  Tab,
+  Button,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
-import Body from "./Table/Body";
 import { useParams } from "react-router-dom";
 import CustomeHeader from "../../Common/Table/CustomeHeader";
+import Body from "./Table/Body";
 
 export default function EnrollmentView() {
+  const { courseId } = useParams();
   const [loading, setLoading] = useState(false);
-  const { courseId: courseId } = useParams();
-  const [enrollmentDetails, setEnrollmentDetails] = useState([]);
+  const [enrollments, setEnrollments] = useState([]); // filtered from API
+  const [activeTab, setActiveTab] = useState(0);
   const [open, setOpen] = useState(null);
-  const [selectedRowId, setSelectedRowId] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
-  const [remarks, setRemarks] = useState("");
-  const [rejectLoading, setRejectLoading] = useState(false);
-
-  const handleRejectClick = (row) => {
-    setSelectedEnrollment({
-      id: row._id,
-      name: row.studentId?.name || "Unknown",
-    });
-    setRemarks("");
-    setIsModalOpen(true);
-    setOpen(false);
-  };
-
-  const columns = [
-    { key: "name", label: "Name" },
-    { key: "bmdcNo	", label: "BM&DC No" },
-    { key: "contact	", label: "Contact" },
-    { key: "enrollmentDate", label: "Enrollment Date" },
-    { key: "status	", label: "Status" },
-    { key: "payment	", label: "Payment" },
-    { key: "paymentInfo	", label: "Payment Info" },
-  ];
-  useEffect(() => {
-    loadEnrollmentHistory(true);
-  }, []);
-
-  const loadEnrollmentHistory = async () => {
-    if (loading) return;
-
-    try {
-      setLoading(true);
-      const res = await axios.get(`/enrollment-history/${courseId}`);
-      setEnrollmentDetails(res.data);
-    } catch (err) {
-      toast.error(
-        err?.response?.data?.error || "Error loading enrollment details"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenMenu = (event, eventData) => {
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  const [title, setTitle] = useState("");
+  const handleOpenMenu = (event, events) => {
     setOpen(event.currentTarget);
-
-    // eventData now contains courseId and enrollment
-    setSelectedRowId({
-      courseId: eventData.courseId,
-      studentId: eventData.enrollment?.studentId?._id || "",
-      status: eventData.enrollment?.status || "", // <-- add status here
-      enrollment: eventData.enrollment,
-    });
+    setSelectedRowId(events);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
   };
+  const tabLabels = [
+    "Enrolled",
+    "Payment",
+    "Confirmed",
+    "Waitlist",
+    "Rejected",
+  ];
+  const [tabCounts, setTabCounts] = useState({
+    Enrolled: 0,
+    Payment: 0,
+    Confirmed: 0,
+    Waitlist: 0,
+    Rejected: 0,
+  });
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
-  // ------------------------------------------------ Start Payment Accept Start ------------------------------------------------ //
 
-  const handlePaymentAccept = async (courseId, studentId) => {
-    if (!courseId || !studentId) {
-      toast.error("Missing course or student ID.");
-      return;
-    }
-    setOpen(null);
-
-    const loadingToast = toast.loading("Accepting payment...");
-
+  const loadEnrollmentHistory = async (tabName) => {
     try {
-      const { data } = await axios.patch("/enrollment/accept", {
-        courseId,
-        studentId,
-      });
-
-      toast.success(data.message || "Payment accepted successfully", {
-        id: loadingToast,
-      });
-
-      setIsModalOpen(false);
-      loadEnrollmentHistory();
-    } catch (error) {
-      toast.error(error?.response?.data?.error || "Failed to accept payment.", {
-        id: loadingToast,
-      });
+      setLoading(true);
+      const res = await axios.get(
+        `/enrollment-history/${courseId}?tab=${tabName}`
+      );
+      setEnrollments(res.data.enrollments || []);
+      setTabCounts(res.data.tabCounts || {});
+      setTitle(res.data.title);
+      console.log(res.data);
+    } catch (err) {
+      console.error("Error loading enrollment history:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ------------------------------------------------ Start Payment Accept End ------------------------------------------------ //
+  // load when activeTab changes
+  useEffect(() => {
+    loadEnrollmentHistory(tabLabels[activeTab]);
+  }, [activeTab]);
 
-  // ------------------------------------------------ Payment Rejection Start ------------------------------------------------ //
-
-  const handleRejectEnrollments = async () => {
-    if (!selectedRowId.courseId || !selectedRowId.studentId || !remarks) {
-      toast.error("Remarks and IDs are required.");
-      return;
-    }
-
-    setRejectLoading(true);
-
-    await toast
-      .promise(
-        axios.patch("/enrollment/reject", {
-          courseId: selectedRowId.courseId,
-          studentId: selectedRowId.studentId,
-          remark: remarks,
-        }),
-        {
-          loading: "Rejecting enrollment...",
-          success: (res) =>
-            res.data.message || "Enrollment rejected successfully",
-          error: (err) =>
-            err?.response?.data?.error || "Failed to reject the enrollment.",
-        }
-      )
-      .then(() => {
-        setIsModalOpen(false);
-        setRemarks("");
-        setOpen(null); // close menu on success
-        loadEnrollmentHistory();
-      })
-      .finally(() => {
-        setRejectLoading(false);
-      });
-  };
-  // ------------------------------------------------ Payment Rejection End ------------------------------------------------ //
-
-  // ------------------------------------------------ Handle Move to enrollment Start ------------------------------------------------ //
-
-  const handleMoveToEnrolled = async (enrollment) => {
-    try {
-      const res = await axios.post("/enrollment/move", {
-        studentId: enrollment.studentId._id || enrollment.studentId, // handle if studentId is object or string
-        courseId: enrollment.courseId, // make sure enrollment object contains courseId
-      });
-
-      toast.success("Moved to Enrolled successfully");
-      loadEnrollmentHistory(); // Refresh the data if needed
-    } catch (error) {
-      console.error("Move to enrolled error:", error);
-
-      const errorMessage =
-        error.response?.data?.error || "Failed to move to Enrolled";
-      toast.error(errorMessage);
-    }
-  };
-  // ------------------------------------------------ Handle Move to enrollment End ------------------------------------------------ //
+  const columns = [
+    { key: "name", label: "Name" },
+    { key: "bmdcNo", label: "BM&DC No" },
+    { key: "contact", label: "Contact" },
+    { key: "enrollmentDate", label: "Enrollment Date" },
+    { key: "status", label: "Status" },
+    { key: "payment", label: "Payment" },
+    { key: "paymentInfo", label: "Payment Info" },
+    { key: "action", label: "" },
+  ];
 
   return (
     <Box
@@ -175,33 +92,36 @@ export default function EnrollmentView() {
         mt: 3,
       }}
     >
+      <Stack
+        sx={{ p: "12px" }}
+        flexDirection="row"
+        justifyContent="space-between"
+      >
+        <Typography variant="h6">{title}</Typography>
+        <Button variant="contained">Search</Button>
+      </Stack>
+      {/* ---------------- Tabs with count ---------------- */}
+      <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+        {tabLabels.map((label, idx) => (
+          <Tab key={idx} label={`${label} (${tabCounts[label] || 0})`} />
+        ))}
+      </Tabs>
+
       <TableContainer>
         <Table sx={{ mt: "16px" }}>
           <CustomeHeader
             columns={columns}
-            includeActions={true}
+            includeActions={false}
             includeDrag={false}
           />
           <Body
-            enrollmentDetails={enrollmentDetails}
-            open={open}
-            setOpen={setOpen}
+            enrollmentDetails={{ enrollments }}
             loading={loading}
+            open={open}
+            selectedRowId={selectedRowId}
             handleOpenMenu={handleOpenMenu}
             handleCloseMenu={handleCloseMenu}
-            showModal={showModal}
-            selectedRowId={selectedRowId}
-            setIsModalOpen={setIsModalOpen}
-            handleRejectClick={handleRejectClick}
-            selectedEnrollment={selectedEnrollment}
-            handleRejectEnrollments={handleRejectEnrollments}
-            remarks={remarks}
-            setRemarks={setRemarks}
-            rejectLoading={rejectLoading}
-            isModalOpen={isModalOpen}
-            handlePaymentAccept={handlePaymentAccept}
-            handleMoveToEnrolled={handleMoveToEnrolled}
-            courseId={courseId}
+            activeTab={tabLabels[activeTab]}
           />
         </Table>
 

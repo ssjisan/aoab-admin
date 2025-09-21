@@ -47,7 +47,7 @@ export default function ConfirmationModal({
           <Warning size="48px" color="#dc3545" />
           <Typography variant="body1" sx={{ textAlign: "center" }}>
             Are you sure you want to reject the payment for{" "}
-            <strong>&quot;{data?.name}&quot;</strong>? This action cannot be
+            <strong>&quot;{data?.studentId?.name}&quot;</strong>? This action cannot be
             undone.
           </Typography>
         </Stack>
