@@ -7,12 +7,20 @@ import {
   Tabs,
   Tab,
   Button,
+  TextField,
+  Drawer,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import CustomeHeader from "../../Common/Table/CustomeHeader";
 import Body from "./Table/Body";
+import toast from "react-hot-toast";
+import PaymentRejectModal from "./Modal/PaymentRejectModal";
+import PaymentApproveModal from "./Modal/PaymentApproveModal";
+import MoveToEnrolledModal from "./Modal/MoveToEnrolledModal";
+import EnrollmentRejectModal from "./Modal/EnrollmentRejectModal";
+import StudentSearchDrawer from "./Drawer/StudentSearchDrawer";
 
 export default function EnrollmentView() {
   const { courseId } = useParams();
@@ -82,6 +90,151 @@ export default function EnrollmentView() {
     { key: "action", label: "" },
   ];
 
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
+  // Open modal
+  const handleOpenRejectModal = (student) => {
+    setSelectedStudent(student);
+    setRejectModalOpen(true);
+  };
+
+  // Close modal
+  const handleCloseRejectModal = () => {
+    setSelectedStudent(null);
+    setRejectModalOpen(false);
+  };
+
+  // Handle confirm rejection
+  const handleEnrollmentIntialReject = async (remark) => {
+    if (!selectedStudent) return;
+    try {
+      const { studentId, _id: enrollmentId } = selectedStudent;
+      await axios.post("reject-intial-enrollment", {
+        courseId,
+        studentId: studentId._id || studentId, // handle populated object
+        enrollmentId,
+        remark,
+      });
+
+      toast.success("Enrollment rejected successfully.");
+
+      // Refresh the current tab
+      loadEnrollmentHistory(tabLabels[activeTab]);
+
+      // Close modal
+      handleCloseRejectModal();
+    } catch (err) {
+      console.error("Error rejecting enrollment:", err);
+      toast.error("Failed to reject enrollment.");
+    }
+  };
+
+  const [paymentRejectModalOpen, setPaymentRejectModalOpen] = useState(false);
+  const handleOpenPaymentRejectModal = (student) => {
+    setSelectedStudent(student);
+    setPaymentRejectModalOpen(true);
+  };
+
+  const handleClosePaymentRejectModal = () => {
+    setSelectedStudent(null);
+    setPaymentRejectModalOpen(false);
+  };
+
+  const handleConfirmPaymentReject = async (remark) => {
+    if (!selectedStudent) return;
+
+    try {
+      const studentId =
+        selectedStudent.studentId._id || selectedStudent.studentId;
+      await axios.post("/enrollment/reject-payment", {
+        courseId,
+        studentId,
+        remark,
+      });
+
+      toast.success("Payment rejected successfully.");
+
+      // Refresh table
+      loadEnrollmentHistory(tabLabels[activeTab]);
+    } catch (err) {
+      console.error("Error rejecting payment:", err);
+      toast.error("Failed to reject payment.");
+    } finally {
+      handleClosePaymentRejectModal();
+    }
+  };
+  const [paymentApproveModalOpen, setPaymentApproveModalOpen] = useState(false);
+
+  const handleOpenPaymentApproveModal = (student) => {
+    setSelectedStudent(student);
+    setPaymentApproveModalOpen(true);
+  };
+
+  const handleClosePaymentApproveModal = () => {
+    setSelectedStudent(null);
+    setPaymentApproveModalOpen(false);
+  };
+  const handleConfirmPaymentAccept = async () => {
+    if (!selectedStudent) return;
+    try {
+      const studentId =
+        selectedStudent.studentId._id || selectedStudent.studentId;
+      await axios.post("/enrollment/accept-payment", {
+        courseId,
+        studentId,
+      });
+
+      toast.success("Payment approved successfully.");
+      loadEnrollmentHistory(tabLabels[activeTab]); // refresh table
+    } catch (err) {
+      console.error("Error approving payment:", err);
+      toast.error("Failed to approve payment.");
+    } finally {
+      handleClosePaymentApproveModal();
+    }
+  };
+  const [moveModalOpen, setMoveModalOpen] = useState(false);
+
+  const handleOpenMoveToEnrolledModal = (student) => {
+    setSelectedStudent(student);
+    setMoveModalOpen(true);
+  };
+
+  const handleCloseMoveToEnrolledModal = () => {
+    setMoveModalOpen(false);
+    setSelectedStudent(null);
+  };
+
+  const handleConfirmMoveToEnrolled = async () => {
+    if (!selectedStudent) return;
+    try {
+      const studentId =
+        selectedStudent.studentId._id || selectedStudent.studentId;
+      await axios.post("/enrollment/move", {
+        courseId,
+        studentId,
+      });
+
+      toast.success("Student moved to enrolled list successfully.");
+      loadEnrollmentHistory(tabLabels[activeTab]); // refresh table
+    } catch (err) {
+      console.error("Error moving student:", err);
+      toast.error("Failed to move student.");
+    } finally {
+      handleCloseMoveToEnrolledModal();
+    }
+  };
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+const handleDrawerOpen = () => {
+  setIsDrawerOpen(true);
+};
+
+const handleDrawerClose = () => {
+  setIsDrawerOpen(false);
+};
+  
+
   return (
     <Box
       sx={{
@@ -98,7 +251,7 @@ export default function EnrollmentView() {
         justifyContent="space-between"
       >
         <Typography variant="h6">{title}</Typography>
-        <Button variant="contained">Search</Button>
+        <Button variant="contained" onClick={handleDrawerOpen}>Add participant</Button>
       </Stack>
       {/* ---------------- Tabs with count ---------------- */}
       <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
@@ -122,6 +275,10 @@ export default function EnrollmentView() {
             handleOpenMenu={handleOpenMenu}
             handleCloseMenu={handleCloseMenu}
             activeTab={tabLabels[activeTab]}
+            handleOpenRejectModal={handleOpenRejectModal}
+            handleOpenPaymentRejectModal={handleOpenPaymentRejectModal}
+            handleOpenPaymentApproveModal={handleOpenPaymentApproveModal}
+            handleOpenMoveToEnrolledModal={handleOpenMoveToEnrolledModal}
           />
         </Table>
 
@@ -131,6 +288,34 @@ export default function EnrollmentView() {
           </Stack>
         )}
       </TableContainer>
+      <EnrollmentRejectModal
+        open={rejectModalOpen}
+        onClose={handleCloseRejectModal}
+        student={selectedStudent}
+        onConfirm={handleEnrollmentIntialReject}
+      />
+      <PaymentRejectModal
+        open={paymentRejectModalOpen}
+        onClose={handleClosePaymentRejectModal}
+        student={selectedStudent}
+        onConfirm={handleConfirmPaymentReject}
+      />
+      <PaymentApproveModal
+        open={paymentApproveModalOpen}
+        onClose={handleClosePaymentApproveModal}
+        student={selectedStudent}
+        onConfirm={handleConfirmPaymentAccept}
+      />
+      <MoveToEnrolledModal
+        open={moveModalOpen}
+        onClose={handleCloseMoveToEnrolledModal}
+        student={selectedStudent}
+        onConfirm={handleConfirmMoveToEnrolled}
+      />
+      <Drawer anchor="right" open={isDrawerOpen} onClose={handleDrawerClose}>
+        <StudentSearchDrawer courseId={courseId}/>
+      </Drawer>
+      
     </Box>
   );
 }

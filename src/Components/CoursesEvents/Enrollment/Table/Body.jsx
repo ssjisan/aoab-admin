@@ -6,8 +6,8 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  TableCell,
 } from "@mui/material";
-import TableCell from "@mui/material/TableCell";
 import PropTypes from "prop-types";
 import { Approve, Deny, More, NoData } from "../../../../assets/IconSet";
 import CustomChip from "../../../Common/Chip/CustomeChip";
@@ -18,32 +18,64 @@ export default function Body({
   loading,
   open,
   handleOpenMenu,
-  redirectEdit,
   handleCloseMenu,
   selectedRowId,
-  activeTab, 
+  activeTab,
+  handleOpenRejectModal,
+  handleOpenPaymentRejectModal,
+  handleOpenPaymentApproveModal,
+  handleOpenMoveToEnrolledModal,
 }) {
   const enrollments = enrollmentDetails?.enrollments || [];
 
-  // 👇 decide menu items based on tab
   const getMenuItems = () => {
     switch (activeTab) {
       case "Enrolled":
-        return [{ label: "Reject", icon: Deny, color: "error" }];
+        return [
+          {
+            label: "Reject",
+            icon: Deny,
+            color: "error",
+            onClick: () => {
+              handleCloseMenu();
+              handleOpenRejectModal(selectedRowId);
+            },
+          },
+        ];
       case "Payment":
         return [
           {
             label: "Approve",
             icon: Approve,
-            onClick: (e) => redirectEdit(e, selectedRowId),
+            onClick: () => {
+              handleCloseMenu();
+              handleOpenPaymentApproveModal(selectedRowId);
+            },
           },
-          { label: "Reject", icon: Deny, color: "error" },
+          {
+            label: "Reject",
+            icon: Deny,
+            color: "error",
+            onClick: () => {
+              handleCloseMenu();
+              handleOpenPaymentRejectModal(selectedRowId);
+            },
+          },
         ];
       case "Waitlist":
-        return [{ label: "Move to Enrolled", icon: Approve }];
+        return [
+          {
+            label: "Move to Enrolled",
+            icon: Approve,
+            onClick: () => {
+              handleCloseMenu();
+              handleOpenMoveToEnrolledModal(selectedRowId);
+            },
+          },
+        ];
       case "Confirmed":
       case "Rejected":
-        return []; // no actions
+        return [];
       default:
         return [];
     }
@@ -113,7 +145,7 @@ export default function Body({
             <TableCell>
               {data?.paymentProof?.url ? (
                 <a
-                  href={data?.paymentProof?.url}
+                  href={data.paymentProof.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: "#1976d2", textDecoration: "underline" }}
@@ -130,7 +162,7 @@ export default function Body({
                   <IconButton
                     sx={{ width: "40px", height: "40px" }}
                     onClick={(event) => handleOpenMenu(event, data)}
-                    disabled={["Confirmed", "Rejected"].includes(activeTab)} // 👈 disable in confirmed/rejected
+                    disabled={["Confirmed", "Rejected"].includes(activeTab)}
                   >
                     <More color="#919EAB" size={24} />
                   </IconButton>
@@ -140,6 +172,7 @@ export default function Body({
           </TableRow>
         ))
       )}
+
       <CustomePopOver
         open={Boolean(open)}
         anchorEl={open}
@@ -152,8 +185,33 @@ export default function Body({
 
 Body.propTypes = {
   enrollmentDetails: PropTypes.shape({
-    enrollments: PropTypes.array,
+    enrollments: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        studentId: PropTypes.shape({
+          _id: PropTypes.string,
+          name: PropTypes.string,
+          bmdcNo: PropTypes.string,
+          email: PropTypes.string,
+          contactNumber: PropTypes.string,
+        }),
+        enrolledAt: PropTypes.string,
+        status: PropTypes.string,
+        paymentReceived: PropTypes.string,
+        paymentProof: PropTypes.shape({
+          url: PropTypes.string,
+        }),
+      })
+    ),
   }).isRequired,
   loading: PropTypes.bool.isRequired,
+  open: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+  handleOpenMenu: PropTypes.func.isRequired,
+  handleCloseMenu: PropTypes.func.isRequired,
+  selectedRowId: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   activeTab: PropTypes.string.isRequired,
+  handleOpenRejectModal: PropTypes.func.isRequired,
+  handleOpenPaymentRejectModal: PropTypes.func.isRequired,
+  handleOpenPaymentApproveModal: PropTypes.func.isRequired,
+  handleOpenMoveToEnrolledModal: PropTypes.func.isRequired,
 };
