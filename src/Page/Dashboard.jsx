@@ -25,7 +25,7 @@ export default function Dashboard() {
         <Toolbar />
         <Box>
           <WelcomeCard />
-          <Typography>Hello</Typography>
+          <Typography></Typography>
           <MatrixCardDeck />
         </Box>
         <Grid container spacing={3}>
