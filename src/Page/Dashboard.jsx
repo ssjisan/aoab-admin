@@ -1,4 +1,4 @@
-import { Box, Grid, Toolbar, useMediaQuery } from "@mui/material";
+import { Box, Grid, Toolbar, Typography, useMediaQuery } from "@mui/material";
 import Sidebar from "../Layout/Sidebar";
 import MatrixCardDeck from "../Components/Dashboard/MatrixCardDeck";
 import WelcomeCard from "../Components/Dashboard/WelcomeCard/WelcomeCard";
@@ -25,6 +25,7 @@ export default function Dashboard() {
         <Toolbar />
         <Box>
           <WelcomeCard />
+          <Typography>Hello</Typography>
           <MatrixCardDeck />
         </Box>
         <Grid container spacing={3}>
