@@ -56,6 +56,10 @@ const navConfig = ({ pathname }) => {
           title: "Email Verification Error",
           link: "/email_verification_error",
         },
+        {
+          title: "Incomplete accounts",
+          link: "/incomplete_accounts",
+        },
       ],
     },
     {

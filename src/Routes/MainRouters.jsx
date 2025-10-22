@@ -32,6 +32,7 @@ import EnrollmentHistory from "../Page/Courses&Events/EnrollmentHistory";
 import ConfirmList from "../Page/Courses&Events/ConfirmList";
 import FinalList from "../Page/Courses&Events/FinalList";
 import StudentUpdateView from "../Page/StudentUpdate/StudentUpdateView";
+import IncompleteAccounts from "../Page/Students/IncompleteAccounts";
 
 export default function MainRouters() {
   function RoutedAddCoursesEvents() {
@@ -116,6 +117,7 @@ export default function MainRouters() {
           <Route path="/student_approval" element={<StudentsApproval />} />
           <Route path="/student_list" element={<StudentsList />} />
           <Route path="/email_verification_error" element={<EmailVerificationError />} />
+          <Route path="/incomplete_accounts" element={<IncompleteAccounts />} />
           {/* User Routes End */}
 
           

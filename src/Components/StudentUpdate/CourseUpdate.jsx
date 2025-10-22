@@ -56,7 +56,7 @@ export default function CourseUpdate({ open, onClose, courseData }) {
     try {
       if (formData.courseId) {
         // Update existing course
-        await axios.put(`/courses/${formData.studentId}/${formData.courseId}`, {
+        await axios.post(`/courses/${formData.studentId}/${formData.courseId}`, {
           status: formData.status,
           completionYear: formData.completionYear,
         });
