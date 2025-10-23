@@ -19,7 +19,7 @@ export default function IncompleteAccounts() {
         <Toolbar />
         <Box>
           <Box sx={{ p: "16px 16px 0px 16px" }}>
-            <Typography variant="h4">Incomplete Accounts</Typography>
+            <Typography variant="h4">Incomplete Accounts list</Typography>
           </Box>
           <ListView />
         </Box>
