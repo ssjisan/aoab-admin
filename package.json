@@ -23,7 +23,6 @@
     "@tiptap/starter-kit": "^2.6.6",
     "apexcharts": "^4.6.0",
     "axios": "^1.6.8",
-    "cloudinary": "^2.8.0",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.7",
