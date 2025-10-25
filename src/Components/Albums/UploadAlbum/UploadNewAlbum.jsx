@@ -3,25 +3,42 @@ import UploadAlbumForm from "./UploadAlbumForm";
 import UploadImagePreview from "./UploadImagePreview";
 import { useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast"; // Import react-hot-toast for notifications
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export default function UploadNewAlbum() {
-  const [images, setImages] = useState([]); // State to hold uploaded images
-  const [isSubmitting, setIsSubmitting] = useState(false); // State for create button loading
-  const [albumName, setAlbumName] = useState(""); // State for album name
+  const [images, setImages] = useState([]);
+  const [rejectedFiles, setRejectedFiles] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [albumName, setAlbumName] = useState("");
   const navigate = useNavigate();
+
   // Handle image uploads
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
-    const newImages = files.map((file, index) => ({
-      id: `${file.name}-${index}-${Date.now()}`, // Generate a unique id
-      src: URL.createObjectURL(file),
-      name: file.name,
-      size: (file.size / (1024 * 1024)).toFixed(2),
-      file,
-    }));
-    setImages((prevImages) => [...prevImages, ...newImages]);
+    const validImages = [];
+    const rejected = [];
+
+    files.forEach((file, index) => {
+      if (file.size > 5 * 1024 * 1024) {
+        rejected.push(file.name);
+      } else {
+        validImages.push({
+          id: `${file.name}-${index}-${Date.now()}`,
+          src: URL.createObjectURL(file),
+          name: file.name,
+          size: (file.size / (1024 * 1024)).toFixed(2),
+          file,
+        });
+      }
+    });
+
+    if (rejected.length > 0) {
+      setRejectedFiles((prev) => [...prev, ...rejected]);
+      toast.error("Some files exceed the 5MB size limit");
+    }
+
+    setImages((prevImages) => [...prevImages, ...validImages]);
   };
 
   // Handle image removal
@@ -29,62 +46,75 @@ export default function UploadNewAlbum() {
     setImages((prevImages) => prevImages.filter((image) => image.id !== id));
   };
 
-  // Handle album form submission (send data to the backend)
+  // Handle form submission
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    if (!albumName) {
-      toast.error("Album name is required");
+    if (!albumName.trim()) {
+      toast.error("Please enter an album name");
       return;
     }
+
     if (images.length === 0) {
-      toast.error("Please upload at least one image");
+      toast.error("Please upload at least one valid image");
       return;
     }
 
-    setIsSubmitting(true); // Show CircularProgress on create button
+    setIsSubmitting(true);
 
-    // Prepare form data
-    const formData = new FormData();
-    formData.append("name", albumName); // Add the album name
-    images.forEach((image) => {
-      formData.append("images", image.file); // Append the image files
-    });
+    let elapsedSeconds = 0;
+    const toastId = toast.loading(`Uploading... 0s elapsed`);
+
+    // Timer to update the toast every second
+    const timer = setInterval(() => {
+      elapsedSeconds += 1;
+      toast.loading(`Uploading... ${elapsedSeconds}s elapsed`, { id: toastId });
+    }, 1000);
 
     try {
-      const response = await axios.post("/upload_album", formData, {
+      const formData = new FormData();
+      formData.append("albumName", albumName);
+      images.forEach((img) => {
+        formData.append("images", img.file);
+      });
+
+      const response = await axios.post(`/create-album`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          toast.loading(
+            `Uploading... ${progress}% | ${elapsedSeconds}s elapsed`,
+            { id: toastId }
+          );
+        },
       });
 
-      if (response.status === 201) {
+      clearInterval(timer);
+
+      if (response.data.success) {
+        toast.success(`Album uploaded successfully in ${elapsedSeconds}s!`, {
+          id: toastId,
+        });
+        setAlbumName("");
+        setImages([]);
+        setRejectedFiles([]);
         navigate("/album_list");
-        toast.success("Album created successfully");
-        setAlbumName(""); // Clear album name
-        setImages([]); // Clear uploaded images
+      } else {
+        toast.error(response.data.error || "Failed to upload album", {
+          id: toastId,
+        });
       }
     } catch (error) {
-      console.error("Error creating album:", error);
-
-      // Handle specific errors from the backend
-      if (error.response && error.response.data) {
-        const errorMessage = error.response.data.message;
-
-        if (errorMessage.includes("File size too large")) {
-          toast.error("File size too large. Maximum allowed is 10MB.");
-        } else if (errorMessage.includes("E11000 duplicate key error")) {
-          toast.error(
-            "An album with this name already exists. Please choose a different name."
-          );
-        } else {
-          toast.error(errorMessage);
-        }
-      } else {
-        toast.error(error.message);
-      }
+      clearInterval(timer);
+      console.error("Error uploading album:", error);
+      toast.error("Failed to upload album", { id: toastId });
     } finally {
-      setIsSubmitting(false); // Re-enable button after submission
+      clearInterval(timer);
+      setIsSubmitting(false);
     }
   };
 
@@ -96,8 +126,8 @@ export default function UploadNewAlbum() {
             onImageUpload={handleImageUpload}
             onFormSubmit={handleFormSubmit}
             albumName={albumName}
-            setAlbumName={setAlbumName} // Pass the album name state and setter
-            isSubmitting={isSubmitting} // Pass loading state to the form
+            setAlbumName={setAlbumName}
+            isSubmitting={isSubmitting}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={9}>
@@ -105,7 +135,8 @@ export default function UploadNewAlbum() {
             images={images}
             setImages={setImages}
             handleRemoveImage={handleRemoveImage}
-            isSubmitting={isSubmitting} // Pass submission state
+            rejectedFiles={rejectedFiles}
+            isSubmitting={isSubmitting}
           />
         </Grid>
       </Grid>

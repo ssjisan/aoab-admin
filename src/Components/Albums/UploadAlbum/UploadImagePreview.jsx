@@ -14,6 +14,7 @@ export default function UploadImagePreview({
   setImages,
   handleRemoveImage,
   isSubmitting,
+  rejectedFiles,
 }) {
   const handleOnDragEnd = (result) => {
     if (!result.destination) return;
@@ -26,71 +27,88 @@ export default function UploadImagePreview({
   };
 
   return (
-    <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Droppable droppableId="images">
-        {(provided) => (
-          <Stack
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            sx={{ p: "40px 0px" }}
-          >
-            {images.map((data, index) => (
-              <Draggable key={data.id} draggableId={data.id} index={index}>
-                {(provided) => (
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    sx={{
-                      border: "1px solid #DBDCDC",
-                      borderRadius: "12px",
-                      p: "8px 4px",
-                      mt: 2,
-                      backgroundColor: "white",
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" gap="12px">
-                      <IconButton {...provided.dragHandleProps} disabled={isSubmitting}>
-                        <Drag size={24} color="#000" />
-                      </IconButton>
-                      <Stack>
-                        <img
-                          src={data.src}
-                          alt="Uploaded"
-                          style={{
-                            width: "80px",
-                            height: "48px",
-                            borderRadius: "4px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      </Stack>
-                      <Typography variant="body1">{data.name}</Typography>
-                    </Stack>
-                    <Stack direction="row" alignItems="center" gap="12px">
-                      <Typography variant="body1">{data.size} MB</Typography>
-                      {isSubmitting ? (
-                        <Box sx={{ height: "24px", width: "36px" }}>
-                          <CircularProgress size={20} />
-                        </Box>
-                      ) : (
-                        <IconButton onClick={() => handleRemoveImage(data.id)}>
-                          <Cross size={24} color="red" />
+    <>
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId="images">
+          {(provided) => (
+            <Stack
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              sx={{ p: "40px 0px" }}
+            >
+              {images.map((data, index) => (
+                <Draggable key={data.id} draggableId={data.id} index={index}>
+                  {(provided) => (
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      sx={{
+                        border: "1px solid #DBDCDC",
+                        borderRadius: "12px",
+                        p: "8px 4px",
+                        mt: 2,
+                        backgroundColor: "white",
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" gap="12px">
+                        <IconButton
+                          {...provided.dragHandleProps}
+                          disabled={isSubmitting}
+                        >
+                          <Drag size={24} color="#000" />
                         </IconButton>
-                      )}
+                        <Stack>
+                          <img
+                            src={data.src}
+                            alt="Uploaded"
+                            style={{
+                              width: "80px",
+                              height: "48px",
+                              borderRadius: "4px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </Stack>
+                        <Typography variant="body1">{data.name}</Typography>
+                      </Stack>
+                      <Stack direction="row" alignItems="center" gap="12px">
+                        <Typography variant="body1">{data.size} MB</Typography>
+                        {isSubmitting ? (
+                          <Box sx={{ height: "24px", width: "36px" }}>
+                            <CircularProgress size={20} />
+                          </Box>
+                        ) : (
+                          <IconButton
+                            onClick={() => handleRemoveImage(data.id)}
+                          >
+                            <Cross size={24} color="red" />
+                          </IconButton>
+                        )}
+                      </Stack>
                     </Stack>
-                  </Stack>
-                )}
-              </Draggable>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </Stack>
+          )}
+        </Droppable>
+      </DragDropContext>
+      {rejectedFiles && rejectedFiles.length > 0 && (
+        <div style={{ marginTop: "10px", color: "red" }}>
+          <strong>Files too large (max 5MB):</strong>
+          <ul>
+            {rejectedFiles.map((file, idx) => (
+              <li key={idx}>{file}</li>
             ))}
-            {provided.placeholder}
-          </Stack>
-        )}
-      </Droppable>
-    </DragDropContext>
+          </ul>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -24,6 +24,7 @@ export default function Body({
   redirectEdit,
   selectedAlbum,
   onDragEnd,
+  handleDownloadAlbum
 }) {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -51,6 +52,9 @@ export default function Body({
                             <Drag color="#919EAB" size={24} />
                           </IconButton>
                         </Tooltip>
+                      </TableCell>
+                      <TableCell align="left" sx={{ p: "16px" }}>
+                        {data?.order}
                       </TableCell>
                       <TableCell component="th" scope="row">
                         <Stack direction="row" alignItems="center" spacing={2}>
@@ -114,6 +118,11 @@ export default function Body({
             label: "Preview",
             icon: EyeBold,
             onClick: handlePreviewAlbum,
+          },
+          {
+            label: "Download",
+            icon: EyeBold,
+            onClick: handleDownloadAlbum,
           },
           {
             label: "Edit",

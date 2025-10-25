@@ -23,6 +23,7 @@ export default function TableView() {
   // ***************** Table Header Columns ************************* //
 
   const columns = [
+    { key: "order", label: "Order" },
     { key: "album name", label: "Album Name" },
     { key: "upload date	", label: "Upload Date" },
     { key: "file count	", label: "File Count" },
@@ -105,26 +106,65 @@ export default function TableView() {
 
   // Dragging and reorder
   const onDragEnd = async (result) => {
-    if (!result.destination) return;
+  const { destination, source } = result;
 
-    const reorderedAlbums = Array.from(albums);
-    const [movedAlbum] = reorderedAlbums.splice(result.source.index, 1);
-    reorderedAlbums.splice(result.destination.index, 0, movedAlbum);
-    setAlbums(reorderedAlbums);
+  // If dropped outside the droppable area or position didn't change
+  if (!destination || (destination.index === source.index)) return;
 
-    // Send reordered video IDs to the backend
-    const reorderedIds = reorderedAlbums.map((album) => album._id);
-    console.log("Sending reordered videos to the server:", reorderedIds);
+  // Reorder the local albums array
+  const reorderedAlbums = Array.from(albums);
+  const [movedAlbum] = reorderedAlbums.splice(source.index, 1);
+  reorderedAlbums.splice(destination.index, 0, movedAlbum);
 
-    try {
-      await axios.post("/update-album-order", { reorderedAlbums });
+  // Update local state immediately for fast UI response
+  setAlbums(reorderedAlbums);
+
+  // Prepare array of ids in new order for backend
+  const reorderedAlbumIds = reorderedAlbums.map((album) => album._id);
+
+  try {
+    // Call backend API to save new order
+    const response = await axios.post("/update-album-order", {
+      reorderedAlbums: reorderedAlbumIds,
+    });
+
+    if (response.data.success) {
+      // Optionally update local albums with authoritative data from server
+      setAlbums(response.data.albums);
       toast.success("Album order updated successfully!");
+    } else {
+      toast.error(response.data.message || "Failed to update album order");
+    }
+  } catch (error) {
+    console.error("Error updating album order:", error);
+    toast.error("Network error: failed to update album order");
+  }
+};
+
+  const handleDownloadAlbum = async () => {
+    handleCloseMenu();
+    const toastId = toast.loading("Downloading album, please wait...");
+    try {
+      if (!selectedAlbum?.slug) return;
+
+      const response = await axios.get(`/${selectedAlbum.slug}/download`, {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${selectedAlbum.name}.zip`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.dismiss(toastId);
     } catch (error) {
-      console.error("Error updating album order:", error);
-      toast.error("Failed to update album order.");
+      console.error("Error downloading album:", error);
+      toast.error("Error downloading album:", error);
+      toast.dismiss(toastId);
     }
   };
-
   return (
     <Box
       sx={{
@@ -160,6 +200,7 @@ export default function TableView() {
             handleAlbumClose={handleAlbumClose}
             showConfirmationModal={showConfirmationModal}
             redirectEdit={redirectEdit}
+            handleDownloadAlbum={handleDownloadAlbum}
           />
           <CustomePagination
             count={albums.length}

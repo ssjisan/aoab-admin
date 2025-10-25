@@ -58,7 +58,7 @@ export default function UploadAlbumForm({
           Create
         </Button>
         <Typography variant="body2" color={"text.secondary"}>
-          Maximum file size is 10MB. 
+          Maximum file size is 5MB. 
         </Typography>
       </Stack>
     </Box>
