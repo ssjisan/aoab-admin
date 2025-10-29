@@ -8,7 +8,7 @@ export default function UserList() {
   const { auth } = useContext(DataContext);
 
   const handleBackupDownload = () => {
-    window.open(`${process.env.REACT_APP_SERVER_API}/mongodb-backup`, "_blank");
+    window.open(`${import.meta.env.VITE_SERVER_API}/mongodb-backup`, "_blank");
   };
 
   return (

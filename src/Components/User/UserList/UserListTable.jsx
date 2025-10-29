@@ -25,7 +25,7 @@ export default function UserListTable() {
       const { data } = await axios.get("/users");
       setUsers(data);
     } catch (err) {
-      toast.error("Check");
+      toast.error("Error");
     }
   };
   const [page, setPage] = useState(0);
