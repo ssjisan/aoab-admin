@@ -126,28 +126,30 @@ export default function UploadNewAlbum() {
   // ---------------------------------------------------------------------
   // 🗑️ Remove image from preview
   // ---------------------------------------------------------------------
-const handleRemoveImage = async (id, public_id) => {
-  const toastId = toast.loading("Removing image...");
+  const handleRemoveImage = async (id, public_id) => {
+    const toastId = toast.loading("Removing image...");
 
-  try {
-    // If public_id exists, call backend to remove from Cloudinary
-    if (public_id) {
-      const res = await axios.post("/delete-image", { public_id });
+    try {
+      // If public_id exists, call backend to remove from Cloudinary
+      if (public_id) {
+        const res = await axios.post("/delete-image", { public_id });
 
-      if (!res.data.success) {
-        toast.error(res.data.message || "Failed to remove image", { id: toastId });
-        return;
+        if (!res.data.success) {
+          toast.error(res.data.message || "Failed to remove image", {
+            id: toastId,
+          });
+          return;
+        }
       }
-    }
 
-    // Remove from local state in any case
-    setImages(prev => prev.filter(img => img.id !== id));
-    toast.success("Image removed successfully!", { id: toastId });
-  } catch (error) {
-    console.error("Failed to remove image:", error);
-    toast.error("Failed to remove image", { id: toastId });
-  }
-};
+      // Remove from local state in any case
+      setImages((prev) => prev.filter((img) => img.id !== id));
+      toast.success("Image removed successfully!", { id: toastId });
+    } catch (error) {
+      console.error("Failed to remove image:", error);
+      toast.error("Failed to remove image", { id: toastId });
+    }
+  };
 
   // ---------------------------------------------------------------------
   // 💾 Save album info to backend
@@ -214,10 +216,10 @@ const handleRemoveImage = async (id, public_id) => {
             isSubmitting={isSaving || isUploading}
           />
         </Grid>
-
         <Grid item xs={12} md={9}>
           <UploadImagePreview
             images={images}
+            setImages={setImages}
             handleRemoveImage={handleRemoveImage}
             rejectedFiles={rejectedFiles}
             isSubmitting={isSaving || isUploading}

@@ -1,6 +1,6 @@
 import {
   Box,
-  CircularProgress,
+  LinearProgress,
   IconButton,
   Stack,
   Typography,
@@ -19,11 +19,10 @@ export default function UploadImagePreview({
   const handleOnDragEnd = (result) => {
     if (!result.destination) return;
 
-    const items = Array.from(images);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setImages(items);
+    const reorderedImages = Array.from(images);
+    const [movedImage] = reorderedImages.splice(result.source.index, 1);
+    reorderedImages.splice(result.destination.index, 0, movedImage);
+    setImages(reorderedImages);
   };
 
   return (
@@ -54,69 +53,81 @@ export default function UploadImagePreview({
                         backgroundColor: "white",
                       }}
                     >
-                      <Stack direction="row" alignItems="center" gap="12px">
-                        <IconButton
-                          {...provided.dragHandleProps}
-                          disabled={isSubmitting}
-                        >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        gap="12px"
+                        style={{ width: "100%" }}
+                      >
+                        <IconButton {...provided.dragHandleProps}>
                           <Drag size={24} color="#000" />
                         </IconButton>
-                        <Stack>
-                          <img
-                            src={data.src}
-                            alt="Uploaded"
-                            style={{
-                              width: "80px",
-                              height: "48px",
-                              borderRadius: "4px",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </Stack>
-                        <Typography variant="body1">{data.name}</Typography>
-                      </Stack>
-
-                      <Stack direction="row" alignItems="center" gap="12px">
-                        <Typography variant="body1">{data.size} MB</Typography>
-
+                        <img
+                          src={data.src}
+                          alt="Uploaded"
+                          style={{
+                            width: "80px",
+                            height: "48px",
+                            borderRadius: "4px",
+                            objectFit: "cover",
+                          }}
+                        />
                         {data.uploading ? (
-                          <Box sx={{ position: "relative", display: "inline-flex" }}>
-                            <CircularProgress
-                              variant="determinate"
-                              value={data.progress}
-                              size={36}
-                              thickness={4}
-                            />
-                            <Box
-                              sx={{
-                                top: 0,
-                                left: 0,
-                                bottom: 0,
-                                right: 0,
-                                position: "absolute",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                component="div"
-                                color="textSecondary"
-                              >
-                                {`${data.progress}%`}
+                          // ⚡ Linear progress while uploading instead of name/size
+                          <Stack style={{ width: "100%" }}>
+                            <Box sx={{ width: "100%" }}>
+                              <LinearProgress
+                                variant="determinate"
+                                value={data.progress}
+                              />
+                              <Typography variant="caption" sx={{ mt: 0.5 }}>
+                                {data.progress}%
                               </Typography>
                             </Box>
-                          </Box>
+                          </Stack>
                         ) : (
+                          <Stack style={{ width: "100%" }}>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {data.name}
+                            </Typography>
+                          </Stack>
+                        )}
+                      </Stack>
+
+                      {!data.uploading && (
+                        <Stack
+                          flexDirection="row"
+                          gap="4px"
+                          alignItems="center"
+                        >
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            sx={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {data.size} MB
+                          </Typography>
                           <IconButton
-  onClick={() => handleRemoveImage(data.id, data.public_id)} // pass public_id
+                            onClick={() =>
+                              handleRemoveImage(data.id, data.public_id)
+                            }
                             disabled={isSubmitting}
                           >
                             <Cross size={24} color="red" />
                           </IconButton>
-                        )}
-                      </Stack>
+                        </Stack>
+                      )}
                     </Stack>
                   )}
                 </Draggable>

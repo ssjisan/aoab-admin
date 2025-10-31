@@ -12,24 +12,10 @@ import PropTypes from "prop-types";
 export default function UpdateAlbumForm({
   albumName,
   setAlbumName,
-  images, // New prop to handle the images array
-  setImages, // Prop to update the images array
   isLoading,
   handleSubmit,
+  onImageUpload,
 }) {
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = files.map((file) => ({
-      src: URL.createObjectURL(file), // Generate a preview URL
-      name: file.name,
-      size: (file.size / (1024 * 1024)).toFixed(2), // Convert size to MB
-      file: file, // Store the actual file for uploading
-      fromDatabase: false, // Mark as newly uploaded image
-    }));
-
-    setImages((prevImages) => [...prevImages, ...newImages]); // Add to existing images
-  };
-
   return (
     <Box component="form" onSubmit={handleSubmit}>
       <Typography variant="h4" sx={{ mb: "40px" }}>
@@ -57,7 +43,7 @@ export default function UpdateAlbumForm({
             accept="image/*"
             hidden
             multiple
-            onChange={handleFileUpload} // Handle file upload
+            onChange={(e) => onImageUpload(e)}
           />
         </Button>
         <Button
@@ -65,7 +51,9 @@ export default function UpdateAlbumForm({
           variant="contained"
           color="primary"
           disabled={isLoading} // Disable button while loading
-          endIcon={isLoading && <CircularProgress size={24} sx={{ color: "white" }} />}
+          endIcon={
+            isLoading && <CircularProgress size={24} sx={{ color: "white" }} />
+          }
         >
           Update Album
         </Button>
@@ -81,4 +69,5 @@ UpdateAlbumForm.propTypes = {
   setImages: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  onImageUpload: PropTypes.func.isRequired,
 };
