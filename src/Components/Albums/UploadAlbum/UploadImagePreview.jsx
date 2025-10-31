@@ -75,15 +75,43 @@ export default function UploadImagePreview({
                         </Stack>
                         <Typography variant="body1">{data.name}</Typography>
                       </Stack>
+
                       <Stack direction="row" alignItems="center" gap="12px">
                         <Typography variant="body1">{data.size} MB</Typography>
-                        {isSubmitting ? (
-                          <Box sx={{ height: "24px", width: "36px" }}>
-                            <CircularProgress size={20} />
+
+                        {data.uploading ? (
+                          <Box sx={{ position: "relative", display: "inline-flex" }}>
+                            <CircularProgress
+                              variant="determinate"
+                              value={data.progress}
+                              size={36}
+                              thickness={4}
+                            />
+                            <Box
+                              sx={{
+                                top: 0,
+                                left: 0,
+                                bottom: 0,
+                                right: 0,
+                                position: "absolute",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                component="div"
+                                color="textSecondary"
+                              >
+                                {`${data.progress}%`}
+                              </Typography>
+                            </Box>
                           </Box>
                         ) : (
                           <IconButton
-                            onClick={() => handleRemoveImage(data.id)}
+  onClick={() => handleRemoveImage(data.id, data.public_id)} // pass public_id
+                            disabled={isSubmitting}
                           >
                             <Cross size={24} color="red" />
                           </IconButton>
@@ -98,6 +126,7 @@ export default function UploadImagePreview({
           )}
         </Droppable>
       </DragDropContext>
+
       {rejectedFiles && rejectedFiles.length > 0 && (
         <div style={{ marginTop: "10px", color: "red" }}>
           <strong>Files too large (max 5MB):</strong>
@@ -116,5 +145,6 @@ UploadImagePreview.propTypes = {
   images: PropTypes.array.isRequired,
   setImages: PropTypes.func.isRequired,
   handleRemoveImage: PropTypes.func.isRequired,
-  isSubmitting: PropTypes.func.isRequired,
+  isSubmitting: PropTypes.bool.isRequired,
+  rejectedFiles: PropTypes.array,
 };
