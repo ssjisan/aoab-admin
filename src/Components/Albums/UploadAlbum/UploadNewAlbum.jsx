@@ -109,9 +109,29 @@ export default function UploadNewAlbum() {
         });
       }
     } catch (error) {
-      clearInterval(timer);
-      console.error("Error uploading album:", error);
-      toast.error("Failed to upload album", { id: toastId });
+      if (error.response) {
+        console.error("Error uploading album:", {
+          status: error.response.status,
+          data: error.response.data,
+          message: error.message,
+        });
+
+        toast.error(
+          error.response.data?.message ||
+            "Server responded with an error during upload",
+          { id: toastId }
+        );
+      } else if (error.request) {
+        console.error("No response from server:", error.request);
+        toast.error("No response from server. Please check your connection.", {
+          id: toastId,
+        });
+      } else {
+        console.error("Error setting up request:", error.message);
+        toast.error("Unexpected client error. Please try again.", {
+          id: toastId,
+        });
+      }
     } finally {
       clearInterval(timer);
       setIsSubmitting(false);
