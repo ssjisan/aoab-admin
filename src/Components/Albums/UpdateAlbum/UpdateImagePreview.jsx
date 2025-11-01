@@ -129,10 +129,14 @@ export default function UpdateImagePreview({
                             {data.size} MB
                           </Typography>
                           <IconButton
-                            onClick={() =>
-                              handleRemoveImage(data.id, data.public_id)
-                            }
-                          >
+                          onClick={() =>
+                            handleRemoveImage(
+                              data._id,
+                              data.public_id,
+                              data.fromDatabase
+                            )
+                          }
+                        >
                             <Cross size={24} color="red" />
                           </IconButton>
                         </Stack>

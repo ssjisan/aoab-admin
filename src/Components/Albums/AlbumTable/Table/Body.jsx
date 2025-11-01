@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Drag, Edit, EyeBold, More, Remove } from "../../../../assets/IconSet";
+import { Download, Drag, Edit, EyeBold, More, Remove } from "../../../../assets/IconSet";
 import { format } from "date-fns";
 import PropTypes from "prop-types";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -121,7 +121,7 @@ export default function Body({
           },
           {
             label: "Download",
-            icon: EyeBold,
+            icon: Download,
             onClick: handleDownloadAlbum,
           },
           {
