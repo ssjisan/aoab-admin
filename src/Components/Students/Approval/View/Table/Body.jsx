@@ -22,19 +22,16 @@ export default function Body({
   handleOpenMenu,
   handleCloseMenu,
   open,
+  activeTab, // ✅ Added prop
 }) {
   if (loading) {
     return (
       <TableBody>
         <TableRow>
           <TableCell colSpan={6}>
-            <Stack
-              sx={{ width: "100%", mt: 4, mb: 4 }}
-              gap={2}
-              alignItems="center"
-            >
+            <Stack sx={{ width: "100%", mt: 4, mb: 4 }} gap={2} alignItems="center">
               <CircularProgress />
-              <Typography variant="body1" color="text.secondary" sx={{fontWeight:"500 !important"}}>
+              <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
                 Loading profiles...
               </Typography>
             </Stack>
@@ -43,19 +40,16 @@ export default function Body({
       </TableBody>
     );
   }
-  if (!studentProfiles.length >= 1) {
+
+  if (!studentProfiles.length) {
     return (
       <TableBody>
         <TableRow>
           <TableCell colSpan={6}>
-            <Stack
-              sx={{ width: "100%", mt: "32px", mb: "32px" }}
-              gap="8px"
-              alignItems="center"
-            >
+            <Stack sx={{ width: "100%", mt: 4, mb: 4 }} gap={2} alignItems="center">
               <NoData />
-              <Typography variant="body1" color="text.secondary" sx={{fontWeight:"500 !important"}}>
-                No approval pending!
+              <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
+                No {activeTab === "rejected" ? "rejected" : "approval pending"} profiles!
               </Typography>
             </Stack>
           </TableCell>
@@ -66,26 +60,30 @@ export default function Body({
 
   return (
     <TableBody>
-      {studentProfiles.map((data) => {
-        return (
-          <TableRow key={data._id}>
-            <TableCell sx={{ p: "8px 16px" }}>{data.name}</TableCell>
-            <TableCell sx={{ p: "8px 16px" }}>{data.email}</TableCell>
-            <TableCell sx={{ p: "8px 16px" }}>
-              +880{data.contactNumber}
+      {studentProfiles.map((data) => (
+        <TableRow key={data._id}>
+          <TableCell sx={{ p: "8px 16px" }}>{data.name}</TableCell>
+          <TableCell sx={{ p: "8px 16px" }}>{data.email}</TableCell>
+          <TableCell sx={{ p: "8px 16px" }}>+880{data.contactNumber}</TableCell>
+          <TableCell sx={{ p: "8px 16px" }}>A-{data.bmdcNo}</TableCell>
+          <TableCell
+            sx={{
+              p: "16px",
+              textDecoration: "underline",
+              color: "blue",
+              cursor: "pointer",
+            }}
+            onClick={() => onViewProfile(data._id)}
+          >
+            View Details
+          </TableCell>
+
+          {/* ✅ Conditional Rendering */}
+          {activeTab === "rejected" ? (
+            <TableCell sx={{ p: "16px", color: "#FF5630", fontWeight: 500 }}>
+              {data.remarks ? data.remarks : "No remarks provided"}
             </TableCell>
-            <TableCell sx={{ p: "8px 16px" }}>A-{data.bmdcNo}</TableCell>
-            <TableCell
-              sx={{
-                p: "16px",
-                textDecoration: "underline",
-                color: "blue",
-                cursor: "pointer",
-              }}
-              onClick={() => onViewProfile(data._id)}
-            >
-              View Details
-            </TableCell>
+          ) : (
             <TableCell align="center" sx={{ p: "16px" }}>
               <Tooltip title="Actions">
                 <IconButton
@@ -96,47 +94,44 @@ export default function Body({
                 </IconButton>
               </Tooltip>
             </TableCell>
-          </TableRow>
-        );
-      })}
-      <CustomePopOver
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        menuItems={[
-          {
-            label: "Approve",
-            icon: Approve,
-            color: "success",
-            onClick: () => openApprovalModal(selectedRow),
-          },
-          {
-            label: "Deny",
-            icon: Deny,
-            color: "error",
-            onClick: () => openDenyModal(selectedRow),
-          },
-        ]}
-      />
+          )}
+        </TableRow>
+      ))}
+
+      {activeTab !== "rejected" && (
+        <CustomePopOver
+          open={Boolean(open)}
+          anchorEl={open}
+          onClose={handleCloseMenu}
+          menuItems={[
+            {
+              label: "Approve",
+              icon: Approve,
+              color: "success",
+              onClick: () => openApprovalModal(selectedRow),
+            },
+            {
+              label: "Deny",
+              icon: Deny,
+              color: "error",
+              onClick: () => openDenyModal(selectedRow),
+            },
+          ]}
+        />
+      )}
     </TableBody>
   );
 }
 
 Body.propTypes = {
-  studentProfiles: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      publishedDate: PropTypes.string.isRequired,
-      link: PropTypes.string.isRequired,
-    })
-  ).isRequired,
+  studentProfiles: PropTypes.array.isRequired,
   openApprovalModal: PropTypes.func.isRequired,
   openDenyModal: PropTypes.func.isRequired,
   onViewProfile: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  selectedRow: PropTypes.object.isRequired,
+  selectedRow: PropTypes.object,
   handleOpenMenu: PropTypes.func.isRequired,
   handleCloseMenu: PropTypes.func.isRequired,
   open: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
+  activeTab: PropTypes.string.isRequired, // ✅ Added
 };

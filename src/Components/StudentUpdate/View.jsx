@@ -1,29 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-
 import Search from "./Search";
 import { Typography, Box } from "@mui/material";
-import BasicInfo from "./BasicInfo";
-import CourseTable from "./CourseTable";
-import Signature from "./Signature";
-import PostGradCertificate from "./PostGradCertificate";
 
 export default function View() {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log("User", selectedUser);
-
-  // Editable fields
-  const [studentId, setStudetnId] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [bmdcNo, setBmdcNo] = useState();
-  const [contactNumber, setContactNumber] = useState();
-  const [courses, setCourses] = useState([]);
-  console.log("Courses", courses);
 
   // ----------------- Functions -----------------
   const loadStudentsProfile = async (search = "") => {
@@ -34,7 +18,6 @@ export default function View() {
 
       const { data } = await axios.get(`/all-students?${params.toString()}`);
       setSearchResults(data);
-      setSelectedUser(null);
     } catch (err) {
       console.error(err);
       toast.error("Students Profile can't load");
@@ -51,39 +34,8 @@ export default function View() {
     loadStudentsProfile(search);
   };
 
-  const handleSelectUser = (student) => {
-    setSelectedUser(student);
-    setSearchResults([]);
-    setStudetnId(student._id);
-    setName(student.name);
-    setEmail(student.email);
-    setBmdcNo(student.bmdcNo);
-    setContactNumber(student.contactNumber);
-    setCourses(student.courses || []);
-  };
 
-  const handleUpdateUser = async () => {
-    if (!selectedUser?._id) return;
-    try {
-      const { data } = await axios.put(`/students/${selectedUser._id}`, {
-        name,
-        email,
-        bmdcNo,
-        contactNumber,
-      });
-      toast.success(data.message || "Student updated successfully");
-      setSelectedUser("");
-      setSearch("");
-      setName("");
-      setEmail("");
-      setBmdcNo("");
-      setContactNumber("");
-      setCourses([]);
-    } catch (err) {
-      console.error(err);
-      toast.error(`Failed to update user: ${err.message}`);
-    }
-  };
+
 
   const highlightMatch = (text) => {
     if (!search) return text;
@@ -117,45 +69,8 @@ export default function View() {
         searchResults={searchResults}
         loading={loading}
         handleSearch={handleSearch}
-        handleSelectUser={handleSelectUser}
         highlightMatch={highlightMatch}
       />
-      {selectedUser && (
-        <div style={{ marginBottom: "64px" }}>
-          <BasicInfo
-            name={name}
-            setName={setName}
-            email={email}
-            setEmail={setEmail}
-            bmdcNo={bmdcNo}
-            setBmdcNo={setBmdcNo}
-            contactNumber={contactNumber}
-            setContactNumber={setContactNumber}
-            handleUpdateUser={handleUpdateUser}
-          />
-          <Signature
-            studentId={studentId}
-            existingSignature={
-              selectedUser?.signature?.length > 0
-                ? selectedUser.signature[0]
-                : null
-            }
-          />
-          <PostGradCertificate
-            studentId={studentId}
-            existingCertificate={
-              selectedUser?.postGraduationCertificates?.length > 0
-                ? selectedUser.postGraduationCertificates[0]
-                : null
-            }
-          />
-          <CourseTable
-            courses={courses}
-            studentId={studentId}
-            onEditCourse={(course) => console.log("Edit course", course)}
-          />
-        </div>
-      )}
     </Box>
   );
 }

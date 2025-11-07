@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import {
   Box,
   TextField,
@@ -23,7 +24,6 @@ export default function Search({
   searchResults,
   loading,
   handleSearch,
-  handleSelectUser,
   highlightMatch,
 }) {
   // store generating state per student id
@@ -51,7 +51,11 @@ export default function Search({
       if (s.bypassExpiry) {
         const rem = getRemainingSeconds(s.bypassExpiry);
         if (rem > 0) {
-          init[s._id] = { expiresAt: new Date(s.bypassExpiry), remainingSec: rem, rawBypass: null };
+          init[s._id] = {
+            expiresAt: new Date(s.bypassExpiry),
+            remainingSec: rem,
+            rawBypass: null,
+          };
         }
       }
     }
@@ -135,7 +139,11 @@ export default function Search({
         // store rawBypass locally for copy button and set cooldown
         setCooldowns((prev) => ({
           ...prev,
-          [studentId]: { expiresAt: new Date(expiresAt), remainingSec: getRemainingSeconds(expiresAt), rawBypass: bypass },
+          [studentId]: {
+            expiresAt: new Date(expiresAt),
+            remainingSec: getRemainingSeconds(expiresAt),
+            rawBypass: bypass,
+          },
         }));
       } else {
         toast.error(res.data?.error || "Failed to generate bypass");
@@ -176,11 +184,21 @@ export default function Search({
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell><strong>Name</strong></TableCell>
-                <TableCell><strong>Email</strong></TableCell>
-                <TableCell><strong>BM&DC Reg.</strong></TableCell>
-                <TableCell><strong>Contact No</strong></TableCell>
-                <TableCell align="center"><strong>Action</strong></TableCell>
+                <TableCell>
+                  <strong>Name</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Email</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>BM&DC Reg.</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Contact No</strong>
+                </TableCell>
+                <TableCell align="center">
+                  <strong>Action</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -192,16 +210,44 @@ export default function Search({
                     <TableCell>{highlightMatch(student.name)}</TableCell>
                     <TableCell>{highlightMatch(student.email)}</TableCell>
                     <TableCell>{highlightMatch(student.bmdcNo)}</TableCell>
-                    <TableCell>{highlightMatch(student.contactNumber)}</TableCell>
+                    <TableCell>
+                      {highlightMatch(student.contactNumber)}
+                    </TableCell>
                     <TableCell align="center">
                       {isCooling ? (
-                        <Box display="flex" alignItems="center" gap={1} justifyContent="center">
-                          <Button size="small" variant="outlined" disabled>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={1}
+                          justifyContent="center"
+                        >
+                          <Box
+                            sx={{
+                              bgcolor: "transparent",
+                              border: (theme) =>
+                                `1px solid ${theme.palette.primary.main}`,
+                              color: "primary.main",
+                              fontSize: "0.75rem",
+                              fontWeight: 500,
+                              borderRadius: "6px",
+                              width: "48px",
+                              px: 1,
+                              py: 0.5,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              minWidth: "38px",
+                            }}
+                          >
                             {formatSec(cd.remainingSec)}
-                          </Button>
+                          </Box>
+
                           {cd.rawBypass && (
-                            <IconButton size="small" onClick={() => copyToClipboard(cd.rawBypass)}>
-                              <Copy size="20px" color="#000"/>
+                            <IconButton
+                              size="small"
+                              onClick={() => copyToClipboard(cd.rawBypass)}
+                            >
+                              <Copy size="20px" color="#792df8" />
                             </IconButton>
                           )}
                         </Box>
@@ -209,11 +255,15 @@ export default function Search({
                         <Button
                           size="small"
                           variant="contained"
-                          color="secondary"
+                          color="primary"
                           onClick={() => handleGenerateBypass(student._id)}
                           disabled={generatingId === student._id}
                         >
-                          {generatingId === student._id ? <CircularProgress size={20} color="inherit" /> : "Generate"}
+                          {generatingId === student._id ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : (
+                            "Generate"
+                          )}
                         </Button>
                       )}
                     </TableCell>
@@ -227,3 +277,20 @@ export default function Search({
     </Box>
   );
 }
+Search.propTypes = {
+  search: PropTypes.string.isRequired,
+  setSearch: PropTypes.func.isRequired,
+  searchResults: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      name: PropTypes.string,
+      email: PropTypes.string,
+      bmdcNo: PropTypes.string,
+      contactNumber: PropTypes.string,
+      bypassExpiry: PropTypes.string,
+    })
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+  handleSearch: PropTypes.func.isRequired,
+  highlightMatch: PropTypes.func.isRequired,
+};

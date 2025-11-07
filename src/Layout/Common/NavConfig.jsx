@@ -21,7 +21,7 @@ const navConfig = ({ pathname }) => {
     {
       title: "Overview",
       icon: (
-        <Dashboard color={pathname === "/" ? "#00AE60" : "#637381"} size={20} />
+        <Dashboard color={pathname === "/" ? "#792df8" : "#637381"} size={20} />
       ),
       items: [
         {
@@ -37,7 +37,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/student_approval") ||
             pathname.startsWith("/student_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -67,9 +67,10 @@ const navConfig = ({ pathname }) => {
       icon: (
         <CoursesEvents
           color={
-            pathname.startsWith("/add_album") ||
-            pathname.startsWith("/album_list")
-              ? "#00AE60"
+            pathname.startsWith("/setup_category") ||
+            pathname.startsWith("/add_courses_events") ||
+            pathname.startsWith("/courses_events_list")
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -97,7 +98,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/add_album") ||
             pathname.startsWith("/album_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -121,7 +122,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/add_online_learning") ||
             pathname.startsWith("/online_learning_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -145,7 +146,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/add_links") ||
             pathname.startsWith("/links_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -169,7 +170,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/add_forms") ||
             pathname.startsWith("/forms_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -193,7 +194,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/upload_video") ||
             pathname.startsWith("/video_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -217,7 +218,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/create_user") ||
             pathname.startsWith("/user_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
@@ -241,7 +242,7 @@ const navConfig = ({ pathname }) => {
     {
       title: "Overview",
       icon: (
-        <Dashboard color={pathname === "/" ? "#00AE60" : "#637381"} size={20} />
+        <Dashboard color={pathname === "/" ? "#792df8" : "#637381"} size={20} />
       ),
       items: [
         {
@@ -257,7 +258,7 @@ const navConfig = ({ pathname }) => {
           color={
             pathname.startsWith("/student_approval") ||
             pathname.startsWith("/student_list")
-              ? "#00AE60"
+              ? "#792df8"
               : "#637381"
           }
           size={20}
