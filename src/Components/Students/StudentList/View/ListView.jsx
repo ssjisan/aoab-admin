@@ -80,7 +80,7 @@ export default function ListView() {
           ({ _id }) => _id && params.append("courses", _id)
         );
       }
-
+      //
       const { data } = await axios.get(
         `/verified-accounts?${params.toString()}`
       );
