@@ -208,7 +208,7 @@ export default function ListView({
                 gap: 1,
               }}
             >
-              <Typography variant="body1">Pending</Typography>
+              <Typography sx={{fontSize:"14px", fontWeight:600}}>Pending</Typography>
               <Box
                 sx={{
                   minWidth: "24px",
@@ -239,7 +239,7 @@ export default function ListView({
                 gap: 1,
               }}
             >
-              <Typography variant="body1">Under Review</Typography>
+              <Typography sx={{fontSize:"14px", fontWeight:600}}>Under Review</Typography>
               <Box
                 sx={{
                   minWidth: "24px",
@@ -270,7 +270,7 @@ export default function ListView({
                 gap: 1,
               }}
             >
-              <Typography variant="body1">Rejected</Typography>
+              <Typography sx={{fontSize:"14px", fontWeight:600}}>Rejected</Typography>
               <Box
                 sx={{
                   minWidth: "24px",
