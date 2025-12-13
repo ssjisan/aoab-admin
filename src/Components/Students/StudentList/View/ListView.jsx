@@ -159,6 +159,14 @@ export default function ListView() {
       Email: student?.email || "",
       "Contact Number": student?.contactNumber || "",
       BMDCNO: student?.bmdcNo || "",
+      "Current Designation":
+        student?.currentWorkingPlace?.[0]?.designation ||
+        student?.currentWorkingPlace?.designation ||
+        "",
+      "Postgraduation Degree":
+        student?.postGraduationDegrees?.[0]?.degreeName ||
+        student?.postGraduationDegrees?.degreeName ||
+        "",
       "Postgraduation Year":
         student?.postGraduationDegrees?.[0]?.yearOfGraduation || "",
     }));
