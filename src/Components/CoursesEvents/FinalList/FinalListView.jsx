@@ -10,8 +10,8 @@ export default function FinalListView() {
   const [loading, setLoading] = useState(false);
   const { courseId } = useParams();
   const [enrollmentDetails, setEnrollmentDetails] = useState([]);
-  console.log("here",enrollmentDetails);
-  
+  console.log("here", enrollmentDetails);
+
   useEffect(() => {
     loadEnrollmentHistory(true);
   }, []);
@@ -21,38 +21,35 @@ export default function FinalListView() {
 
     try {
       setLoading(true);
-      const res = await axios.get(`/enrollment-history/final/${courseId}`);      
+      const res = await axios.get(`/enrollment-history/final/${courseId}`);
       // res.data is already an array of enrollments
       setEnrollmentDetails(res.data);
     } catch (err) {
       toast.error(
-        err?.response?.data?.error || "Error loading enrollment details"
+        err?.response?.data?.error || "Error loading enrollment details",
       );
     } finally {
       setLoading(false);
     }
   };
-const handleIssueCertificate = async () => {
-  try {
-    setLoading(true);
+  const handleIssueCertificate = async () => {
+    try {
+      setLoading(true);
 
-    const res = await axios.post(`/certificate/issue/${courseId}`, {
-      courseCategoryId: enrollmentDetails.categoryId, // 💡 pass it explicitly
-    });
+      const res = await axios.post(`/certificate/issue/${courseId}`, {
+        courseCategoryId: enrollmentDetails.categoryId,
+      });
 
-    toast.success(res.data.message || "Certificates issued successfully");
+      toast.success(res.data.message || "Certificates issued successfully");
 
-    // Optionally reload data
-    loadEnrollmentHistory();
-  } catch (err) {
-    toast.error(
-      err?.response?.data?.error || "Failed to issue certificates"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
+      // Optionally reload data
+      loadEnrollmentHistory();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to issue certificates");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box

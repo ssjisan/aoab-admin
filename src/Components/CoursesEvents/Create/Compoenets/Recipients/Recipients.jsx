@@ -192,7 +192,6 @@ export default function Recipients({
           width: { xs: "100%", sm: "100%", md: "75%", lg: "75%" },
         }}
       >
-       
         {Object.keys(courseWiseStudents).length === 0 ? (
           <Typography color="text.secondary">No profiles added yet.</Typography>
         ) : (
@@ -227,7 +226,7 @@ export default function Recipients({
                           </TableCell>
                         </TableRow>
                       );
-                    })
+                    }),
                 )}
               </TableBody>
             </Table>
@@ -244,7 +243,7 @@ Recipients.propTypes = {
     PropTypes.shape({
       _id: PropTypes.string.isRequired,
       courseName: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   selectedCategoryForRecipients: PropTypes.shape({
     _id: PropTypes.string,
@@ -262,7 +261,7 @@ Recipients.propTypes = {
       bmdcNo: PropTypes.string,
       contactNumber: PropTypes.string,
       email: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   isStudentAlreadyAdded: PropTypes.func.isRequired,
   courseWiseStudents: PropTypes.objectOf(
@@ -271,8 +270,8 @@ Recipients.propTypes = {
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         email: PropTypes.string.isRequired,
-      })
-    )
+      }),
+    ),
   ).isRequired,
   handleRemoveStudent: PropTypes.func.isRequired,
 };

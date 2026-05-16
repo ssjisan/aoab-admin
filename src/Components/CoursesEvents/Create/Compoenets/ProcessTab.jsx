@@ -13,7 +13,6 @@ export default function ProcessTab({ formSections, currentTab, onTabChange }) {
         sx={{
           borderBottom: "1px solid #ccc",
           "& .MuiTab-root": {
-            backgroundColor: "white",
             fontWeight: 600,
             textTransform: "none",
             minWidth: "fit-content",
@@ -42,7 +41,7 @@ ProcessTab.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       content: PropTypes.node.isRequired,
-    })
+    }),
   ).isRequired,
   currentTab: PropTypes.number.isRequired,
   onTabChange: PropTypes.func.isRequired, // ✅ add this

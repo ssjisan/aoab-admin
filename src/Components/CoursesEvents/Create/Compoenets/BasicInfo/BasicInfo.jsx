@@ -55,7 +55,7 @@ export default function BasicInfo({
           sm: "100%", // >600px
           md: "50%", // >900px
         },
-        mb:"40px"
+        mb: "40px",
       }}
     >
       <FormControl fullWidth>
@@ -65,7 +65,7 @@ export default function BasicInfo({
           label="AO Course"
           onChange={(event) => {
             const selectedCourse = courses.find(
-              (course) => course._id === event.target.value
+              (course) => course._id === event.target.value,
             );
             setSelectedCourses(selectedCourse);
             console.log("Selected Course ID:", selectedCourse._id);
@@ -184,7 +184,7 @@ BasicInfo.propTypes = {
     PropTypes.shape({
       _id: PropTypes.string.isRequired,
       courseName: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
 
   selectedCourses: PropTypes.shape({
@@ -216,7 +216,7 @@ BasicInfo.propTypes = {
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       email: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   setContactPersons: PropTypes.func.isRequired,
 

@@ -21,7 +21,7 @@ export default function AddCoursesEvents() {
           <Stack
             sx={{
               p: "12px 0px",
-              mb:"24px"
+              mb: "24px",
             }}
           >
             <Typography variant="h5">Create a new Event/Course</Typography>
@@ -32,4 +32,3 @@ export default function AddCoursesEvents() {
     </Box>
   );
 }
-

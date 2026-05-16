@@ -36,9 +36,9 @@ import IncompleteAccounts from "../Page/Students/IncompleteAccounts";
 
 export default function MainRouters() {
   function RoutedAddCoursesEvents() {
-  const location = useLocation();
-  return <AddCoursesEvents key={location.pathname} />;
-}
+    const location = useLocation();
+    return <AddCoursesEvents key={location.pathname} />;
+  }
   return (
     <>
       <Toaster
@@ -71,13 +71,19 @@ export default function MainRouters() {
           <Route path="/" element={<Dashboard />} />
 
           {/* Courses & Events Routes Start */}
-          
+
           <Route path="/setup_category" element={<CategorySetup />} />
-          <Route path="/add_courses_events" element={<RoutedAddCoursesEvents />} />
+          <Route
+            path="/add_courses_events"
+            element={<RoutedAddCoursesEvents />}
+          />
           <Route path="/course/:id" element={<RoutedAddCoursesEvents />} />
           <Route path="/courses_events_list" element={<CoursesEventsList />} />
           <Route path="/course_event/:id" element={<PreviewCourseEvent />} />
-          <Route path="/enrollment-history/:courseId" element={<EnrollmentHistory />} />
+          <Route
+            path="/enrollment-history/:courseId"
+            element={<EnrollmentHistory />}
+          />
           <Route path="/confirm/:courseId" element={<ConfirmList />} />
           <Route path="/final-list/:courseId" element={<FinalList />} />
           {/* Courses & Events Routes End */}
@@ -116,18 +122,19 @@ export default function MainRouters() {
           {/* Students Info Routes Start */}
           <Route path="/student_approval" element={<StudentsApproval />} />
           <Route path="/student_list" element={<StudentsList />} />
-          <Route path="/email_verification_error" element={<EmailVerificationError />} />
+          <Route
+            path="/email_verification_error"
+            element={<EmailVerificationError />}
+          />
           <Route path="/incomplete_accounts" element={<IncompleteAccounts />} />
           {/* User Routes End */}
-
-          
 
           {/* Album Routes Start */}
           <Route path="add_album" element={<UploadAlbum />} />
           <Route path="album_list" element={<AlbumList />} />
           <Route path="album/:albumId" element={<UpdateAlbum />} />
 
-          <Route path="/user_update" element={<StudentUpdateView/>}/>
+          <Route path="/user_update" element={<StudentUpdateView />} />
           {/* <Route path="album_list" element={<AlbumList />} />
           <Route path="album/:albumId" element={<UpdateAlbum />} /> */}
           {/* Album Routes End */}

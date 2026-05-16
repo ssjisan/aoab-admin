@@ -26,10 +26,13 @@ export default function Setup() {
     try {
       if (selectedRowId) {
         // Editing existing
-        const response = await axios.put(`/category_list/${selectedRowId._id}`, {
-          courseName: name,
-          typeOfParticipation: Number(typeOfParticipation),
-        });
+        const response = await axios.put(
+          `/category_list/${selectedRowId._id}`,
+          {
+            courseName: name,
+            typeOfParticipation: Number(typeOfParticipation),
+          },
+        );
 
         if (response.data.error) {
           toast.error(response.data.error);
@@ -69,7 +72,7 @@ export default function Setup() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [courseSetup, setCourseSetup] = useState([]);
-const isSmDown = useMediaQuery("(max-width:767px)");
+  const isSmDown = useMediaQuery("(max-width:767px)");
 
   useEffect(() => {
     loadLinks();
@@ -134,7 +137,7 @@ const isSmDown = useMediaQuery("(max-width:767px)");
     } catch (error) {
       console.error("Error deleting course setup:", error);
       toast.error(
-        error.response?.data?.error || "Failed to delete course setup."
+        error.response?.data?.error || "Failed to delete course setup.",
       );
     } finally {
       setLoading(false);
@@ -153,11 +156,7 @@ const isSmDown = useMediaQuery("(max-width:767px)");
   };
 
   return (
-    <Grid
-      container
-      spacing={2}
-      
-    >
+    <Grid container spacing={2}>
       <Grid
         item
         xs={12}
@@ -169,7 +168,6 @@ const isSmDown = useMediaQuery("(max-width:767px)");
           top: isSmDown ? "auto" : "80px", // adjust depending on your header height
           alignSelf: "flex-start",
           zIndex: 1,
-          backgroundColor: "#fff",
         }}
       >
         <Form

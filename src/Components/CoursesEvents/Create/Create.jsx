@@ -6,7 +6,7 @@ import Prerequisites from "./Compoenets/Prerequisites";
 import axios from "axios";
 import Recipients from "./Compoenets/Recipients/Recipients";
 import DetailsAndCover from "./Compoenets/Details&Cover/DetailsAndCover";
-import CertificateDesign from "./Compoenets/Certificate/CertificateDesign";
+import CertificateSetup from "./Compoenets/Certificate/CertificateSetup";
 import BasicInfo from "./Compoenets/BasicInfo/BasicInfo";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
@@ -33,7 +33,7 @@ export default function Create() {
   const [courseId, setCourseId] = useState("");
   const [courses, setCourses] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState(null);
-
+  const [selectedTemplate, setSelectedTemplate] = useState(0);
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -134,7 +134,7 @@ export default function Create() {
     setSelectedPrerequisiteCourses((prev) =>
       prev.includes(courseId)
         ? prev.filter((id) => id !== courseId)
-        : [...prev, courseId]
+        : [...prev, courseId],
     );
   };
 
@@ -170,7 +170,7 @@ export default function Create() {
       setRegistrationEndDateError("End date cannot be in the past!");
     } else if (newDate && newDate.isBefore(registrationStartDate, "day")) {
       setRegistrationEndDateError(
-        "End date cannot be earlier than start date!"
+        "End date cannot be earlier than start date!",
       );
     } else {
       setRegistrationEndDateError("");
@@ -212,7 +212,7 @@ export default function Create() {
       const params = new URLSearchParams();
       if (searchForProfile) params.append("search", searchForProfile);
       const { data } = await axios.get(
-        `/verified-accounts?${params.toString()}`
+        `/verified-accounts?${params.toString()}`,
       );
       setStudentProfiles(data);
     } catch (err) {
@@ -229,7 +229,7 @@ export default function Create() {
 
   const isStudentAlreadyAdded = (studentId) => {
     return Object.values(courseWiseStudents).some((students) =>
-      students.some((student) => student._id === studentId)
+      students.some((student) => student._id === studentId),
     );
   };
 
@@ -256,17 +256,26 @@ export default function Create() {
     });
   };
   const transformedRecipients = Object.entries(courseWiseStudents).map(
-    ([categoryId, students]) => ({
-      role: categoryId,
-      profiles: students.map((student) => student._id),
-    })
+    ([categoryId, students]) => {
+      const role = courses.find((c) => String(c._id) === String(categoryId));
+      return {
+        role: {
+          _id: categoryId,
+          name: role?.courseName || "Unknown",
+        },
+        profiles: students.map((student) => ({
+          _id: student._id,
+          name: student.name,
+        })),
+      };
+    },
   );
 
   const handleRemoveStudent = (categoryId, studentId) => {
     setCourseWiseStudents((prev) => {
       const updated = { ...prev };
       updated[categoryId] = updated[categoryId].filter(
-        (s) => s._id !== studentId
+        (s) => s._id !== studentId,
       );
       if (updated[categoryId].length === 0) {
         delete updated[categoryId];
@@ -289,7 +298,7 @@ export default function Create() {
 
   const roleOptions = Object.keys(courseWiseStudents).map((categoryId) => {
     const matchedCourse = courses.find(
-      (course) => String(course._id) === String(categoryId)
+      (course) => String(course._id) === String(categoryId),
     );
     return {
       id: categoryId,
@@ -300,16 +309,14 @@ export default function Create() {
   const selectedStudents =
     courseWiseStudents[selectedCategoryForSignature] || [];
   const selectedCourse = roleOptions.find(
-    (opt) => opt.id === selectedCategoryForSignature
+    (opt) => opt.id === selectedCategoryForSignature,
   );
 
   const toggleProfile = (studentId) => {
     setSelectedProfilesForSignature((prev) => {
       if (prev.includes(studentId)) {
-        // Deselect: remove the ID
         return prev.filter((id) => id !== studentId);
       } else {
-        // Select: add the ID
         return [...prev, studentId];
       }
     });
@@ -325,7 +332,9 @@ export default function Create() {
       if (currentTab === 0) {
         const payload = {
           title,
-          category: selectedCourses?._id,
+          category: selectedCourses
+            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
+            : null,
           location,
           fee: fees,
           startDate,
@@ -342,7 +351,13 @@ export default function Create() {
         }
       } else if (currentTab === 1 && courseId) {
         const formData = new FormData();
-        formData.append("category", selectedCourses?._id);
+        formData.append(
+          "category",
+          JSON.stringify({
+            _id: selectedCourses._id,
+            name: selectedCourses.courseName,
+          }),
+        );
         formData.append("title", title);
         formData.append("details", details);
 
@@ -363,7 +378,9 @@ export default function Create() {
         toast.success("Cover image uploaded successfully!");
       } else if (currentTab === 2 && courseId) {
         const payload = {
-          category: selectedCourses?._id,
+          category: selectedCourses
+            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
+            : null,
           title,
           registrationRequired,
           requiresPrerequisite,
@@ -377,7 +394,9 @@ export default function Create() {
         await axios.put(`/courses/${courseId}`, payload);
       } else if (currentTab === 3 && courseId) {
         const payload = {
-          category: selectedCourses?._id,
+          category: selectedCourses
+            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
+            : null,
           title,
           studentCap,
           waitlistCap,
@@ -391,23 +410,32 @@ export default function Create() {
         await axios.put(`/courses/${courseId}`, payload);
       } else if (currentTab === 4 && courseId) {
         const payload = {
-          category: selectedCourses?._id,
+          category: selectedCourses
+            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
+            : null,
           title,
           recipients: transformedRecipients,
         };
 
         await axios.put(`/courses/${courseId}`, payload);
       } else if (currentTab === 5 && courseId) {
+        if (!selectedProfilesForSignature.length) {
+          toast.error("Please select at least one signature");
+          return false;
+        }
         const payload = {
-          category: selectedCourses?._id,
+          category: selectedCourses
+            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
+            : null,
           title,
           signatures: selectedProfilesForSignature,
+          certificateTemplate: selectedTemplate,
         };
 
         await axios.put(`/courses/${courseId}`, payload);
 
         toast.success("Course event created successfully!");
-        navigate("/courses_events_list"); // <- Redirect after success
+        navigate("/courses_events_list"); // Redirect after success
         return true;
       }
 
@@ -447,9 +475,9 @@ export default function Create() {
   useEffect(() => {
     if (courseData) {
       setCourseId(courseData._id || "");
-      if (courses.length > 0 && courseData.category) {
+      if (courses.length > 0 && courseData.category?._id) {
         const matchedCategory = courses.find(
-          (c) => String(c._id) === String(courseData.category)
+          (c) => String(c._id) === String(courseData.category._id),
         );
         setSelectedCourses(matchedCategory || null);
       } else {
@@ -466,7 +494,7 @@ export default function Create() {
       setContactPersons(
         courseData.contactPersons?.length
           ? courseData.contactPersons
-          : [{ name: "", email: "" }]
+          : [{ name: "", email: "" }],
       );
       // Set Details & Cover info
 
@@ -481,7 +509,7 @@ export default function Create() {
         setYearTo(prerequisites?.postGraduationYearRange?.end ?? "");
         setRequiresPrerequisite(prerequisites?.mustHave ?? "no");
         setSelectedPrerequisiteCourses(
-          prerequisites.requiredCourseCategory || []
+          prerequisites.requiredCourseCategory || [],
         );
         setRestrictReenrollment(prerequisites.restrictReenrollment ?? true);
       }
@@ -508,7 +536,7 @@ export default function Create() {
           const groupedByRole = {};
           courseData.recipients.forEach(({ role, profiles }) => {
             groupedByRole[role] = allProfiles.filter((profile) =>
-              profiles.includes(profile._id)
+              profiles.includes(profile._id),
             );
           });
 
@@ -523,16 +551,16 @@ export default function Create() {
 
             // Filter students whose IDs are in the signatureIds array
             const matchedStudents = allStudents.filter((student) =>
-              signatureIds.includes(String(student._id))
+              signatureIds.includes(String(student._id)),
             );
 
             if (matchedStudents.length > 0) {
               setSelectedProfilesForSignature(
-                matchedStudents.map((s) => s._id)
+                matchedStudents.map((s) => s._id),
               );
             } else {
               console.warn(
-                "No matching student profiles found for signatures."
+                "No matching student profiles found for signatures.",
               );
             }
           }
@@ -658,7 +686,9 @@ export default function Create() {
     {
       label: "Certificate Setup",
       content: (
-        <CertificateDesign
+        <CertificateSetup
+          selectedTemplate={selectedTemplate}
+          setSelectedTemplate={setSelectedTemplate}
           courseWiseStudents={courseWiseStudents}
           courses={courses}
           selectedCategoryForSignature={selectedCategoryForSignature}
@@ -716,11 +746,11 @@ export default function Create() {
           onClick={
             currentTab === 0
               ? () => {
-                window.history.back();
-              }
+                  window.history.back();
+                }
               : handleBack
           }
-        //   disabled={isSubmitting}
+          //   disabled={isSubmitting}
         >
           {currentTab === 0 ? "Cancel" : "Back"}
         </Button>
@@ -728,7 +758,7 @@ export default function Create() {
           variant="contained"
           color="primary"
           onClick={handleNext}
-        //   disabled={isSubmitting}
+          //   disabled={isSubmitting}
         >
           {currentTab === formSections.length - 1 ? "Complete" : "Save & Next"}
         </Button>
