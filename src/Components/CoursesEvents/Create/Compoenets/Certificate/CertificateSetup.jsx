@@ -36,9 +36,9 @@ export default function CertificateSetup({
   const allStudents = Object.values(courseWiseStudents).flat();
 
   return (
-    <Stack gap="32px" sx={{ mt: 3 }}>
+    <Stack gap="32px" sx={{ mt: 3, pb: "64px" }}>
       {/* ---------------- TEMPLATE SECTION ---------------- */}
-      <Box>
+      {/* <Box>
         <Typography variant="h6" mb={2}>
           Choose Certificate Template
         </Typography>
@@ -80,7 +80,7 @@ export default function CertificateSetup({
             </Grid>
           ))}
         </Grid>
-      </Box>
+      </Box> */}
 
       {/* ---------------- STUDENT TABLE SECTION ---------------- */}
       <Box>

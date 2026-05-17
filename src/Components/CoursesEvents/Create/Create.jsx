@@ -6,13 +6,12 @@ import Prerequisites from "./Compoenets/Prerequisites";
 import axios from "axios";
 import Recipients from "./Compoenets/Recipients/Recipients";
 import DetailsAndCover from "./Compoenets/Details&Cover/DetailsAndCover";
-import CertificateSetup from "./Compoenets/Certificate/CertificateSetup";
 import BasicInfo from "./Compoenets/BasicInfo/BasicInfo";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import Enrollment from "./Compoenets/Enrollment/Enrollment";
 import { useNavigate, useParams } from "react-router-dom";
-
+import CertificateSetup from "./Compoenets/Certificate/CertificateSetup";
 export default function Create() {
   const forBelow1200 = useMediaQuery("(max-width:1200px)");
   const [currentTab, setCurrentTab] = useState(0);
@@ -33,7 +32,7 @@ export default function Create() {
   const [courseId, setCourseId] = useState("");
   const [courses, setCourses] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState(null);
-  const [selectedTemplate, setSelectedTemplate] = useState(0);
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -256,19 +255,10 @@ export default function Create() {
     });
   };
   const transformedRecipients = Object.entries(courseWiseStudents).map(
-    ([categoryId, students]) => {
-      const role = courses.find((c) => String(c._id) === String(categoryId));
-      return {
-        role: {
-          _id: categoryId,
-          name: role?.courseName || "Unknown",
-        },
-        profiles: students.map((student) => ({
-          _id: student._id,
-          name: student.name,
-        })),
-      };
-    },
+    ([categoryId, students]) => ({
+      role: categoryId,
+      profiles: students.map((student) => student._id),
+    }),
   );
 
   const handleRemoveStudent = (categoryId, studentId) => {
@@ -315,8 +305,10 @@ export default function Create() {
   const toggleProfile = (studentId) => {
     setSelectedProfilesForSignature((prev) => {
       if (prev.includes(studentId)) {
+        // Deselect: remove the ID
         return prev.filter((id) => id !== studentId);
       } else {
+        // Select: add the ID
         return [...prev, studentId];
       }
     });
@@ -332,9 +324,7 @@ export default function Create() {
       if (currentTab === 0) {
         const payload = {
           title,
-          category: selectedCourses
-            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
-            : null,
+          category: selectedCourses?._id,
           location,
           fee: fees,
           startDate,
@@ -351,13 +341,7 @@ export default function Create() {
         }
       } else if (currentTab === 1 && courseId) {
         const formData = new FormData();
-        formData.append(
-          "category",
-          JSON.stringify({
-            _id: selectedCourses._id,
-            name: selectedCourses.courseName,
-          }),
-        );
+        formData.append("category", selectedCourses?._id);
         formData.append("title", title);
         formData.append("details", details);
 
@@ -378,9 +362,7 @@ export default function Create() {
         toast.success("Cover image uploaded successfully!");
       } else if (currentTab === 2 && courseId) {
         const payload = {
-          category: selectedCourses
-            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
-            : null,
+          category: selectedCourses?._id,
           title,
           registrationRequired,
           requiresPrerequisite,
@@ -394,9 +376,7 @@ export default function Create() {
         await axios.put(`/courses/${courseId}`, payload);
       } else if (currentTab === 3 && courseId) {
         const payload = {
-          category: selectedCourses
-            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
-            : null,
+          category: selectedCourses?._id,
           title,
           studentCap,
           waitlistCap,
@@ -410,32 +390,23 @@ export default function Create() {
         await axios.put(`/courses/${courseId}`, payload);
       } else if (currentTab === 4 && courseId) {
         const payload = {
-          category: selectedCourses
-            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
-            : null,
+          category: selectedCourses?._id,
           title,
           recipients: transformedRecipients,
         };
 
         await axios.put(`/courses/${courseId}`, payload);
       } else if (currentTab === 5 && courseId) {
-        if (!selectedProfilesForSignature.length) {
-          toast.error("Please select at least one signature");
-          return false;
-        }
         const payload = {
-          category: selectedCourses
-            ? { _id: selectedCourses._id, name: selectedCourses.courseName }
-            : null,
+          category: selectedCourses?._id,
           title,
           signatures: selectedProfilesForSignature,
-          certificateTemplate: selectedTemplate,
         };
 
         await axios.put(`/courses/${courseId}`, payload);
 
         toast.success("Course event created successfully!");
-        navigate("/courses_events_list"); // Redirect after success
+        navigate("/courses_events_list"); // <- Redirect after success
         return true;
       }
 
@@ -475,9 +446,9 @@ export default function Create() {
   useEffect(() => {
     if (courseData) {
       setCourseId(courseData._id || "");
-      if (courses.length > 0 && courseData.category?._id) {
+      if (courses.length > 0 && courseData.category) {
         const matchedCategory = courses.find(
-          (c) => String(c._id) === String(courseData.category._id),
+          (c) => String(c._id) === String(courseData.category),
         );
         setSelectedCourses(matchedCategory || null);
       } else {
@@ -687,8 +658,6 @@ export default function Create() {
       label: "Certificate Setup",
       content: (
         <CertificateSetup
-          selectedTemplate={selectedTemplate}
-          setSelectedTemplate={setSelectedTemplate}
           courseWiseStudents={courseWiseStudents}
           courses={courses}
           selectedCategoryForSignature={selectedCategoryForSignature}
