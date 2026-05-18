@@ -15,7 +15,7 @@ import CertificateSetup from "./Compoenets/Certificate/CertificateSetup";
 export default function Create() {
   const forBelow1200 = useMediaQuery("(max-width:1200px)");
   const [currentTab, setCurrentTab] = useState(0);
-  const navigate = useNavigate(); // Add this inside your component
+  const navigate = useNavigate();
   const { id } = useParams();
 
   //-------------------------------------------------------- Basic Info Data State Start Here --------------------------------------------------//
