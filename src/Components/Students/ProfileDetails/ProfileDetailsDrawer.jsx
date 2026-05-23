@@ -6,7 +6,11 @@ import BasicInfo from "./BasicInfo";
 import Certificate from "./Certificate";
 import PropTypes from "prop-types";
 
-export default function ProfileDetailsDrawer({ studentProfile, onClose, open }) {
+export default function ProfileDetailsDrawer({
+  studentProfile,
+  onClose,
+  open,
+}) {
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -71,14 +75,14 @@ ProfileDetailsDrawer.propTypes = {
       PropTypes.shape({
         url: PropTypes.string,
         public_id: PropTypes.string,
-      })
+      }),
     ),
     postGraduationCertificates: PropTypes.arrayOf(
       PropTypes.shape({
         url: PropTypes.string,
         public_id: PropTypes.string,
         name: PropTypes.string,
-      })
+      }),
     ),
     courses: PropTypes.array, // optionally you can define inner shape
   }).isRequired,

@@ -20,8 +20,12 @@ export default function Body({ studentProfiles, onViewProfile, loading }) {
               gap={2}
               alignItems="center"
             >
-              <CircularProgress size={40}/>
-              <Typography variant="body1" color="text.secondary" sx={{fontWeight:"500 !important"}}>
+              <CircularProgress size={40} />
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ fontWeight: "500 !important" }}
+              >
                 Loading profiles...
               </Typography>
             </Stack>
@@ -42,7 +46,11 @@ export default function Body({ studentProfiles, onViewProfile, loading }) {
               alignItems="center"
             >
               <NoData />
-              <Typography variant="body1" color="text.secondary" sx={{fontWeight:"500 !important"}}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ fontWeight: "500 !important" }}
+              >
                 No data here!
               </Typography>
             </Stack>
@@ -86,7 +94,7 @@ Body.propTypes = {
       title: PropTypes.string.isRequired,
       publishedDate: PropTypes.string.isRequired,
       link: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   onViewProfile: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,

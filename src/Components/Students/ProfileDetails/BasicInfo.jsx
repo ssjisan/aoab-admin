@@ -89,7 +89,7 @@ export default function BasicInfo({ profile }) {
                 Current Working Place
               </TableCell>
               <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
-                {profile?.currentWorkingPlace?.[0]?.name || "N/A"}
+                {profile?.currentWorkingPlace?.name || "N/A"}
               </TableCell>
             </TableRow>
 
@@ -99,7 +99,7 @@ export default function BasicInfo({ profile }) {
                 Current Designation
               </TableCell>
               <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
-                {profile?.currentWorkingPlace?.[0]?.designation || "N/A"}
+                {profile?.currentWorkingPlace?.designation || "N/A"}
               </TableCell>
             </TableRow>
 
@@ -109,7 +109,7 @@ export default function BasicInfo({ profile }) {
                 Post-Graduation Degree in Orthopedics
               </TableCell>
               <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
-                {profile?.postGraduationDegrees?.[0]?.degreeName || "N/A"}
+                {profile?.postGraduationDegrees?.degreeName || "N/A"}
               </TableCell>
             </TableRow>
 
@@ -119,7 +119,7 @@ export default function BasicInfo({ profile }) {
                 Year of Post Graduation
               </TableCell>
               <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
-                {profile?.postGraduationDegrees?.[0]?.yearOfGraduation || "N/A"}
+                {profile?.postGraduationDegrees?.yearOfGraduation || "N/A"}
               </TableCell>
             </TableRow>
           </TableBody>

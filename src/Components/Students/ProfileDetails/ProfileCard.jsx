@@ -28,7 +28,7 @@ export default function ProfileCard({ profile }) {
         }}
       >
         <Avatar
-          src={profile?.picture?.[0]?.url}
+          src={profile?.picture?.url}
           alt="Profile"
           sx={{
             width: "80px",
@@ -50,8 +50,8 @@ export default function ProfileCard({ profile }) {
         }}
       >
         <Typography variant="h5" sx={{ fontWeight: "700" }}>
-            {profile.name}
-          </Typography>
+          {profile.name}
+        </Typography>
         <Typography variant="body1" color="text.secondary">
           {profile.email}
         </Typography>
@@ -69,7 +69,7 @@ ProfileCard.propTypes = {
     picture: PropTypes.arrayOf(
       PropTypes.shape({
         url: PropTypes.string,
-      })
+      }),
     ),
   }).isRequired,
 };
