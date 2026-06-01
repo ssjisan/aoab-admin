@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus } from "../../../../assets/IconSet";
 import toast from "react-hot-toast";
 
-export default function StudentSearchDrawer({ courseId }) {
+export default function StudentSearchDrawer({ courseId, onStudentAdded }) {
   const drawerWidth = "320px";
   // Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,9 +20,9 @@ export default function StudentSearchDrawer({ courseId }) {
     try {
       setSearchLoading(true);
       const res = await axios.get(
-        `/enrollment/search/${courseId}?query=${query}`
+        `/enrollment/search/${courseId}?query=${query}`,
       );
-      setSearchResults(res.data.students || []); // <-- changed here
+      setSearchResults(res.data.students || []);
     } catch (err) {
       console.error("Error searching students:", err);
       setSearchResults([]);
@@ -41,27 +41,30 @@ export default function StudentSearchDrawer({ courseId }) {
   }, [searchQuery]);
 
   const handleAddStudent = async (student) => {
-  try {
-    await axios.post(`/enrollment/${courseId}/add-student`, {
-      studentId: student._id,
-    });
-    // Optional: show success toast
-    toast.success(`${student.name} added successfully`);
-    
-    // Update UI to show dimmed/already enrolled
-    setSearchResults((prev) =>
-      prev.map((s) =>
-        s._id === student._id
-          ? { ...s, displayStatus: "completed", extraText: " (Already enrolled)" }
-          : s
-      )
-    );
-  } catch (err) {
-    console.error("Error adding student:", err);
-    toast.error(err.response?.data?.message || "Failed to add student");
-  }
-};
-
+    try {
+      await axios.post(`/enrollment/${courseId}/add-student`, {
+        studentId: student._id,
+      });
+      // Optional: show success toast
+      toast.success(`${student.name} added successfully`);
+      // Update UI to show dimmed/already enrolled
+      setSearchResults((prev) =>
+        prev.map((s) =>
+          s._id === student._id
+            ? {
+                ...s,
+                displayStatus: "completed",
+                extraText: " (Already enrolled)",
+              }
+            : s,
+        ),
+      );
+      onStudentAdded?.();
+    } catch (err) {
+      console.error("Error adding student:", err);
+      toast.error(err.response?.data?.message || "Failed to add student");
+    }
+  };
 
   return (
     <Box sx={{ width: drawerWidth, p: 2 }}>
@@ -113,12 +116,11 @@ export default function StudentSearchDrawer({ courseId }) {
                 {student.extraText}
               </Box>
 
-              {/* Only show plus icon for bold/eligible students */}
               {student.displayStatus === "pending" && (
                 <IconButton
                   size="small"
                   color="primary"
-                    onClick={() => handleAddStudent(student)}
+                  onClick={() => handleAddStudent(student)}
                 >
                   <Plus size="24px" color="#00ae60" />
                 </IconButton>

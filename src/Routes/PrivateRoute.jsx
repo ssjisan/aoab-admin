@@ -21,6 +21,5 @@ export default function PrivateRoute() {
     if (auth?.token) authCheck();
   }, [auth?.token]);
 
-
   return isUserLoggedIn ? <Outlet /> : <Loading />;
 }

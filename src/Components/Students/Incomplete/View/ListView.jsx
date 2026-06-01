@@ -41,7 +41,7 @@ export default function ListView({ limit = null, withContainer = true }) {
     ? studentProfiles.slice(0, limit)
     : studentProfiles.slice(
         page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
+        page * rowsPerPage + rowsPerPage,
       );
 
   // ---------- Download CSV ----------
@@ -61,7 +61,7 @@ export default function ListView({ limit = null, withContainer = true }) {
           }
           return `"${value}"`;
         })
-        .join(",")
+        .join(","),
     );
 
     const csvContent = [csvHeader, ...csvRows].join("\n");

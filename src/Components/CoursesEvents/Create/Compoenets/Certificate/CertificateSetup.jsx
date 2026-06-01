@@ -120,10 +120,10 @@ export default function CertificateSetup({
                       <TableCell>{student.email || "N/A"}</TableCell>
 
                       <TableCell>
-                        {student?.signature?.[0]?.url ? (
+                        {student?.signature?.url ? (
                           <Box sx={{ width: "75px", height: "35px" }}>
                             <img
-                              src={student.signature[0].url}
+                              src={student.signature.url}
                               alt="signature"
                               style={{
                                 width: "100%",

@@ -60,6 +60,10 @@ const navConfig = ({ pathname }) => {
           title: "Incomplete accounts",
           link: "/incomplete_accounts",
         },
+        {
+          title: "User Update",
+          link: "/user_update",
+        },
       ],
     },
     {

@@ -61,7 +61,7 @@ export default function EnrollmentView() {
     try {
       setLoading(true);
       const res = await axios.get(
-        `/enrollment-history/${courseId}?tab=${tabName}`
+        `/enrollment-history/${courseId}?tab=${tabName}`,
       );
       setEnrollments(res.data.enrollments || []);
       setTabCounts(res.data.tabCounts || {});
@@ -226,15 +226,16 @@ export default function EnrollmentView() {
     }
   };
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-const handleDrawerOpen = () => {
-  setIsDrawerOpen(true);
-};
+  const handleDrawerOpen = () => {
+    setIsDrawerOpen(true);
+  };
 
-const handleDrawerClose = () => {
-  setIsDrawerOpen(false);
-};
-  
-
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
+  const refreshEnrollment = () => {
+    loadEnrollmentHistory(tabLabels[activeTab]);
+  };
   return (
     <Box
       sx={{
@@ -251,7 +252,9 @@ const handleDrawerClose = () => {
         justifyContent="space-between"
       >
         <Typography variant="h6">{title}</Typography>
-        <Button variant="contained" onClick={handleDrawerOpen}>Add participant</Button>
+        <Button variant="contained" onClick={handleDrawerOpen}>
+          Add participant
+        </Button>
       </Stack>
       {/* ---------------- Tabs with count ---------------- */}
       <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
@@ -313,9 +316,11 @@ const handleDrawerClose = () => {
         onConfirm={handleConfirmMoveToEnrolled}
       />
       <Drawer anchor="right" open={isDrawerOpen} onClose={handleDrawerClose}>
-        <StudentSearchDrawer courseId={courseId}/>
+        <StudentSearchDrawer
+          courseId={courseId}
+          onStudentAdded={refreshEnrollment}
+        />
       </Drawer>
-      
     </Box>
   );
 }

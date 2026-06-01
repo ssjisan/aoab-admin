@@ -34,9 +34,6 @@ export default function View() {
     loadStudentsProfile(search);
   };
 
-
-
-
   const highlightMatch = (text) => {
     if (!search) return text;
 
@@ -53,7 +50,7 @@ export default function View() {
         </mark>
       ) : (
         part
-      )
+      ),
     );
   };
 

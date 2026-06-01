@@ -3,7 +3,7 @@ import Sidebar from "../../Layout/Sidebar";
 import ListView from "../../Components/Students/Incomplete/View/ListView";
 
 export default function IncompleteAccounts() {
-    const drawerWidth = 280;
+  const drawerWidth = 280;
 
   return (
     <Box>
@@ -25,5 +25,5 @@ export default function IncompleteAccounts() {
         </Box>
       </Box>
     </Box>
-  )
+  );
 }
