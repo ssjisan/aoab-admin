@@ -109,7 +109,7 @@ export default function BasicInfo({ profile }) {
                 Post-Graduation Degree in Orthopedics
               </TableCell>
               <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
-                {profile?.postGraduationDegrees?.degreeName || "N/A"}
+                {profile?.postGraduationDegree?.degreeName || "N/A"}
               </TableCell>
             </TableRow>
 
@@ -119,7 +119,7 @@ export default function BasicInfo({ profile }) {
                 Year of Post Graduation
               </TableCell>
               <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
-                {profile?.postGraduationDegrees?.yearOfGraduation || "N/A"}
+                {profile?.postGraduationDegree?.yearOfGraduation || "N/A"}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -136,6 +136,6 @@ BasicInfo.propTypes = {
     bmdcNo: PropTypes.string.isRequired,
     contactNumber: PropTypes.string.isRequired,
     currentWorkingPlace: PropTypes.array,
-    postGraduationDegrees: PropTypes.array,
+    postGraduationDegree: PropTypes.array,
   }).isRequired,
 };

@@ -8,14 +8,24 @@ import {
   Button,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 export default function Certificate({ profile }) {
-  const certificates = profile?.postGraduationCertificates || [];
-  const hasCertificates = certificates.length > 0;
-
   const [openPdf, setOpenPdf] = useState(false);
   const [activePdf, setActivePdf] = useState(null);
+
+  // ✅ Normalize data (supports BOTH old + future schema)
+  const certificates = useMemo(() => {
+    const data = profile?.postGraduationCertificates;
+
+    if (!data) return [];
+
+    // If already array (future-proof)
+    if (Array.isArray(data)) return data;
+
+    // Current schema (single object)
+    return data?.url ? [data] : [];
+  }, [profile]);
 
   const handleOpenPdf = (doc) => {
     setActivePdf(doc);
@@ -47,6 +57,8 @@ export default function Certificate({ profile }) {
       console.error("Download failed:", err);
     }
   };
+
+  const hasCertificates = certificates.length > 0;
 
   return (
     <>
@@ -114,7 +126,7 @@ export default function Certificate({ profile }) {
                     fontSize: "12px",
                   }}
                 >
-                  {doc.name || doc.url.split("/").pop()}
+                  {doc.name || doc.url?.split("/").pop()}
                 </Typography>
 
                 {/* Actions */}
@@ -122,7 +134,6 @@ export default function Certificate({ profile }) {
                   <Button
                     size="small"
                     variant="outlined"
-                    startIcon={"V"}
                     onClick={() => handleOpenPdf(doc)}
                   >
                     View
@@ -131,7 +142,6 @@ export default function Certificate({ profile }) {
                   <Button
                     size="small"
                     variant="contained"
-                    startIcon={"D"}
                     onClick={() => handleDownload(doc)}
                   >
                     Download
@@ -147,7 +157,7 @@ export default function Certificate({ profile }) {
         </Stack>
       </Stack>
 
-      {/* PDF Modal Viewer */}
+      {/* PDF Modal */}
       <Dialog open={openPdf} onClose={handleClose} fullWidth maxWidth="lg">
         <DialogTitle
           sx={{
@@ -158,7 +168,7 @@ export default function Certificate({ profile }) {
         >
           {activePdf?.name || "Certificate"}
 
-          <IconButton onClick={handleClose}>X</IconButton>
+          <IconButton onClick={handleClose}>✕</IconButton>
         </DialogTitle>
 
         <DialogContent sx={{ height: "85vh", p: 0 }}>
@@ -179,11 +189,13 @@ export default function Certificate({ profile }) {
 
 Certificate.propTypes = {
   profile: PropTypes.shape({
-    postGraduationCertificates: PropTypes.arrayOf(
+    postGraduationCertificates: PropTypes.oneOfType([
+      PropTypes.array,
       PropTypes.shape({
-        url: PropTypes.string.isRequired,
+        url: PropTypes.string,
         name: PropTypes.string,
+        size: PropTypes.number,
       }),
-    ),
+    ]),
   }),
 };

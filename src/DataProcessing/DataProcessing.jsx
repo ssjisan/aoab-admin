@@ -27,7 +27,7 @@ export default function DataProcessing({ children }) {
   // -----------------------------------------------Auth Provider End--------------------------------------------------- //
 
   // Axios Configuration
-  
+
   axios.defaults.baseURL = import.meta.env.VITE_SERVER_API;
   axios.defaults.headers.common["Authorization"] = auth?.token;
 

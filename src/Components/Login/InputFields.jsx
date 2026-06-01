@@ -29,7 +29,7 @@ export default function InputFields() {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(
-    localStorage.getItem("isChecked") === "true"
+    localStorage.getItem("isChecked") === "true",
   );
   const { auth, setAuth } = useContext(DataContext);
   const navigate = useNavigate();
@@ -155,15 +155,15 @@ export default function InputFields() {
           <FormControlLabel
             control={
               <Checkbox
-              size="small"
+                size="small"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                sx={{borderRadius: "8px",}}
+                sx={{ borderRadius: "8px" }}
               />
             }
             label="Remember me"
             sx={{
-              '& .MuiFormControlLabel-label': {
+              "& .MuiFormControlLabel-label": {
                 fontSize: "14px",
                 fontWeight: 500,
               },

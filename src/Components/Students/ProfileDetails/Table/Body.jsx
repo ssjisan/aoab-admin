@@ -1,17 +1,16 @@
 import PropTypes from "prop-types";
-import { TableBody, TableCell, TableRow } from "@mui/material";
+import { TableBody, TableCell, TableRow, Box } from "@mui/material";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function Body({ profile }) {
-  const [courses, setCourses] = useState([]); // State to hold fetched courses
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    // Fetch course data from the API
     const fetchCourses = async () => {
       try {
         const response = await axios.get("/category_list");
-        setCourses(response.data); // Assuming response is an array of course data
+        setCourses(response.data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -24,10 +23,7 @@ export default function Body({ profile }) {
     return (
       <TableBody>
         <TableRow>
-          <TableCell
-            colSpan={5}
-            sx={{ border: "1px solid #ddd", textAlign: "center" }}
-          >
+          <TableCell colSpan={5} sx={{ textAlign: "center" }}>
             Loading...
           </TableCell>
         </TableRow>
@@ -38,83 +34,84 @@ export default function Body({ profile }) {
   return (
     <TableBody>
       {courses.map((course) => {
+        // ✅ FIXED: safe ObjectId comparison
         const courseData =
-          profile.courses.find((c) => c.courseCategoryId === course._id) || {};
-        const courseStatus =
-          courseData && courseData.status != null
-            ? courseData.status === "yes"
-              ? "Yes"
-              : "No"
-            : "N/A";
+          profile?.courses?.find(
+            (c) => String(c.courseCategoryId) === String(course._id),
+          ) || null;
 
-        const completionYear = courseData?.completionYear || "N/A";
+        // ✅ FIXED: boolean status (NEW schema style)
+        const courseStatus = courseData?.status ? "Yes" : "No";
 
-        const hasDocument =
-          courseData?.documents && courseData.documents.length > 0;
+        const completionYear = courseData?.completionYear || "-";
+
+        const documents = courseData?.documents || [];
+        const hasDocument = documents.length > 0;
+
         return (
           <TableRow key={course._id}>
-            <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
+            {/* Course Name */}
+            <TableCell sx={{ border: "1px solid #ddd" }}>
               {course.courseName}
             </TableCell>
-            <TableCell
-              sx={{ border: "1px solid #ddd", p: "8px 16px", width: "64px" }}
-            >
-              {courseStatus}
+
+            {/* Status (NEW STYLE BADGE LIKE NEW TABLE) */}
+            <TableCell sx={{ border: "1px solid #ddd" }}>
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: "6px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  backgroundColor: courseData?.status ? "#E8F5E9" : "#FDECEC",
+                  color: courseData?.status ? "#2E7D32" : "#D32F2F",
+                }}
+              >
+                {courseStatus}
+              </Box>
             </TableCell>
-            <TableCell
-              sx={{ border: "1px solid #ddd", p: "8px 16px", width: "240px" }}
-            >
+
+            {/* Year */}
+            <TableCell sx={{ border: "1px solid #ddd" }}>
               {completionYear}
             </TableCell>
-            <TableCell sx={{ border: "1px solid #ddd", p: "8px 16px" }}>
+
+            {/* Documents */}
+            <TableCell sx={{ border: "1px solid #ddd" }}>
               {hasDocument ? (
-                courseData.documents.length === 1 ? (
-                  // Handle single document
-                  (() => {
-                    const doc = courseData.documents[0];
-                    const isPdf =
-                      doc.name?.toLowerCase().endsWith(".pdf") && doc.size > 0;
-                    const previewUrl = isPdf
-                      ? `https://docs.google.com/viewer?url=${encodeURIComponent(
-                          doc.url
-                        )}&embedded=true`
-                      : doc.url;
-
-                    return (
-                      <a
-                        href={previewUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {doc.name}
-                      </a>
-                    );
-                  })()
+                documents.length === 1 ? (
+                  <a
+                    href={documents[0].url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#1E88E5",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {documents[0].name}
+                  </a>
                 ) : (
-                  // Handle multiple documents
                   <ol style={{ margin: 0, paddingLeft: "16px" }}>
-                    {courseData.documents.map((doc) => {
-                      const isPdf =
-                        doc.name?.toLowerCase().endsWith(".pdf") &&
-                        doc.size > 0;
-                      const previewUrl = isPdf
-                        ? `https://docs.google.com/viewer?url=${encodeURIComponent(
-                            doc.url
-                          )}&embedded=true`
-                        : doc.url;
-
-                      return (
-                        <li key={doc.url} style={{ marginBottom: "8px" }}>
-                          <a
-                            href={previewUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {doc.name}
-                          </a>
-                        </li>
-                      );
-                    })}
+                    {documents.map((doc) => (
+                      <li key={doc.url}>
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: "#1E88E5",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {doc.name}
+                        </a>
+                      </li>
+                    ))}
                   </ol>
                 )
               ) : (
@@ -132,16 +129,11 @@ Body.propTypes = {
   profile: PropTypes.shape({
     courses: PropTypes.arrayOf(
       PropTypes.shape({
-        courseId: PropTypes.string.isRequired, // Assuming courseId is a string that matches _id from the API
-        status: PropTypes.string,
-        documents: PropTypes.arrayOf(
-          PropTypes.shape({
-            url: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-          })
-        ),
+        courseCategoryId: PropTypes.string,
+        status: PropTypes.bool,
+        documents: PropTypes.array,
         completionYear: PropTypes.string,
-      })
+      }),
     ),
   }),
 };

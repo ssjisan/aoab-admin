@@ -93,7 +93,7 @@ export default function ListView({
     ? filteredProfiles.slice(0, limit)
     : filteredProfiles.slice(
         page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
+        page * rowsPerPage + rowsPerPage,
       );
 
   // Menu handlers
@@ -152,8 +152,8 @@ export default function ListView({
           prev.map((student) =>
             student._id === studentId
               ? { ...student, accountVerificationStatus: "rejected", remarks }
-              : student
-          )
+              : student,
+          ),
         );
         setIsDenyModalOpen(false);
         setRemarks("");
@@ -178,15 +178,15 @@ export default function ListView({
     setOpen(false);
   };
   const pendingCount = studentProfiles.filter(
-    (student) => student.accountVerificationStatus === "pending"
+    (student) => student.accountVerificationStatus === "pending",
   ).length;
 
   const underReviewCount = studentProfiles.filter(
-    (student) => student.accountVerificationStatus === "under-review"
+    (student) => student.accountVerificationStatus === "under-review",
   ).length;
 
   const rejectedCount = studentProfiles.filter(
-    (student) => student.accountVerificationStatus === "rejected"
+    (student) => student.accountVerificationStatus === "rejected",
   ).length;
   const Content = (
     <>
@@ -208,7 +208,9 @@ export default function ListView({
                 gap: 1,
               }}
             >
-              <Typography sx={{fontSize:"14px", fontWeight:600}}>Pending</Typography>
+              <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>
+                Pending
+              </Typography>
               <Box
                 sx={{
                   minWidth: "24px",
@@ -239,7 +241,9 @@ export default function ListView({
                 gap: 1,
               }}
             >
-              <Typography sx={{fontSize:"14px", fontWeight:600}}>Under Review</Typography>
+              <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>
+                Under Review
+              </Typography>
               <Box
                 sx={{
                   minWidth: "24px",
@@ -270,7 +274,9 @@ export default function ListView({
                 gap: 1,
               }}
             >
-              <Typography sx={{fontSize:"14px", fontWeight:600}}>Rejected</Typography>
+              <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>
+                Rejected
+              </Typography>
               <Box
                 sx={{
                   minWidth: "24px",
@@ -386,7 +392,7 @@ ListView.propTypes = {
     PropTypes.shape({
       key: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-    })
+    }),
   ),
   limit: PropTypes.number,
   showPagination: PropTypes.bool,
