@@ -18,7 +18,8 @@ export default function Create() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  //-------------------------------------------------------- Basic Info Data State Start Here --------------------------------------------------//
+  //------------------------------------- Basic Info Data State Start Here ---------------------------------------//
+
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
   const [fees, setFees] = useState("");
@@ -83,9 +84,9 @@ export default function Create() {
     updated.splice(index, 1);
     setContactPersons(updated);
   };
-  //-------------------------------------------------------- Basic Info Data End Here --------------------------------------------------//
+  //---------------------------- Basic Info Data End Here -------------------------------------//
 
-  //-------------------------------------------------------- Details & Cover Data State Here --------------------------------------------------//
+  //------------------------------------ Details & Cover Data State Here --------------------------------//
   const [details, setDetails] = useState("");
   const [coverPhoto, setCoverPhoto] = useState("");
   const [photoUploadError, setPhotoUploadError] = useState(null);
@@ -117,9 +118,10 @@ export default function Create() {
   const removeImage = () => {
     setCoverPhoto(null);
   };
-  //-------------------------------------------------------- Details & Cover Data End Here --------------------------------------------------//
+  //------------------------- Details & Cover Data End Here --------------------------------//
 
-  //-------------------------------------------------------- Prerequisites Data State Here --------------------------------------------------//
+  //------------------------- Prerequisites Data State Here -------------------------------//
+
   const [postGradRequired, setPostGradRequired] = useState("");
   const [yearFrom, setYearFrom] = useState("");
   const [yearTo, setYearTo] = useState("");
@@ -137,9 +139,10 @@ export default function Create() {
     );
   };
 
-  //-------------------------------------------------------- Prerequisites Data End Here --------------------------------------------------//
+  //---------------------------- Prerequisites Data End Here --------------------------//
 
-  //-------------------------------------------------------- Enrollment Funcation Start Here--------------------------------------------------------//
+  //---------------------------- Enrollment Funcation Start Here----------------------------//
+
   const [studentCap, setStudentCap] = useState("");
   const [waitlistCap, setWaitlistCap] = useState("");
   const [registrationStartDate, setRegistrationStartDate] = useState(null);
@@ -194,9 +197,9 @@ export default function Create() {
       setPaymentReceiveEndDate(formattedDate);
     }
   };
-  //-------------------------------------------------------- Enrollment Funcation end Here--------------------------------------------------------//
+  //----------------------------- Enrollment Funcation end Here-------------------------------//
 
-  //-------------------------------------------------------- Receipents Funcation Start Here--------------------------------------------------------//
+  //------------------------ Receipents Funcation Start Here------------------------------//
 
   const [searchForProfile, setSearchForProfile] = useState("");
   const [selectedCategoryForRecipients, setSelectedCategoryForRecipients] =
@@ -274,9 +277,10 @@ export default function Create() {
     });
   };
 
-  //-------------------------------------------------------- Receipents Funcation End Here--------------------------------------------------------//
+  //------------------------ Receipents Funcation End Here ---------------------------------//
 
-  //-------------------------------------------------------- Certificate Signature Funcation Start Here--------------------------------------------------------//
+  //--------------------------- Certificate Signature Funcation Startere ----------------------------//
+
   const [selectedCategoryForSignature, setSelectedCategoryForSignature] =
     useState("");
   const [selectedProfilesForSignature, setSelectedProfilesForSignature] =
@@ -314,9 +318,9 @@ export default function Create() {
     });
   };
 
-  //-------------------------------------------------------- Certificate Signature Funcation End Here--------------------------------------------------------//
+  //------------------------------------- Certificate Signature Funcation End Here-----------------------------//
 
-  //-------------------------------------------------------- Handle Submit function start Here--------------------------------------------------------//
+  //-------------------------- Handle Submit function start Here----------------------//
 
   const handleSubmit = async () => {
     let toastId;
@@ -400,6 +404,7 @@ export default function Create() {
         const payload = {
           category: selectedCourses?._id,
           title,
+          certificateTemplate: selectedTemplate,
           signatures: selectedProfilesForSignature,
         };
 
@@ -423,10 +428,10 @@ export default function Create() {
     }
   };
 
-  //-------------------------------------------------------- Handle Submit function end Here--------------------------------------------------------//
+  //----------------------- Handle Submit function end Here----------------------------------//
 
   const [courseData, setCourseData] = useState(null);
-
+  const [selectedTemplate, setSelectedTemplate] = useState(0);
   useEffect(() => {
     if (id) {
       const fetchCourse = async () => {
@@ -462,6 +467,7 @@ export default function Create() {
       setStartDate(courseData.startDate || null);
       setEndDate(courseData.endDate || null);
       setRegistrationRequired(courseData.registrationRequired ?? false);
+      setSelectedTemplate(courseData.certificateTemplate);
       setContactPersons(
         courseData.contactPersons?.length
           ? courseData.contactPersons
@@ -667,6 +673,8 @@ export default function Create() {
           selectedStudents={selectedStudents}
           selectedProfilesForSignature={selectedProfilesForSignature}
           toggleProfile={toggleProfile}
+          selectedTemplate={selectedTemplate}
+          setSelectedTemplate={setSelectedTemplate}
         />
       ),
     },

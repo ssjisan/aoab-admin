@@ -28,59 +28,57 @@ export default function CertificateSetup({
     { id: 1, img: certificate2Img, title: "Certificate 2" },
   ];
 
-  const handleSelect = (id) => {
-    setSelectedTemplate(id);
-  };
-
   // Flatten students
   const allStudents = Object.values(courseWiseStudents).flat();
 
   return (
     <Stack gap="32px" sx={{ mt: 3, pb: "64px" }}>
       {/* ---------------- TEMPLATE SECTION ---------------- */}
-      {/* <Box>
+      <Box sx={{ mb: 4 }}>
         <Typography variant="h6" mb={2}>
-          Choose Certificate Template
+          Select Certificate Template
         </Typography>
 
         <Grid container spacing={2}>
-          {templates.map((template) => (
-            <Grid item xs={6} sm={3} key={template.id}>
-              <Box
-                sx={{
-                  border:
-                    selectedTemplate === template.id
-                      ? "3px solid #1976d2"
-                      : "1px solid #ccc",
-                  borderRadius: 2,
-                  cursor: "pointer",
-                  overflow: "hidden",
-                  transition: "0.3s",
-                  "&:hover": { borderColor: "#1976d2" },
-                }}
-                onClick={() => handleSelect(template.id)}
-              >
-                <img
-                  src={template.img}
-                  alt={template.title}
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    display: "block",
+          {templates.map((template) => {
+            const isActive = selectedTemplate === template.id;
+
+            return (
+              <Grid item key={template.id}>
+                <Box
+                  onClick={() => setSelectedTemplate(template.id)}
+                  sx={{
+                    width: 300,
+                    height: 220,
+                    cursor: "pointer",
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    border: isActive ? "3px solid #1976d2" : "1px solid #ddd",
+                    boxShadow: isActive
+                      ? "0 0 10px rgba(25,118,210,0.4)"
+                      : "none",
+                    transition: "0.2s ease-in-out",
+                    "&:hover": {
+                      borderColor: "#1976d2",
+                    },
                   }}
-                />
-                <Typography
-                  variant="body2"
-                  textAlign="center"
-                  sx={{ p: 1, background: "#f5f5f5" }}
                 >
-                  {template.title}
-                </Typography>
-              </Box>
-            </Grid>
-          ))}
+                  <img
+                    src={template.img}
+                    alt={template.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </Box>
+              </Grid>
+            );
+          })}
         </Grid>
-      </Box> */}
+      </Box>
 
       {/* ---------------- STUDENT TABLE SECTION ---------------- */}
       <Box>
@@ -116,9 +114,8 @@ export default function CertificateSetup({
 
                   return (
                     <TableRow key={student._id}>
-                      <TableCell>{student.name || "N/A"}</TableCell>
+                      s<TableCell>{student.name || "N/A"}</TableCell>
                       <TableCell>{student.email || "N/A"}</TableCell>
-
                       <TableCell>
                         {student?.signature?.url ? (
                           <Box sx={{ width: "75px", height: "35px" }}>
@@ -136,7 +133,6 @@ export default function CertificateSetup({
                           <Typography>No Signature uploaded</Typography>
                         )}
                       </TableCell>
-
                       <TableCell>
                         <Button
                           variant={isSelected ? "contained" : "outlined"}
