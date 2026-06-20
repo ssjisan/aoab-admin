@@ -14,6 +14,7 @@ import {
 
 import certificate1Img from "/certificate_1st.png";
 import certificate2Img from "/certificate_2nd.png";
+import certificate3Img from "/certificate_3rd.webp";
 
 export default function CertificateSetup({
   selectedTemplate,
@@ -26,6 +27,7 @@ export default function CertificateSetup({
   const templates = [
     { id: 0, img: certificate1Img, title: "Certificate 1" },
     { id: 1, img: certificate2Img, title: "Certificate 2" },
+    { id: 2, img: certificate3Img, title: "Certificate 3" },
   ];
 
   // Flatten students
@@ -71,6 +73,7 @@ export default function CertificateSetup({
                       height: "100%",
                       objectFit: "cover",
                       display: "block",
+                      objectPosition: "top",
                     }}
                   />
                 </Box>
